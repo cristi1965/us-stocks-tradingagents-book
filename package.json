@@ -1,0 +1,15 @@
+{
+  "name": "us-stocks-tradingagents-book",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "serve": "python3 -m http.server 4180 --directory interactive",
+    "verify:browser": "node verify-v2.js"
+  },
+  "devDependencies": {
+    "playwright": "1.55.0"
+  }
+}

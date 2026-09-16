@@ -1,0 +1,36 @@
+const { chromium } = require('../../v15-text-review/node_modules/playwright');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const errors = [];
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  page.on('pageerror', e => errors.push(String(e)));
+  await page.goto('http://127.0.0.1:4180/?review=18.2', { waitUntil: 'networkidle' });
+  const counts = { chapters: await page.locator('.chapter-card').count(), avatars: await page.locator('.dialogue img').count() };
+  await page.locator('#stop').fill('520');
+  const invalidRisk = await page.locator('#riskWarning').textContent();
+  await page.locator('#stop').fill('480');
+  await page.locator('#strategy').selectOption('spread');
+  await page.locator('#shortStrike').fill('100');
+  const invalidOption = await page.locator('[data-panel="payoff"] .lab-output').last().textContent();
+  await page.locator('#agentTime').fill('2020-01-01T00:00');
+  await page.locator('#runAgents').click();
+  const rejectedAgent = await page.locator('#agentVerdict').textContent();
+  await page.locator('#agentTime').fill(new Date(Date.now() - 3600000).toISOString().slice(0, 16));
+  await page.locator('#agentSource').fill('https://www.sec.gov/example');
+  await page.locator('#bullCase').fill('价格结构与可核验基本面证据共同支持条件性看多，但不代表确定结果。');
+  await page.locator('#bearCase').fill('若收益率上升或盈利预期下修，估值和趋势可能同时受压，这是明确反证。');
+  await page.locator('#maxLoss').fill('500');
+  await page.locator('#invalidCase').fill('收盘跌破前低且下一日无法收复时，原交易假设失效。');
+  await page.locator('#runAgents').click();
+  const passedAgent = await page.locator('#agentVerdict').textContent();
+  for (let i = 0; i < 5; i++) await page.locator(`input[name="exam-${i}"]`).nth(i === 1 ? 0 : [1, 0, 1, 0, 1][i]).check();
+  await page.locator('#submitExam').click();
+  const riskGateExam = await page.locator('#examResult').textContent();
+  const desktopOverflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await mobile.goto('http://127.0.0.1:4180/?review=18.2', { waitUntil: 'networkidle' });
+  const mobileOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+  console.log(JSON.stringify({ counts, invalidRisk, invalidOption, rejectedAgent, passedAgent, riskGateExam, desktopOverflow, mobileOverflow, errors }, null, 2));
+  await browser.close();
+})().catch(e => { console.error(e); process.exit(1); });

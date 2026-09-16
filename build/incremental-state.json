@@ -1,0 +1,49 @@
+{
+  "inputs": {
+    "@manifest/book": {
+      "group": "layout",
+      "sha256": "3bd3fa36c1b1ae7e05d681a50517733624b9003279365e60d3b48b49c0c83e25"
+    },
+    "@manifest/output": {
+      "group": "layout",
+      "sha256": "24a4ba8647eb8c619b492e98c27ee87a22045512fbc6b38a055f800d83f0d9c3"
+    },
+    "@manifest/project-meta": {
+      "group": "project-meta",
+      "sha256": "373ed22c37b7a3bbda89483f346714a15de509d13a2c1fd7583fecc8b873bfaa"
+    },
+    "@manifest/review-config": {
+      "group": "review-config",
+      "sha256": "705f925238dee5a1755bac76f0b6cdffee28f659dc1833772e264309f0bc0510"
+    },
+    "@manifest/source-contract": {
+      "group": "source",
+      "sha256": "da59550ed508ea881b87845491b2da358f4c83a78e807502e811aaff285525b4"
+    },
+    "@manifest/style": {
+      "group": "style",
+      "sha256": "015287beabafb2d83b6f74759b125df4bde58d7832fdff2e9e1d7564e28d336b"
+    },
+    "manuscript/augmentation-ledger.jsonl": {
+      "group": "manuscript",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "manuscript/claims.md": {
+      "group": "manuscript",
+      "sha256": "1521a2e709464fefc2cdcd1186bbd719d22fcfe2001537c0038510ada85b1beb"
+    },
+    "manuscript/outline.md": {
+      "group": "manuscript",
+      "sha256": "91a08f54afaa74e2a6ab5361544ce728af524f71ccb06eaef99af639f32b2487"
+    },
+    "manuscript/source-map.jsonl": {
+      "group": "manuscript",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/source-index.json": {
+      "group": "source",
+      "sha256": "095116caaeea75b02a09eec71331ba26e11ad396f883f20229adda2751265ca5"
+    }
+  },
+  "schema_version": 1
+}

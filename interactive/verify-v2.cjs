@@ -1,0 +1,34 @@
+const { chromium } = require('playwright');
+const fs = require('fs');
+
+(async()=>{
+  const chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  const browser=await chromium.launch({headless:true,...(fs.existsSync(chrome)?{executablePath:chrome}:{})});
+  const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  await page.goto('http://127.0.0.1:4180/?verify=v43');
+  await page.evaluate(()=>localStorage.clear());
+  await page.reload();
+  const stages=await page.locator('#stageRail details').count(),chapters=await page.locator('.rail-lesson').count();
+  await page.locator('[data-phase="3"]').click();
+  await page.locator('[data-pick="bad"]').first().click();
+  const wrong=await page.locator('#lessonFeedback').textContent(),doneAfterWrong=await page.evaluate(()=>JSON.parse(localStorage.getItem('manga-us-v2-done')||'[]').length);
+  await page.reload();
+  await page.locator('[data-phase="3"]').click();
+  await page.locator('[data-pick="good"]').first().click();
+  const equityOnce=await page.evaluate(()=>localStorage.getItem('manga-us-v2-equity'));
+  await page.reload();
+  await page.locator('[data-phase="3"]').click();
+  await page.locator('[data-pick="good"]').first().click();
+  const equityTwice=await page.evaluate(()=>localStorage.getItem('manga-us-v2-equity'));
+  await page.evaluate(()=>localStorage.setItem('manga-us-v2-done',JSON.stringify(Array.from({length:27},(_,i)=>i))));
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.evaluate(()=>document.querySelector('[data-v2="27"]').click());
+  await page.locator('[data-phase="3"]').click();
+  await page.locator('[data-run]').click();
+  const blankFinal=await page.locator('#lessonFeedback').textContent();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
+  console.log(JSON.stringify({stages,chapters,wrong,doneAfterWrong,equityOnce,equityTwice,blankFinal,overflow,errors}));
+  await browser.close();
+  if(stages!==8||chapters!==28||doneAfterWrong!==0||equityOnce!==equityTwice||!/未通过|请/.test(blankFinal)||overflow||errors.length)process.exitCode=1;
+})().catch(error=>{console.error(error);process.exitCode=1});

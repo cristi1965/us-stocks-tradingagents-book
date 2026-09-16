@@ -1,0 +1,12 @@
+{
+  "status": "pending",
+  "pdf_sha256": "",
+  "jurisdiction": "",
+  "evidence_cutoff_date": "",
+  "privacy_protocol": "",
+  "disclaimer_boundary": "",
+  "identity_verified_by": "",
+  "identity_verification_method": "",
+  "automated_identity_verification": false,
+  "rounds": []
+}

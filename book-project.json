@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "mode": "book-pdf",
+  "title": "漫画美股：TradingAgents 从 K 线到期权",
+  "domain": "U.S. equity markets, options, macroeconomics, and AI-assisted research",
+  "audience": "具备约 6 年实践、熟悉股票但容易 all-in 或使用过高杠杆，希望用数据、纪律和 TradingAgents 重建美股决策闭环的中文进阶学习者",
+  "language": "zh-CN",
+  "jurisdiction": "not-applicable",
+  "intended_use": "private study",
+  "source": {
+    "paths": [],
+    "exclusions": [],
+    "traceability_required": true,
+    "index_file": "source/source-index.json",
+    "map_file": "manuscript/source-map.jsonl",
+    "augmentation_file": "manuscript/augmentation-ledger.jsonl",
+    "chunk_max_chars": 2000
+  },
+  "style": {
+    "direction": "warm modern anime chat with restrained market diagrams for an experienced, risk-seeking practitioner",
+    "visual_traits": [],
+    "palette": [],
+    "line_and_texture": "",
+    "composition": "",
+    "continuity_anchors": [],
+    "avoid": [
+      "accidental text",
+      "blurry focal subject",
+      "unplanned visual inconsistency"
+    ],
+    "text_in_images": false,
+    "reference_policy": "traits-only"
+  },
+  "book": {
+    "trim_size": "A4",
+    "default_orientation": "portrait",
+    "allow_landscape_diagrams": true,
+    "body_font_min_pt": 10.5,
+    "code_font_min_pt": 9.0,
+    "render_dpi": 144,
+    "require_toc_links": true,
+    "require_bookmarks": true,
+    "expected_chapters": 28,
+    "max_landscape_fraction": 0.4,
+    "toc_max_page": 10
+  },
+  "review": {
+    "required_rounds": 2,
+    "roles": [
+      "domain",
+      "book",
+      "production"
+    ],
+    "regulated_domain": true,
+    "require_qualified_professional_each_round": true,
+    "risk_classification": {
+      "decision": "regulated",
+      "method": "explicit",
+      "classified_by": "project owner",
+      "rationale": "Project owner explicitly classified the domain risk."
+    }
+  },
+  "incremental": {
+    "enabled": true,
+    "state_file": "build/incremental-state.json",
+    "extra_inputs": [],
+    "ignore": [
+      "**/__pycache__/**",
+      "**/*.pyc",
+      "**/.DS_Store"
+    ]
+  },
+  "output": {
+    "artifact_version": "0.1.0",
+    "final_pdf": "output/final.pdf",
+    "images_dir": "images/rendered",
+    "evidence_dir": "evidence"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "round": 1,
+  "status": "pending",
+  "reviewers": [],
+  "reviewer_context_ids": {},
+  "candidate_sha256": "",
+  "closed_artifact_sha256": "",
+  "blockers_open": 0,
+  "critical_open": 0,
+  "issues_total": 0,
+  "issues_closed": 0,
+  "residual_risks": []
+}
