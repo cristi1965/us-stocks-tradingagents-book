@@ -1,7 +1,8 @@
 const { chromium } = require('playwright');
+const chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, executablePath: chrome });
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));

@@ -57,7 +57,7 @@ v2Control = function(type, index) {
       <label><input type="radio" name="trendRead" value="random"> 只看最后一根绿色就算上涨趋势</label>
     </fieldset>
     <div class="chart-actions"><button data-run>提交我的判断</button></div>`;
-  if (index === 8) return `
+  if (index === 7 || index === 8) return `
     <div class="plain-case chart-story">
       <b>支撑不是一个精确数字</b>
       <p>价格曾在 500 美元附近多次止跌，所以把 496-502 美元看成一块支撑区。若放量收盘跌到 496 美元下方，原来的判断就需要作废。</p>
@@ -78,7 +78,7 @@ const clarityValidate = v3Validate;
 v3Validate = function(type) {
   if (v2Active === 4) return candleBody.value === 'up' && candleVolume.value === 'busy';
   if (v2Active === 6) return document.querySelector('input[name="trendRead"]:checked')?.value === 'up';
-  if (v2Active === 8) return document.querySelector('input[name="zoneRead"]:checked')?.value === 'clear';
+  if (v2Active === 7 || v2Active === 8) return document.querySelector('input[name="zoneRead"]:checked')?.value === 'clear';
   return clarityValidate(type);
 };
 
@@ -89,14 +89,14 @@ v2Complete = function(ok, button) {
 };
 
 const STAGE_GUIDES = [
-  ['先学别出局','阿良带着十万本金进山，第一件事不是找翻倍股，而是规定每次最多摔多疼。本金没了，后面的机会都与你无关。'],
-  ['价格留下的脚印','K 线不是预言，是市场一天走过的脚印。粗方块、细影线和量柱分别告诉你：最后站在哪、途中去过哪、路上有多少人。'],
-  ['下单前写退路','看多只是想法，订单才会花钱。先写入场、看错的位置和愿意付出的代价，免得行情一动，脑子就替仓位找借口。'],
-  ['五个名字，一场风雨','五只科技股看着不同，利率上升时可能一起跌。组合管理不是数股票，而是数它们背后共有几种风险。'],
-  ['大日子先收伞','CPI、FOMC 和财报像山里的暴雨。重点不是猜第一滴雨落哪，而是提前决定：下大了减多少，天晴了凭什么再加。'],
-  ['期权不只赌方向','买 Call 像买一张限时门票：方向、时间和市场热闹程度都会改票价。猜对上涨，也可能输给时间和 IV 回落。'],
-  ['让 Agent 拿证据说话','三个 Agent 都说看多，不代表有三份证据。若它们抄的是同一条旧消息，只能算一张过期纸条。'],
-  ['把整笔交易讲明白','最后不是猜涨跌，而是交代：为什么进、错在哪里退、最多亏多少、什么时候回来复盘。能重放，才算真的会。']
+  ['生存规则：先学别出局','阿良带着十万本金进山，第一件事不是找翻倍股，而是先定最大损失、核实结算资金并防范隔夜跳空。本金没了，后面的机会都与你无关。'],
+  ['读图证据：价格留下的脚印','K 线不是预言，是市场一天走过的脚印。从 OHLCV、相对成交量、趋势和关键区域寻找结构证据，不看单根颜色猜多空。'],
+  ['订单执行：下单前算清摩擦','看多只是想法，订单才会花钱。分清订单类型、延长时段无 NBBO 保护、TIF 剩余处理与停牌重开机制，不让执行吞噬策略。'],
+  ['账户风险：组合不是代码堆叠','多只科技股看似分散，压力时可能属于同一高贝塔风险簇。完整反推仓位、盯紧盘中保证金与维持率，用流程执行回撤恢复。'],
+  ['事件交易：大日子提前设防','CPI、FOMC、美债收益率与财报就像暴雨。先看数据版本与同口径预期，做好离散缺口压力测试，不赌单边方向。'],
+  ['期权实战：不止是方向放大器','期权是多维合约：期限、Delta、Gamma、Vega 与 Theta 共同决定盈亏。警惕事件后 IV Crush，用借记价差定义风险并做好到期指派准备。'],
+  ['证据与 Agent：时效与拒绝权','多个 Agent 看多不等于多份独立证据。按类型核验 TTL 时效、保存完整来源与反证，风险官随时保有 fail-closed 关闸权力。'],
+  ['总验收：闭环重放每一笔','统一核对账户、市场状态、订单路线、事件剧本与退出计划，端到端检验公司行动与极端尾部。能回放复盘，才算真正掌握。']
 ];
 
 const CHAPTER_TERMS = {
