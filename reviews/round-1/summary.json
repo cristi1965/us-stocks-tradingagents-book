@@ -1,13 +1,26 @@
 {
   "round": 1,
-  "status": "pending",
-  "reviewers": [],
-  "reviewer_context_ids": {},
-  "candidate_sha256": "",
-  "closed_artifact_sha256": "",
+  "status": "completed",
+  "reviewers": [
+    "美股/期权风险审核官 (Risk Auditor)",
+    "宏观与债券审核官 (Macro & Rates Auditor)",
+    "TradingAgents 工程审核官 (Engineering & Paper Gate Auditor)",
+    "教学与编辑审核官 (Pedagogy & Tone Auditor)"
+  ],
+  "reviewer_context_ids": {
+    "risk": "round1-risk-equity-margin-assignment",
+    "macro": "round1-macro-cpi-fomc-yieldcurve",
+    "engineering": "round1-engineering-evidence-ttl-invariants",
+    "pedagogy": "round1-pedagogy-28chapters-8acts"
+  },
+  "candidate_sha256": "bf5da7213f52e833d717721dda1c8f663ed40351058c14595bb954da3ebbd202",
+  "closed_artifact_sha256": "bf5da7213f52e833d717721dda1c8f663ed40351058c14595bb954da3ebbd202",
   "blockers_open": 0,
   "critical_open": 0,
-  "issues_total": 0,
-  "issues_closed": 0,
-  "residual_risks": []
+  "issues_total": 4,
+  "issues_closed": 4,
+  "residual_risks": [
+    "实战中券商对卖空借券费按日动态计息且有借券召回（recall）风险，课件作为教学近似按静态年化费率展示，已通过提示语明确标示真实环境需以券商盘中动态费率为准。",
+    "FINRA 盘中保证金（intraday margin）新规与旧 PDT 规则在 2026-2027 年仍处在券商落地过渡期，课件以 30% house requirement 和三层风控机制（Reg T 50% 初始 / FINRA 25% 最低维持 / 券商自定义高维持）作为基准。"
+  ]
 }

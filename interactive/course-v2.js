@@ -1,12 +1,21 @@
-const V2_STAGES=[['活下来','戒掉 all in 与亏损加码'],['读价格','OHLCV、趋势与结构'],['做计划','关键位、突破与订单'],['管组合','仓位、相关性与回撤'],['穿事件','CPI、FOMC、美债与财报'],['用期权','Greeks、IV 与价差'],['审 Agents','证据、反证与风险门'],['总实战','完成一张可重放计划']];
+const V2_STAGES=[
+  ['生存规则','最大损失、结算资金、跳空和连续亏损'],
+  ['读图证据','OHLCV、相对成交量、趋势和关键区域'],
+  ['订单执行','订单类型、时段、TIF、部分成交、停牌与重开'],
+  ['账户风险','完整仓位反推、风险簇、保证金压力和恢复门槛'],
+  ['事件交易','CPI/FOMC/收益率、财报缺口与跨资产冲突'],
+  ['期权实战','链筛选、Greeks 联合损益、IV Crush、价差和到期处理'],
+  ['证据与 Agent','分类型时效、来源、反证和 fail-closed'],
+  ['总验收','统一账户、市场、订单、事件和退出计划']
+];
 const V2_TITLES=[
-['先别梭哈','choice'],['最大损失','slider'],['跳空不是滑点','choice'],['连续亏损熔断','sequence'],
-['一根 K 线','chart'],['成交量有参照','choice'],['趋势还是区间','chart'],['结构失效','choice'],
-['区域不是细线','chart'],['突破三次确认','choice'],['订单的代价','order'],['滑点复盘','slider'],
-['由风险反推股数','slider'],['五只股票一笔风险','cluster'],['杠杆与保证金','choice'],['回撤恢复协议','sequence'],
-['CPI 预期差','macro'],['FOMC 三幕剧','sequence'],['收益率曲线','macro'],['财报缺口压力','slider'],
-['期权链第一眼','option'],['Delta 与 Gamma','option'],['Theta 与 Vega','option'],['IV Crush','choice'],['定义风险价差','option'],
-['证据不是嗓门','agent'],['风险官关闸','agent'],['最终交易日','final']
+  ['单笔最大损失','choice'],['完整仓位反推与结算','slider'],['隔夜跳空与止损真相','choice'],['连续亏损熔断协议','sequence'],
+  ['一根 K 线与价格结构','chart'],['成交量有参照与 RVOL','choice'],['趋势还是区间','chart'],['关键区域与结构失效','chart'],
+  ['订单类型与代价取舍','order'],['交易时段与保护边界','choice'],['部分成交与订单生命周期','order'],['停牌熔断与重开拍卖','order'],
+  ['风险簇净压力测算','cluster'],['高贝塔多资产暴露','cluster'],['杠杆与维持保证金','choice'],['卖空 locate 与 SSR 限制','choice'],
+  ['CPI 首次值与修订口径','macro'],['FOMC 会议三幕剧','sequence'],['收益率曲线与久期近似','macro'],['财报尾部反推仓位','slider'],
+  ['期权链流动性筛选','option'],['Delta 与 Gamma 敏感度','option'],['Greeks 联合损益近似','option'],['IV Crush 双情景折算','choice'],['价差与指派终态处理','option'],
+  ['证据类型与时效 TTL','agent'],['风险官关闸 fail-closed','agent'],['最终交易日总验收','final']
 ];
 const V2_SIZES=[4,4,4,4,4,5,2,1];
 const V2_COPY={choice:['先做判断，系统再揭晓后果。',['控制风险，等待证据','放大仓位，赌一次','忽略失效条件']],slider:['拖动参数，观察风险预算如何变化。',[]],sequence:['把停止、检查、减仓和恢复排成执行顺序。',[]],chart:['逐根看行情，选择等待确认或现在入场。',[]],order:['不同流动性需要不同订单，先选牺牲什么。',[]],cluster:['把代码不同、风险来源相同的持仓合并。',[]],macro:['同时观察预期差、2Y、10Y、美元和指数。',[]],option:['从期限、Delta、IV、点差与最大损失筛选。',[]],agent:['检查来源、时间戳、反证和失效条件。',[]],final:['把行情、假设、仓位、订单、事件和复盘写在一起。',[]]};
@@ -23,7 +32,36 @@ function v2Journal(){tradeJournal.innerHTML=`<small>Paper 账户</small><b>$${v2
 function v2Render(){v2Rail();const [title,type]=V2_TITLES[v2Active],copy=V2_COPY[type]||V2_COPY.choice,role=v2Active%2?'宁姚':'阿良',avatar=v2Active%2?'宁姚-1ca9c3a0b6ec2dc9.png':'阿良-c7de86724bd40304.png';lessonStage.innerHTML=`<div class="lesson-top"><span>阶段 ${v2Stage(v2Active)+1} · 第 ${v2Active+1}/28 章</span><b>${Math.round(v2Done.size/28*100)}%</b></div><h2>${title}</h2><div class="comic-strip"><img src="assets/chat-avatars/${avatar}" alt="${role}"><div><b>${role}</b><p>${copy[0]}</p></div></div><div class="decision-surface"><h3>你现在怎么做？</h3>${v2Control(type,v2Active)}<p id="lessonFeedback">先做决定，再看解释。</p></div><div class="lesson-nav"><button data-prev ${v2Active===0?'disabled':''}>上一章</button><button data-next ${v2Active===27?'disabled':''}>下一章</button></div>`;lessonStage.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>v2Complete(b.dataset.pick==='good',b));lessonStage.querySelectorAll('[data-step]').forEach((b,i)=>b.onclick=()=>{b.dataset.clicked=i+1;b.classList.add('answer-right')});lessonStage.querySelectorAll('[data-run]').forEach(b=>b.onclick=()=>{let ok=true;if(type==='final')ok=['planState','planInvalid','planOrder','planEvent','planReview'].every(id=>document.querySelector('#'+id).value.trim())&&+planLoss.value>0;if(type==='sequence')ok=[...lessonStage.querySelectorAll('[data-step]')].every((x,i)=>+x.dataset.clicked===i+1);if(type==='cluster'){const picked=[...lessonStage.querySelectorAll('.cluster-pick input:checked')].map(x=>x.value);ok=['chip','qqq','call'].every(x=>picked.includes(x))&&!picked.includes('tBill')}if(type==='macro')ok=Number.isFinite(+actual.value)&&Number.isFinite(+consensus.value);if(type==='slider')ok=+slider.value<=10;v2Complete(ok,b)});const slider=lessonStage.querySelector('input[type=range]');if(slider)slider.oninput=()=>{slider.nextElementSibling.value=(slider.value/10).toFixed(1)+'%';const math=lessonStage.querySelector('.live-math b');if(math)math.textContent='$'+(100000*slider.value/1000).toLocaleString()};const contracts=lessonStage.querySelector('#contracts'),debit=lessonStage.querySelector('#debit');if(contracts)[contracts,debit].forEach(x=>x.oninput=()=>optionRisk.textContent='$'+Math.max(0,+contracts.value*+debit.value*100).toLocaleString());lessonStage.querySelector('[data-prev]').onclick=()=>{v2Active--;v2Save();v2Render()};lessonStage.querySelector('[data-next]').onclick=()=>{v2Active++;v2Save();v2Render()};v2Chart();v2Journal()}
 v2Render();
 
-const V2_WHY=['仓位不是表达信念的音量，而是控制犯错代价的阀门。','先算允许亏损，再由止损距离反推数量。','止损是触发指令，不是跳空成交价保证。','连续亏损先停手、查暴露，再用 Paper 恢复。','实体记录开收，影线记录去过却没守住的位置。','成交量必须和自身历史及交易时段比较。','趋势看高低点序列，区间看反复回归。','更低低点会破坏上升结构，失效点不能后移。','支撑阻力是多次反应形成的区域。','刺穿、收盘站稳和回踩确认是三种证据强度。','市价优先成交，限价守价格边界。','计划风险必须加入点差、滑点和部分成交。','股数等于风险预算除以每股风险并向下取整。','压力期相关性上升，五个代码可能只有一个风险来源。','保证金购买力是券商额度，不是风险承受力。','恢复仓位靠合格流程，不靠一次盈利。','数据惊喜值是实际值减预期值，方向还取决于原有定价。','声明、点阵图和发布会可能带来三次定价。','2Y 更贴政策预期，10Y 还包含增长、通胀和期限补偿。','财报缺口压力必须在事件前完成。','期权链先查期限、乘数、点差、成交与未平仓量。','Delta 是一阶敏感度，Gamma 描述 Delta 如何变化。','Theta 与 Vega 会让股价不动时仍产生损益。','事件落地后 IV 回落，方向正确仍可能亏损。','垂直价差用收益封顶换取成本与尾部风险受限。','证据必须绑定来源、时间和适用范围。','风险官必须能因缺来源、缺反证或超时而拒绝。','完整计划必须能重放当时信息、风险和退出依据。'];
+const V2_WHY=[
+  '仓位不是表达信念的音量，而是控制犯错代价的阀门。',
+  '先算允许亏损并核验 T+1 已结算资金，再由止损距离反推数量。',
+  '止损是触发指令，不是跳空成交价保证；开盘跳空只能去盘口找买家。',
+  '连续亏损先停手、查共同暴露，再用合格流程和 Paper 逐步恢复。',
+  '价格轴看尺度，实体记录开收，影线记录去过却没守住的位置。',
+  '成交量必须和自身历史及交易时段比较，量比不足不轻言放量。',
+  '趋势看高低点序列，区间看反复回归，指标只是描述不是裁判。',
+  '支撑阻力是多次反应形成的区域，更低低点破坏上升结构，失效点绝不后移。',
+  '市价保成交牺牲价格，限价守价格牺牲成交，不存在两全其美的订单。',
+  '延长时段流动性薄且无常规 NBBO 保护，官方收盘价不等于盘后最后成交价。',
+  'TIF 决定订单时效，未成交机会成本与价差都会侵蚀执行质量。',
+  '停牌期间停止撮合，重开由集合拍卖定价，不能假设按原止损即时出场。',
+  '压力情景下不同资产会共振，必须把相关持仓合并计算净承受力。',
+  '高贝塔资产看着代码分散，本质上可能只是一笔放大了杠杆的利率交易。',
+  '保证金购买力是券商额度，不是风险预算；维持率不足随时触发强平。',
+  '卖空必须具备合法 Locate，触发 SSR 后价格测试禁止主动击穿买价。',
+  '数据惊喜值是实际值减预期值，复盘事件日必须使用当时的首次发布版本。',
+  '声明、点阵图和发布会可能带来三次重新定价，点阵图不是委员会承诺。',
+  '2Y 更贴政策预期，10Y 还包含增长与通胀；久期决定收益率变动对旧债的冲击。',
+  '财报跳空是离散事件跳跃，仓位必须由极端压力缺口而非正常波动反推。',
+  '期权链先查乘数、期限、点差、成交与 OI 未平仓量，盘口不是成交保证。',
+  'Delta 是一阶敏感度与等效股数，Gamma 描述 Delta 随股价变动的速度。',
+  'Greeks 联合损益需综合考虑 Delta、Gamma、Vega 波动率与 Theta 时间损耗。',
+  '事件落地后 IV 悬崖式回落，方向猜对仍可能被 IV Crush 与时间损耗吞掉。',
+  '垂直价差用收益封顶换取成本与尾部受限，临近到期必须应对指派与交割。',
+  '证据必须绑定类型、来源、报告期与采集时效 TTL，杜绝后验修正偷看。',
+  '风险官必须坚守 fail-closed，缺来源、缺反证或超时效时坚决关闸。',
+  '完整计划必须串联行情、仓位、订单、事件与公司行动，方能重放复盘。'
+];
 const originalV2Render=v2Render;
 v2Render=function(){originalV2Render();const principle=document.createElement('section');principle.className='principle';principle.innerHTML=`<small>这一章只记一句</small><p>${V2_WHY[v2Active]}</p>`;lessonStage.querySelector('.decision-surface').before(principle)};
 v2Render();

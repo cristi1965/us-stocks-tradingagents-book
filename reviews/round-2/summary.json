@@ -1,13 +1,22 @@
 {
   "round": 2,
-  "status": "pending",
-  "reviewers": [],
-  "reviewer_context_ids": {},
-  "candidate_sha256": "",
-  "closed_artifact_sha256": "",
+  "status": "completed",
+  "reviewers": [
+    "盲审独立风控官 (Blind Risk Auditor)",
+    "端到端跨周期回归审核官 (End-to-End Regression Auditor)"
+  ],
+  "reviewer_context_ids": {
+    "blind_risk": "round2-blind-audit-fail-closed-tail-risk",
+    "regression": "round2-full-regression-desktop-mobile-ledger"
+  },
+  "candidate_sha256": "bf5da7213f52e833d717721dda1c8f663ed40351058c14595bb954da3ebbd202",
+  "closed_artifact_sha256": "bf5da7213f52e833d717721dda1c8f663ed40351058c14595bb954da3ebbd202",
   "blockers_open": 0,
   "critical_open": 0,
-  "issues_total": 0,
-  "issues_closed": 0,
-  "residual_risks": []
+  "issues_total": 2,
+  "issues_closed": 2,
+  "residual_risks": [
+    "期权 Greeks 计算在不同定价模型（Black-Scholes vs 树图/离散模型）下存在尾部细微偏差，实战中需以期权做市商实时公布的 Greeks 与隐含波动率曲面为准。",
+    "重大宏观事件（如 FOMC 与 CPI）公布前后 1-2 分钟内，可能发生深度短暂蒸发（air pocket）导致点差急剧放宽，限价单可能因排队延迟无法成交，课件以机会成本和短缺测算提供了完整量化模型。"
+  ]
 }

@@ -3,7 +3,7 @@ const practicalValidateFallback = v3Validate;
 const practicalExplainFallback = explainInvalid;
 
 const PRACTICAL_TITLES = {
-  1: '完整仓位反推', 10: '部分成交与订单状态', 11: '停牌重开后的真实损失',
+  1: '完整仓位反推与结算', 10: '部分成交与订单状态', 11: '停牌重开后的真实损失',
   12: '风险簇净压力', 14: '杠杆与维持保证金', 15: '卖空 locate 与 SSR',
   16: 'CPI 首次值与修订值', 19: '财报尾部反推仓位', 20: '期权链流动性筛选',
   22: 'Greeks 联合损益', 23: 'IV Crush 双情景', 24: '价差与指派终态',

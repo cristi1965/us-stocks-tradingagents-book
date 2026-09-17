@@ -31,7 +31,7 @@ const chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
     const chartLessons = [];
     for (const lesson of [
       {index:6, name:'trendRead', answer:'up', plain:'不用填价格'},
-      {index:8, name:'zoneRead', answer:'clear', plain:'支撑不是一个精确数字'}
+      {index:7, name:'zoneRead', answer:'clear', plain:'支撑不是一个精确数字'}
     ]) {
       await page.evaluate(index => {
         localStorage.setItem('manga-us-v2-active', String(index));
