@@ -35,15 +35,366 @@ v2Render = function() {
   const row = CHAPTER_BACKGROUND[v2Active];
   if (!row) return;
   const [analogy, concept, impact, trap, action] = row;
+  const mapData = (typeof CHAPTER_RIESLING_MAP !== 'undefined' && CHAPTER_RIESLING_MAP[v2Active]) || null;
+
   const card = document.createElement('details');
   card.className = 'background-card';
   card.open = true;
-  card.innerHTML = `<summary><span>先补背景</span><b>${analogy}</b></summary><div class="background-body"><p><strong>说人话：</strong>${concept}</p><p><strong>为什么影响美股：</strong>${impact}</p><p class="background-trap"><strong>别这样理解：</strong>${trap}</p><p class="background-action"><strong>看完立刻做：</strong>${action}</p></div>`;
+
+  if (mapData) {
+    card.innerHTML = `
+      <summary>
+        <div class="summary-meta-left">
+          <span class="summary-tag-riesling">🍷 雷司令深度实证</span>
+          <span class="summary-ticker-tag">${mapData.ticker}</span>
+        </div>
+        <b class="summary-heading">${mapData.title} · ${mapData.primaryTitle}</b>
+        <span class="summary-chevron" aria-hidden="true">▾</span>
+      </summary>
+      <div class="background-body">
+        <!-- 1. 白话心法 -->
+        <div class="bg-sec bg-riesling">
+          <div class="bg-sec-header">
+            <div class="bg-sec-badge-box">
+              <span class="bg-badge-icon">🍷</span>
+              <span class="bg-badge-label">雷司令白话心法</span>
+              <span class="bg-badge-article">《${mapData.primaryTitle}》</span>
+            </div>
+            <button type="button" class="btn-read-riesling" onclick="window.openRieslingArticleModal('${mapData.primaryArticleId}')">
+              <span>📖 阅读完整原文</span>
+              <span class="arrow">↗</span>
+            </button>
+          </div>
+          <blockquote class="bg-quote-prose">“${mapData.rieslingQuote}”</blockquote>
+        </div>
+
+        <!-- 2. 学术实证 -->
+        <div class="bg-sec bg-empirical">
+          <div class="bg-sec-header">
+            <div class="bg-sec-badge-box">
+              <span class="bg-badge-icon">🔬</span>
+              <span class="bg-badge-label">机构微观结构与学术实证</span>
+            </div>
+            <span class="bg-sec-meta-pill">Peer-Reviewed / 真实市场数据</span>
+          </div>
+          <div class="bg-sec-text">${mapData.empiricalProof}</div>
+        </div>
+
+        <!-- 3. 四神票标定 -->
+        <div class="bg-sec bg-ticker">
+          <div class="bg-sec-header">
+            <div class="bg-sec-badge-box">
+              <span class="bg-badge-icon">⚡</span>
+              <span class="bg-badge-label">四神票实战参数标定</span>
+              <span class="ticker-pill-active">${mapData.ticker}</span>
+            </div>
+            <span class="bg-sec-meta-pill quant">微观摩擦参数标定</span>
+          </div>
+          <div class="bg-sec-text">${mapData.microstructureMechanic}</div>
+        </div>
+
+        <!-- 4. 散户认知误区 -->
+        <div class="bg-sec background-trap">
+          <div class="bg-sec-header">
+            <div class="bg-sec-badge-box">
+              <span class="bg-badge-icon">⚠️</span>
+              <span class="bg-badge-label">散户致命认知误区</span>
+            </div>
+            <span class="bg-sec-meta-pill danger">6年亏损典型病灶</span>
+          </div>
+          <div class="bg-sec-text">${trap}</div>
+        </div>
+
+        <!-- 5. 看完立刻执行清单 -->
+        <div class="bg-sec background-action">
+          <div class="bg-sec-header">
+            <div class="bg-sec-badge-box">
+              <span class="bg-badge-icon">🎯</span>
+              <span class="bg-badge-label">看完立刻执行清单</span>
+            </div>
+            <span class="bg-sec-meta-pill success">量化执行闭环</span>
+          </div>
+          <div class="formula-banner">
+            <span class="formula-tag">FORMULA</span>
+            <code>${mapData.actionableFormula}</code>
+          </div>
+          <div class="action-body-text"><b>执行动作：</b>${action}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    card.innerHTML = `
+      <summary>
+        <div class="summary-meta-left">
+          <span class="summary-tag-riesling">先补背景</span>
+        </div>
+        <b class="summary-heading">${analogy}</b>
+        <span class="summary-chevron" aria-hidden="true">▾</span>
+      </summary>
+      <div class="background-body">
+        <p><strong>说人话：</strong>${concept}</p>
+        <p><strong>为什么影响美股：</strong>${impact}</p>
+        <p class="background-trap"><strong>别这样理解：</strong>${trap}</p>
+        <p class="background-action"><strong>看完立刻做：</strong>${action}</p>
+      </div>
+    `;
+  }
+
   const story = lessonStage.querySelector('.story-guide');
   (story || lessonStage.querySelector('.comic-strip')).after(card);
 };
 
 const backgroundStyle = document.createElement('style');
-backgroundStyle.textContent = `.background-card{margin:0 0 18px;border:1px solid #ccd8d2;background:#fbfdfb}.background-card summary{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;padding:16px 18px;cursor:pointer}.background-card summary span{grid-row:1/3;padding:5px 8px;color:#fff;background:#207a58;font-size:12px;font-weight:800}.background-card summary b{font-size:19px}.background-body{padding:0 18px 16px}.background-body p{margin:9px 0;line-height:1.7}.background-body strong{color:#174e3d}.background-trap{padding:10px 12px;background:#fff3ed;border-left:3px solid #b95443}.background-action{padding:10px 12px;background:#edf6f2;border-left:3px solid #207a58}@media(max-width:700px){.background-card summary{grid-template-columns:1fr}.background-card summary span{grid-row:auto;width:max-content}.background-card summary b{font-size:17px}}`;
+backgroundStyle.textContent = `
+.background-card {
+  margin: 0 0 18px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.background-card summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  background: #fafafa;
+  border-bottom: 1px solid #f1f5f9;
+  user-select: none;
+  list-style: none;
+}
+.background-card summary::-webkit-details-marker {
+  display: none;
+}
+.summary-meta-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.summary-tag-riesling {
+  padding: 3px 8px;
+  color: #ffffff;
+  background: #be185d;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 5px;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.summary-ticker-tag {
+  padding: 2px 7px;
+  color: #0284c7;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  border-radius: 5px;
+  line-height: 1.2;
+}
+.summary-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  flex: 1;
+  letter-spacing: -0.01em;
+}
+.summary-chevron {
+  font-size: 12px;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+details[open] > summary .summary-chevron {
+  transform: rotate(180deg);
+}
+.background-body {
+  padding: 14px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.background-body .bg-sec {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  letter-spacing: -0.005em;
+  word-break: break-word;
+}
+.bg-sec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bg-sec-badge-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.bg-badge-icon {
+  font-size: 14px;
+}
+.bg-badge-label {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.bg-badge-article {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #be185d;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1px 7px;
+  border-radius: 4px;
+  border: 1px solid #fbcfe8;
+}
+.bg-sec-meta-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  letter-spacing: 0.02em;
+}
+.bg-sec-meta-pill.quant {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+.bg-sec-meta-pill.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+.bg-sec-meta-pill.success {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.ticker-pill-active {
+  font-family: var(--font-mono, monospace);
+  font-size: 11.5px;
+  font-weight: 800;
+  background: #f59e0b;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.bg-quote-prose {
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 6px;
+  border-left: 3.5px solid #be185d;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.75;
+  color: #831843;
+}
+.btn-read-riesling {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #be185d;
+  border: 1px solid #fbcfe8;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(190, 24, 93, 0.08);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn-read-riesling:hover {
+  background: #be185d;
+  color: #ffffff;
+  border-color: #be185d;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(190, 24, 93, 0.2);
+}
+.btn-read-riesling .arrow {
+  font-size: 11px;
+  font-weight: 800;
+}
+.bg-sec-text {
+  color: inherit;
+  line-height: 1.7;
+}
+.formula-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+}
+.formula-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: #1e293b;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+.formula-banner code {
+  color: #f1f5f9;
+  font-family: var(--font-mono, monospace);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.action-body-text {
+  font-size: 13px;
+  color: #14532d;
+  line-height: 1.6;
+}
+.bg-riesling {
+  background: #fdf2f8;
+  border-left: 3.5px solid #be185d;
+  color: #831843;
+}
+.bg-empirical {
+  background: #f8fafc;
+  border-left: 3.5px solid #0284c7;
+  color: #1e293b;
+}
+.bg-ticker {
+  background: #fffbeb;
+  border-left: 3.5px solid #f59e0b;
+  color: #78350f;
+}
+.background-trap {
+  background: #fff1f2;
+  border-left: 3.5px solid #e11d48;
+  color: #881337;
+}
+.background-action {
+  background: #f0fdf4;
+  border-left: 3.5px solid #16a34a;
+  color: #14532d;
+}
+@media (max-width: 700px) {
+  .background-card summary { flex-direction: column; align-items: flex-start; }
+  .summary-heading { font-size: 14px; }
+}
+`;
 document.head.appendChild(backgroundStyle);
 v2Render();
+

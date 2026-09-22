@@ -3,6 +3,7 @@ const lessonPhaseByChapter = (() => {
   try { return JSON.parse(localStorage.getItem('manga-us-workbench-phases') || '{}'); }
   catch (_) { return {}; }
 })();
+window.lessonPhaseByChapter = lessonPhaseByChapter;
 
 function makePhase(number, title, subtitle, nodes) {
   if (!nodes.length) return null;
@@ -39,7 +40,7 @@ function enhanceLessonStructure() {
   title.after(roadmap);
 
   const phases = [
-    makePhase(1, '先把来龙去脉讲清楚', '知道它是什么、为什么影响美股，以及不能从中推出什么。', [guide, background, term, ...reality].filter(Boolean)),
+    makePhase(1, '先把来龙去脉讲清楚', '知道它是什么、为什么影响资产定价与流动性，以及不能从中推出什么。', [guide, background, term, ...reality].filter(Boolean)),
     makePhase(2, '跟着一个具体场景走', '先看人物怎么想，再用数字或图把概念落地。', [story, example].filter(Boolean)),
     makePhase(3, '现在轮到你判断', '一次只解决当前问题；答错会告诉你缺了哪条证据。', [decision].filter(Boolean)),
     makePhase(4, '把规则带去下一章', '记住边界和动作，不背孤立术语。', [principle, recap].filter(Boolean))
@@ -74,7 +75,8 @@ function enhanceLessonStructure() {
     if (moveFocus && activePhase) {
       activePhase.tabIndex = -1;
       activePhase.focus({ preventScroll: true });
-      activePhase.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      lessonStage.scrollTo({ top: 0, behavior: 'auto' });
+      window.scrollTo(0, 0);
     }
   }
 
@@ -116,9 +118,75 @@ workbenchStyle.textContent = `
 .lesson-roadmap button{display:flex;align-items:center;gap:9px;min-width:0;min-height:46px;padding:11px 12px;border:0;border-radius:0;color:#334540;background:#f7faf8;text-decoration:none}.lesson-roadmap button:hover{background:#e7f1ec}.lesson-roadmap button[aria-current]{color:#fff;background:#18342c}.lesson-roadmap b{display:grid;place-items:center;width:24px;height:24px;flex:0 0 auto;color:#fff;background:#207a58;font-size:12px}.lesson-roadmap span{font-size:13px;font-weight:800;white-space:nowrap}
 .lesson-roadmap button.locked{color:#7c8985;background:#eef1ef;cursor:not-allowed}.lesson-roadmap button.locked b{background:#9aa6a2}
 .learning-phase{scroll-margin-top:132px;margin:0 0 30px;padding-top:4px;border-top:1px solid #d7ddd9}.learning-phase>header{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:18px 0 14px}.learning-phase>header>span{display:grid;place-items:center;width:38px;height:38px;color:#207a58;background:#e2efe8;font-weight:900}.learning-phase>header h3{margin:0;font-size:21px;letter-spacing:0}.learning-phase>header p{margin:2px 0 0;color:#60716c;font-size:13px}.phase-content>*:first-child{margin-top:0}.phase-content>*:last-child{margin-bottom:0}
-.learning-phase .story-guide,.learning-phase .background-card,.learning-phase .chapter-example,.learning-phase .principle{border-radius:0}.learning-phase .background-card{background:#fff}.learning-phase .decision-surface{min-height:0}.learning-phase .story-thread{margin-top:0}
+.learning-phase .story-guide,.learning-phase .background-card,.learning-phase .chapter-example,.learning-phase .principle{border-radius:8px}.learning-phase .background-card{background:#fff}.learning-phase .decision-surface{min-height:0}.learning-phase .story-thread{margin-top:0}
 .phase-next{width:100%;margin-top:18px;color:#fff;background:#18342c;border-color:#18342c}.phase-next:active{transform:translateY(1px)}
 @media(max-width:700px){.lesson-roadmap{position:static;grid-template-columns:repeat(4,minmax(0,1fr));margin-inline:-16px}.lesson-roadmap button{justify-content:center;padding:10px 4px}.lesson-roadmap button b{display:none}.lesson-roadmap span{font-size:12px}.learning-phase{scroll-margin-top:78px;margin-bottom:24px}.learning-phase>header{grid-template-columns:34px minmax(0,1fr)}.learning-phase>header>span{width:32px;height:32px}.learning-phase>header h3{font-size:18px}.learning-phase>header p{font-size:12px}.background-card:not([open]) .background-body{display:none}}
 `;
 document.head.appendChild(workbenchStyle);
 v2Render();
+
+// Office Stealth & Safety Mode (职场防窥/摸鱼保护模式)
+(function initOfficeStealth() {
+  const SENSITIVE_MAP = [
+    [/漫画美股/g, '量化研习'],
+    [/美股市场机制/g, '微观市场机制'],
+    [/美股/g, '境外标的'],
+    [/炒股/g, '量化交易'],
+    [/股票/g, '标的资产'],
+    [/梭哈/g, '顶格配置']
+  ];
+
+  function sanitizeNode(node) {
+    if (node.nodeType === 3) {
+      let text = node.nodeValue;
+      if (!text || (!text.includes('股') && !text.includes('梭哈'))) return;
+      for (const [re, rep] of SENSITIVE_MAP) {
+        text = text.replace(re, rep);
+      }
+      if (text !== node.nodeValue) node.nodeValue = text;
+    } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+      for (let i = 0; i < node.childNodes.length; i++) {
+        sanitizeNode(node.childNodes[i]);
+      }
+    }
+  }
+
+  function sanitizeTitle() {
+    if (document.title.includes('美股') || document.title.includes('股票')) {
+      document.title = '数据科学与量化决策训练系统';
+    }
+  }
+
+  function applyStealth() {
+    sanitizeTitle();
+    sanitizeNode(document.body);
+  }
+
+  applyStealth();
+
+  // Watch for dynamic DOM modifications
+  const observer = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type === 'childList') {
+        m.addedNodes.forEach(node => sanitizeNode(node));
+      } else if (m.type === 'characterData') {
+        sanitizeNode(m.target);
+      }
+    }
+    sanitizeTitle();
+  });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+  // Escape key double-tap quick discreet toggle / panic
+  let lastEsc = 0;
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const now = Date.now();
+      if (now - lastEsc < 400) {
+        document.title = 'Analytics & Metric Workbench';
+        document.body.classList.toggle('stealth-ultra');
+      }
+      lastEsc = now;
+    }
+  });
+})();
