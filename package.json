@@ -6,7 +6,9 @@
     "node": ">=18"
   },
   "scripts": {
-    "serve": "python3 -m http.server 4180 --directory interactive",
+    "serve": "go run server.go",
+    "serve:go": "go run server.go",
+    "serve:py": "python3 -m http.server 4180 --directory interactive",
     "verify:browser": "node verify-v2.js"
   },
   "devDependencies": {
