@@ -578,10 +578,10 @@ window.CHAPTER_RIESLING_MAP = [
       "mind-sunshi",
       "mind-huiche"
     ],
-    "rieslingQuote": "仓位是你唯一能百分之百说了算的东西。看对看错市场决定，买多买少你决定。排第一，是因为它管的是活下去。",
-    "empiricalProof": "Barber & Odean (2000) 统计 66,465 户家庭真实交易记录，换手最频繁者年化收益仅 11.4%，同期市场 17.9%，差出来的 6.5% 全被频繁交易磨损。台湾市场全量数据显示散户每年亏损超台湾 GDP 2%，几乎全额零和转移至机构。",
-    "microstructureMechanic": "卡尼曼损失厌恶（亏 1,000 美元的痛苦需要赚 2,000 美元才能抵消）；处置效应（卖出盈利股概率比卖出亏损股高 50%）。TSLA 现价 $215，止损 $211，按 $800 最大允许损失除以每股风险 $4.20（含摩擦），严格反推限买 190 股。",
-    "actionableFormula": "最大允许股数 = floor( 账户净值 × 风险比例% / (入场价 - 止损价 + 滑点缓冲) )"
+    "rieslingQuote": "风险预算是事前愿意承担的损失金额。账户 $100,000 × 0.8% = $800；每股计划风险 $4.20，则 $800 ÷ $4.20 = 190.47，向下取整为 190 股。跳空仍可能使实际损失超预算。",
+    "empiricalProof": "风险预算是事前愿意承担的损失金额。账户 $100,000 × 0.8% = $800；每股计划风险 $4.20，则 $800 ÷ $4.20 = 190.47，向下取整为 190 股。跳空仍可能使实际损失超预算。",
+    "microstructureMechanic": "先算预算，再算每股风险，最后向下取整。买入金额是 190 × $215 = $40,850，与允许亏损 $800 是两个不同数字。",
+    "actionableFormula": "股数 = 向下取整(风险预算 ÷ 每股计划风险)"
   },
   {
     "chapter": 2,
@@ -593,10 +593,10 @@ window.CHAPTER_RIESLING_MAP = [
       "start-kaihu",
       "start-feiyong"
     ],
-    "rieslingQuote": "钱没到账先花出去，叫挪用；票没到手先卖出去，叫违规。把结算制度想通了，你就知道券商屏幕上的浮动数字，哪一部分是真能动、哪一部分只是系统借你的影子。",
-    "empiricalProof": "美股自 2024 年 5 月全面实施 T+1 结算。现金账户使用未结算资金买入并于同日卖出，触发 Good Faith Violation（善意违规）。12 个月内满 3 次将被强制限制 90 天仅能用已结算现金交易。",
-    "microstructureMechanic": "Settled Cash vs Unsettled Cash。在 CRWV 剧烈波动日内，券商购买力并不等于可用资金。结算日前资金未完成 DTCC 清算，严禁做回转交易。",
-    "actionableFormula": "可用已结算买力 = 现金额 - 未清算卖出应收款 - 挂单冻结保证金"
+    "rieslingQuote": "已结算资金是买卖交割已完成、可用于付款的钱；未结算卖出款仍在交割途中。先看这次买入用哪笔钱，再核对卖出时该笔钱是否已经结算。不要把现金账户所有当日买卖都说成违规。",
+    "empiricalProof": "已结算资金是买卖交割已完成、可用于付款的钱；未结算卖出款仍在交割途中。先看这次买入用哪笔钱，再核对卖出时该笔钱是否已经结算。不要把现金账户所有当日买卖都说成违规。",
+    "microstructureMechanic": "本练习只用已结算资金安排当日买卖，具体资金资格与违规处理以账户规则为准。",
+    "actionableFormula": "可买数量同时受风险预算与已结算付款能力限制"
   },
   {
     "chapter": 3,
@@ -608,10 +608,10 @@ window.CHAPTER_RIESLING_MAP = [
       "trade-zhisun",
       "mind-heitiane"
     ],
-    "rieslingQuote": "止损不是认命，是认错。但止损单只负责在价格被越过时向交易所发送市价指令，它从不承诺你能成交在止损价上。",
-    "empiricalProof": "美股隔夜财报与非农公布时，开盘撮合由集合竞价一锤定音。在 CRWV $80 跌至 $65 缺口中，$80~$65 之间根本没有任何买单撮合，止损只能在 $65 恶性成交。",
-    "microstructureMechanic": "肥尾分布（Fat Tails）与离散跳跃。日常连续布朗运动假设在此彻底失效。必须将极端跳空缺口幅度（如 -20%）直接计入单股风险敞口反推股数。",
-    "actionableFormula": "财报压力每股风险 = 入场价 × 极端跳空比例(20%) + 滑点($0.50)"
+    "rieslingQuote": "本教学情景假定在 $80 买入、最终在 $65 卖出：每股亏 $15。200 股共亏 $3,000，比原计划 $4 × 200 = $800 多亏 $2,200。",
+    "empiricalProof": "本教学情景假定在 $80 买入、最终在 $65 卖出：每股亏 $15。200 股共亏 $3,000，比原计划 $4 × 200 = $800 多亏 $2,200。",
+    "microstructureMechanic": "这里的 $65 是给定成交假设；真实订单何时、以何价成交，要看触发条件、订单类型和当时买卖盘。",
+    "actionableFormula": "情景亏损 = (入场价 - 情景成交价) × 股数"
   },
   {
     "chapter": 4,
@@ -623,10 +623,10 @@ window.CHAPTER_RIESLING_MAP = [
       "trade-jihua",
       "master-haigui"
     ],
-    "rieslingQuote": "散户亏钱很少是一枪毙命，基本都是同几种慢性病反复发作。亏损后急红了眼加倍下注，是一脚踩向深渊的致命毒药。",
-    "empiricalProof": "神经金融学实验证明：连续两笔亏损后人体大脑皮质醇水平飙升 300%，理性风控中枢被原始杏仁核恐惧与贪婪劫持，极易发生报复性交易（Revenge Trading）。",
-    "microstructureMechanic": "三级熔断日风控线：日亏损达到 1.6%（两笔各 $800）强制停手，断开 API / 离开终端，连续 5 笔 Paper 合规方可恢复实盘。",
-    "actionableFormula": "触发条件：日回撤 ≥ 1.5% 或 连续亏损笔数 ≥ 2 -> 动作：强制断开 API，转入 Paper"
+    "rieslingQuote": "停止新增风险是为了防止连续亏损后扩大下注。这里的日亏损阈值和恢复所需模拟笔数是练习设定，不是生理学定律，也不是交易所规则。",
+    "empiricalProof": "停止新增风险是为了防止连续亏损后扩大下注。这里的日亏损阈值和恢复所需模拟笔数是练习设定，不是生理学定律，也不是交易所规则。",
+    "microstructureMechanic": "先停止新增风险，再检查已有持仓和保护订单。不要为停手而一并断开必要的持仓监控。",
+    "actionableFormula": "达到练习停手条件 → 停止新增风险 → 检查与模拟复盘"
   },
   {
     "chapter": 5,
@@ -639,10 +639,10 @@ window.CHAPTER_RIESLING_MAP = [
       "kline-juxian",
       "kline-fuquan"
     ],
-    "rieslingQuote": "K 线是多空订单在交易所留下的脚印，四个价格记录一场战争的结局。实体告诉你谁最后赢了，影线告诉你盘中打到了哪里又被谁打了回来。",
-    "empiricalProof": "K 线的滞后性与局限：单根阳线绝不包含对明日价格的预言能力。TSLA 冲高 $225 留下的长上影线，本质是做市商与机构大额卖单在阻力区的集中派发。",
-    "microstructureMechanic": "前复权与后复权口径消除分红除权失真；区分 RTH 常规时段与含 ETH 盘前盘后的真实蜡烛形态。",
-    "actionableFormula": "实体幅度 = |收盘 - 开盘| / 开盘；上影线 = 最高 - max(开盘, 收盘)"
+    "rieslingQuote": "开盘 $210、收盘 $220，所以实体长度 $10；最高 $225，所以上影线长 $5。四个价格不能告诉我们是谁卖出，也不能证明机构在出货。",
+    "empiricalProof": "开盘 $210、收盘 $220，所以实体长度 $10；最高 $225，所以上影线长 $5。四个价格不能告诉我们是谁卖出，也不能证明机构在出货。",
+    "microstructureMechanic": "复权是为分红、拆股调整历史价格口径。常规时段与含盘前盘后的图表也不能直接混着比。",
+    "actionableFormula": "实体长度 = |收盘 - 开盘|；上影线 = 最高 - 较高的开盘或收盘价"
   },
   {
     "chapter": 6,
@@ -654,10 +654,10 @@ window.CHAPTER_RIESLING_MAP = [
       "indi-vol",
       "tool-fenshi"
     ],
-    "rieslingQuote": "成交量是价格的底气，没有量的上涨是沙滩上的城堡。但别单看今天多高，得问这一刻相比历史同期算不算挤。",
-    "empiricalProof": "全球交易所公认的成交量\"U型分布\"：开盘前 30 分钟（9:30-10:00）和收盘前 30 分钟（15:30-16:00）成交量占据全天 50% 以上。午盘 12:00 自然清淡。",
-    "microstructureMechanic": "相对成交量 RVOL = 当前时段成交量 / 过去 20 日同时段基准均量。COIN 突破时 RVOL 仅 0.6，属于严重缩量诱多，机构未参与，坚决不追。",
-    "actionableFormula": "RVOL = 当日某时段累计成交量 / 过去 20 日同时段平均成交量"
+    "rieslingQuote": "相对成交量（RVOL）把当前成交量除以历史同一时段均量。120 万 ÷ 200 万 = 0.6，表示比基准少 40%；它不能单独识别机构是否参与。",
+    "empiricalProof": "相对成交量（RVOL）把当前成交量除以历史同一时段均量。120 万 ÷ 200 万 = 0.6，表示比基准少 40%；它不能单独识别机构是否参与。",
+    "microstructureMechanic": "盘中累计量只与过去同一截止时刻相比，完整日量才与过去完整日量相比。",
+    "actionableFormula": "相对成交量 = 当前累计量 ÷ 历史同一时段平均量"
   },
   {
     "chapter": 7,
@@ -669,10 +669,10 @@ window.CHAPTER_RIESLING_MAP = [
       "trend-jieduan",
       "kline-zhouqi"
     ],
-    "rieslingQuote": "趋势就一句话：高点越来越高、低点越来越高。道氏理论不是教你预测明天，是教你承认现在所处的水流方向，别逆流游泳。",
-    "empiricalProof": "道氏思想三阶段：积累期（聪明钱悄悄建仓）、大众参与期（趋势明确展开）、派发期（群里晒单狂欢机构出货）。",
-    "microstructureMechanic": "摆动高点与低点序列破坏法则：一旦最新低点跌破前波段低点，原有上升趋势宣告终结，均线多头排列滞后不能作为死扛借口。",
-    "actionableFormula": "上升趋势判定条件：Pivot_High(t) > Pivot_High(t-1) 且 Pivot_Low(t) > Pivot_Low(t-1)"
+    "rieslingQuote": "在同一周期比较相邻波段高低点。低点由 $210 降到 $208，说明原先“低点持续抬高”的条件不再成立；这并不保证下一步一定下跌。",
+    "empiricalProof": "在同一周期比较相邻波段高低点。低点由 $210 降到 $208，说明原先“低点持续抬高”的条件不再成立；这并不保证下一步一定下跌。",
+    "microstructureMechanic": "波段高点是附近一段价格中的相对高点，波段低点同理。先固定周期再比较，避免随意挑点。",
+    "actionableFormula": "比较相邻波段：高点是否抬高，低点是否抬高"
   },
   {
     "chapter": 8,
@@ -684,10 +684,10 @@ window.CHAPTER_RIESLING_MAP = [
       "trend-tupo",
       "trend-qushixian"
     ],
-    "rieslingQuote": "支撑阻力不是一根细线，是一个带厚度的房间。跌破了，地板就变成了天花板——这就是角色互换。",
-    "empiricalProof": "密集成交区（Volume Profile）筹码堆积效应：曾有上亿美元在此成交，套牢盘在反弹至成本线时争相出逃，买盘在回踩时被动护盘。",
-    "microstructureMechanic": "假突破（Fakeout）识别：做市商扫单穿透前高 0.5% 后迅速收回，必须等待两根 K 线收盘确认或配合 RVOL > 1.5 方可确认真突破。",
-    "actionableFormula": "支撑带有效性 = 密集成交量 POC + 前期高低点重合度 ≥ 2 项证据"
+    "rieslingQuote": "支撑是价格过去多次停止下跌的区域。跌破后若反弹又在这里受阻，可把它当作候选阻力；需要观察，不能只凭一条线保证反转。",
+    "empiricalProof": "支撑是价格过去多次停止下跌的区域。跌破后若反弹又在这里受阻，可把它当作候选阻力；需要观察，不能只凭一条线保证反转。",
+    "microstructureMechanic": "成交密集区表示过去成交较多的价格范围，不能据此知道现在还有多少未卖出的持仓。",
+    "actionableFormula": "支撑与阻力需要价格反应证据，不能由固定公式保证"
   },
   {
     "chapter": 9,
@@ -699,10 +699,10 @@ window.CHAPTER_RIESLING_MAP = [
       "trade-huadian",
       "tool-wudang"
     ],
-    "rieslingQuote": "限价单是\"这个价我才买\"，市价单是\"多少钱都行给我成交\"。市价单买的是确定性，卖出的是价格控制权——在深水区，急单最容易挨宰。",
-    "empiricalProof": "买卖五档订单簿（L2 Order Book）撮合原理：小盘股与宽点差标的（如 COIN/CRWV 开盘）市价单单笔冲击成本可达 0.8%~1.5%。",
-    "microstructureMechanic": "Stop-Market（触发变市价）vs Stop-Limit（触发变限价可能不成交）。根据标的流动性与点差深度选择订单，严禁宽点差市价扫单。",
-    "actionableFormula": "点差摩擦率 = (卖一 Ask - 买一 Bid) / 中间价 Mid × 100%"
+    "rieslingQuote": "市价单优先争取成交，成交价格不受限；限价买单只接受指定价格或更低价格，却可能买不到。盘口深度表示各个价位有多少可见挂单。",
+    "empiricalProof": "市价单优先争取成交，成交价格不受限；限价买单只接受指定价格或更低价格，却可能买不到。盘口深度表示各个价位有多少可见挂单。",
+    "microstructureMechanic": "止损市价单（Stop-Market）触发后按市价执行；止损限价单（Stop-Limit）触发后仍受限价约束，可能不成交。",
+    "actionableFormula": "点差率 = (卖一 - 买一) ÷ 中间价 × 100%"
   },
   {
     "chapter": 10,
@@ -714,10 +714,10 @@ window.CHAPTER_RIESLING_MAP = [
       "market-sanshi",
       "tool-kanpan"
     ],
-    "rieslingQuote": "交易时间表看着是死的，底下是活的——是一套跟着钱走、防有人钻空子的攻防史。开盘前那几分钟和盘后，没有保镖护着你。",
-    "empiricalProof": "美股延长交易时段（ETH：4:00-9:30 AM，16:00-20:00 PM）不适用 SEC Reg NMS 的 NBBO（全美最优买卖报价）价格保护；Cboe BZX 仅占全美 15% 撮合量，易产生假影线。",
-    "microstructureMechanic": "16:00 官方收盘集合竞价确定官方基准。延长交易时段只准使用指定限价单并严格缩减 50% 仓位。",
-    "actionableFormula": "ETH 风险折算系数 = 常规时段点差 / ETH 时段点差（通常 < 0.3）"
+    "rieslingQuote": "盘前盘后要同时核对券商允许的时段、订单类型与价格保护。官方收盘价和盘后最后成交价是不同数据；某一交易场所的报价也不等于全市场报价。",
+    "empiricalProof": "盘前盘后要同时核对券商允许的时段、订单类型与价格保护。官方收盘价和盘后最后成交价是不同数据；某一交易场所的报价也不等于全市场报价。",
+    "microstructureMechanic": "本练习采用限价和减量措施。具体减多少由可承受损失和盘口条件决定，不把固定比例当市场规则。",
+    "actionableFormula": "先核对时段与订单权限，再决定限价和数量"
   },
   {
     "chapter": 11,
@@ -728,10 +728,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "trade-dingdan"
     ],
-    "rieslingQuote": "你看到的价格，和你实际成交的价格，中间那点差就是滑点。分批成交不是顺利，是你的仓位暴露正在失衡。",
-    "empiricalProof": "Perold (1988) 提出的执行短缺（Implementation Shortfall）理论：总短缺 = 执行价差损耗 + 未成交机会成本 + 佣金税费。",
-    "microstructureMechanic": "TIF（Time-In-Force）：DAY 单盘后失效引发的 300 股未成交机会成本，导致实际策略产生隐性跑输风险。",
-    "actionableFormula": "总执行短缺 IS = 实际支付总额 - (基准决策价 × 目标总股数) + 显性费用"
+    "rieslingQuote": "执行短缺比较实际执行与原计划的差别。买单的已成交成本按成交价减基准价计算；未成交部分按期末价减基准价计算，再加费用。结果也可能为负，表示比基准更有利。",
+    "empiricalProof": "执行短缺比较实际执行与原计划的差别。买单的已成交成本按成交价减基准价计算；未成交部分按期末价减基准价计算，再加费用。结果也可能为负，表示比基准更有利。",
+    "microstructureMechanic": "300 股在 $219.50、400 股在 $220 成交，均价约 $219.786；剩余 300 股尚未买到，不能当作已有持仓。",
+    "actionableFormula": "买入执行短缺 = 已成交数量×(成交价-基准价) + 未成交数量×(期末价-基准价) + 费用"
   },
   {
     "chapter": 12,
@@ -742,10 +742,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "mind-heitiane"
     ],
-    "rieslingQuote": "熔断是交易所拉闸断电。红灯亮起时谁都走不掉，别以为你的止损单能在断电的屋子里摸黑替你卖出。",
-    "empiricalProof": "美股 LULD（Limit-Up/Limit-Down）单股 5 分钟限制带与暂停机制；MWCB（全市场 7%、13%、20% 三级熔断机制）；新闻停牌（T1/T2）。",
-    "microstructureMechanic": "停牌期间连续撮合中断，所有挂单进入集合拍卖队列，重开价格由供求交点决定，暴跌开盘越过原止损造成不可撤销巨损。",
-    "actionableFormula": "重开缺口损失 = 目标止损价 - 集合拍卖出清价"
+    "rieslingQuote": "停牌意味着暂时不能成交。原止损价不会因此变成保证成交价；重开后应查询订单状态和实际成交记录，撤改单是否受理还要看券商及交易所规则。",
+    "empiricalProof": "停牌意味着暂时不能成交。原止损价不会因此变成保证成交价；重开后应查询订单状态和实际成交记录，撤改单是否受理还要看券商及交易所规则。",
+    "microstructureMechanic": "本例 $215 买入 200 股、$195 卖出，总损失 $4,000；与 $211 止损计划相比，多损失 $3,200。",
+    "actionableFormula": "每股额外缺口损失 = 原止损价 - 实际卖出价"
   },
   {
     "chapter": 13,
@@ -757,10 +757,10 @@ window.CHAPTER_RIESLING_MAP = [
       "master-dalio",
       "trade-zuoyou"
     ],
-    "rieslingQuote": "买了五只不同名字的芯片股，不叫分散风险，叫把鸡蛋放在五个贴着不同标签的同一个篮子里。一刮大风，一网打尽。",
-    "empiricalProof": "达利欧全天候与风险平价（Risk Parity）原理：在宏观流动性紧缩或利率上行期，资产间相关性（Correlation）会瞬间跳升至接近 1.0。",
-    "microstructureMechanic": "风险因子聚类与净暴露计算：芯片多头 +$50k、纳指多头 +$30k 与保护性 Put -$20k 净暴露为 +$60k，测算 -8% 极端板块压力净亏损。",
-    "actionableFormula": "净因子敞口 = ∑ 多头名义价值 - ∑ 空头/期权等效对冲价值"
+    "rieslingQuote": "风险簇是可能因同一个因素同时亏损的一组持仓。先分别估计每项在同一情景中的损益，再相加。期权对冲额必须换成同口径风险暴露，不能直接拿权利金相减。",
+    "empiricalProof": "风险簇是可能因同一个因素同时亏损的一组持仓。先分别估计每项在同一情景中的损益，再相加。期权对冲额必须换成同口径风险暴露，不能直接拿权利金相减。",
+    "microstructureMechanic": "只有在给定的线性等效暴露假设下，$50,000 + $30,000 - $20,000 = $60,000，乘 -8% 得 -$4,800。",
+    "actionableFormula": "组合压力损益 = 各持仓在同一情景下的损益之和"
   },
   {
     "chapter": 14,
@@ -771,10 +771,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "market-etf"
     ],
-    "rieslingQuote": "杠杆 ETF 是带损耗的消耗品。高贝塔资产在风口上飞得最高，在退潮时摔得粉身碎骨。区分谁是武器、谁是盾牌。",
-    "empiricalProof": "杠杆 ETF 的波动率损耗（Volatility Decay / Beta Slippage）：SOXL 在震荡市中即使纳指不跌，净值也会因每日再平衡（Daily Rebalancing）不断阴跌。",
-    "microstructureMechanic": "隔离低贝塔避险现金（T-Bills 仅享受无风险国债利息），将高贝塔科技敞口合并设定不得超过总账户净值 25% 的硬顶。",
-    "actionableFormula": "高贝塔科技敞口上限 = min( 账户总资产 × 25%, 风险预算 / (Beta × 压力跌幅) )"
+    "rieslingQuote": "高贝塔表示资产历史上对所选市场基准的变动较敏感。SOXL 的三倍目标针对半导体基准的单日收益，多日收益不能直接乘三，也不能拿纳指作它的跟踪基准。",
+    "empiricalProof": "高贝塔表示资产历史上对所选市场基准的变动较敏感。SOXL 的三倍目标针对半导体基准的单日收益，多日收益不能直接乘三，也不能拿纳指作它的跟踪基准。",
+    "microstructureMechanic": "25% 是本练习的持仓限制。短期国库券不属于同一科技风险簇，但仍需核对期限、价格和流动性。",
+    "actionableFormula": "先换算同一基准的风险暴露，再检查练习总额上限"
   },
   {
     "chapter": 15,
@@ -785,10 +785,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "market-beixiang"
     ],
-    "rieslingQuote": "强平线杀人，不是因为你看错了方向，是因为它在最坏的时候，替你按下了卖出键——而按键的人是券商，不是你。",
-    "empiricalProof": "FINRA Rule 4210 法定维持保证金 25%，但多数券商对高波动成长股设置 30%~40% 的 House Requirement；融资年化利息 10%~12% 按天计提。",
-    "microstructureMechanic": "自有 $50k 融资 $50k，市值跌 30% 剩 $70k，30 天利息 $493，净权益跌至 $19,506，实际保证金率 27.87% 跌破 30% 警戒线触发强平清算。",
-    "actionableFormula": "保证金率 = (持仓总市值 - 融资金额 - 计提利息) / 持仓总市值"
+    "rieslingQuote": "本例设借款 $50,000、年息 12%、按 365 天计息：30 天利息 $493.15。市值跌至 $70,000 后，净权益为 $19,506.85，除以市值得 27.87%，低于本例券商要求的 30%。",
+    "empiricalProof": "本例设借款 $50,000、年息 12%、按 365 天计息：30 天利息 $493.15。市值跌至 $70,000 后，净权益为 $19,506.85，除以市值得 27.87%，低于本例券商要求的 30%。",
+    "microstructureMechanic": "融资利率、计息方式与维持要求均为本例输入，实际账户需读取券商当前规则。",
+    "actionableFormula": "保证金率 = (市值 - 借款 - 应计利息) ÷ 市值"
   },
   {
     "chapter": 16,
@@ -799,10 +799,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "start-t1t0"
     ],
-    "rieslingQuote": "做多最多亏光 100%，做空理论上亏损无底洞。借不到券就不能卖，跌太狠了交易所直接锁死市价打压。",
-    "empiricalProof": "SEC Regulation SHO 规定卖空前必须取得合规借券确认（Locate）；单日跌超 10% 触发 SEC Rule 201 替代升档规则（SSR）。",
-    "microstructureMechanic": "SSR 生效期间仅允许在高于当前最优买价（NBBO Bid）挂单等待被动成交，严禁市价砸盘；动态融券借贷年化费率从 2% 飙升至 80% 的轧空风险。",
-    "actionableFormula": "SSR 卖空限制价 = NBBO Ask（必须处于升档或平档且高于当前买一）"
+    "rieslingQuote": "卖空是先卖出借来的股票，以后买回归还。借券确认（Locate）和价格限制（SSR）是不同检查：前者查券源，后者查订单在限制生效时是否符合价格要求。",
+    "empiricalProof": "卖空是先卖出借来的股票，以后买回归还。借券确认（Locate）和价格限制（SSR）是不同检查：前者查券源，后者查订单在限制生效时是否符合价格要求。",
+    "microstructureMechanic": "先核对已确认的借券数量，再核对价格要求与适用例外；不能把借券确认当成永久可借保证。",
+    "actionableFormula": "检查借券数量、SSR适用状态与订单价格，不能仅套一个报价公式"
   },
   {
     "chapter": 17,
@@ -813,10 +813,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "market-caibaoji"
     ],
-    "rieslingQuote": "这三个是全球盯得最紧的美国数据：CPI 说物价涨没涨，非农说活儿好不好找，议息说钱贵不贵。市场交易的不是数字大小，是它比预期差了多少。",
-    "empiricalProof": "美国劳工统计局（BLS）数据发布规律：市场定价完全由首次公布值（Initial Vintage）与市场彭博共识预期的预期差（Surprise）驱动。",
-    "microstructureMechanic": "数月后的季节性调整终值不能用于复盘历史交易；CPI 超预期 0.2% 触发 2Y 国债收益率飙升与成长股杀估值。",
-    "actionableFormula": "预期差 Surprise = 首次公布 Actual - 彭博共识 Consensus"
+    "rieslingQuote": "公布值 3.2% 减预期值 3.0%，预期差为 0.2 个百分点。必须比较同一指标、时期和统计口径，并只使用当时已经公布的信息。",
+    "empiricalProof": "公布值 3.2% 减预期值 3.0%，预期差为 0.2 个百分点。必须比较同一指标、时期和统计口径，并只使用当时已经公布的信息。",
+    "microstructureMechanic": "0.2 个百分点不是相对增加 0.2%。预期差只是可能影响市场的一个因素，不能直接推出股票必涨或必跌。",
+    "actionableFormula": "预期差 = 同口径公布值 - 同口径预期值"
   },
   {
     "chapter": 18,
@@ -827,10 +827,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "tool-zhouqi-shizhong"
     ],
-    "rieslingQuote": "美联储调的是美元资金价格，这个价格是全世界给资产估值的那把尺子。会议有三幕，每一幕都可能推翻上一幕。",
-    "empiricalProof": "FOMC 定价三阶段：14:00 政策声明与利率决议（首波冲击）→ 经济预测 SEP 与点阵图（中期分歧）→ 14:30 主席新闻发布会（记者问答引爆波动）。",
-    "microstructureMechanic": "点阵图不是承诺；会前制定鹰派/中性/鸽派三套剧本，会后观察联邦基金利率期货与 2Y 收益率确认真实定调。",
-    "actionableFormula": "利率期货隐含降息概率 = (100 - 合约价格 - 当前基准利率) / 每次降息幅度"
+    "rieslingQuote": "美联储议息会议（FOMC）可能通过声明、经济预测和发布会影响预期。经济预测摘要（SEP）与点阵图并非每次会议都发布；偏鹰表示倾向更紧政策，偏鸽表示倾向更宽政策。",
+    "empiricalProof": "美联储议息会议（FOMC）可能通过声明、经济预测和发布会影响预期。经济预测摘要（SEP）与点阵图并非每次会议都发布；偏鹰表示倾向更紧政策，偏鸽表示倾向更宽政策。",
+    "microstructureMechanic": "会前写清：出现什么信息、观察什么价格反应、条件不满足时怎样等待。不要把预测当作已发生事实。",
+    "actionableFormula": "声明、预测与发布会分别记录；降息概率不能只由单一价格直接相减得出"
   },
   {
     "chapter": 19,
@@ -841,10 +841,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "tool-zhaiquan"
     ],
-    "rieslingQuote": "利率就是钱的租金，巴菲特叫它地心引力。引力变大，所有天上的资产都要往地上沉。久期就是这根连在资产上的弹簧。",
-    "empiricalProof": "2Y 美债收益率紧贴政策利率，10Y 包含通胀与期限溢价。10Y-2Y 收益率曲线倒挂与重回陡峭化是宏观周期最准温度计。",
-    "microstructureMechanic": "修正久期（Modified Duration）一阶敏感度：久期为 8 的长债 ETF，收益率上升 50bp（0.50%），债券现值近似暴跌 -4.0%：ΔP/P ≈ -D × Δy。",
-    "actionableFormula": "债券价格变动百分比 ΔP/P ≈ - Modified_Duration × ΔYield"
+    "rieslingQuote": "2 年期（2Y）收益率升 6 个基点、10 年期（10Y）升 18 个基点，期限差增加 12 个基点。1 个基点（bp）是 0.01 个百分点。利差变化和债券价格变化要分开计算。",
+    "empiricalProof": "2 年期（2Y）收益率升 6 个基点、10 年期（10Y）升 18 个基点，期限差增加 12 个基点。1 个基点（bp）是 0.01 个百分点。利差变化和债券价格变化要分开计算。",
+    "microstructureMechanic": "另作独立久期练习：修正久期 8、收益率升 0.50 个百分点，则价格约降 8 × 0.005 = 4%，只适合小变动近似。",
+    "actionableFormula": "价格变化比例 ≈ -修正久期 × 收益率变化（小数）"
   },
   {
     "chapter": 20,
@@ -856,10 +856,10 @@ window.CHAPTER_RIESLING_MAP = [
       "mind-heitiane",
       "trade-fenpi"
     ],
-    "rieslingQuote": "数学是不讲情面的：跌 50% 要涨 100% 才能回本，跌 75% 得涨 300%。财报夜不是拿来赌博的，先算最坏情况亏多少还能不出局。",
-    "empiricalProof": "财报公布前夕市场期权隐含大幅波动（Implied Move ±10%）。历年 TSLA 财报日跳空经常穿透日常波动极限。",
-    "microstructureMechanic": "设定单笔尾部损失预算上限 $1,000，按极端 -20% 跳空（$43 每股风险含滑点）反推，持股上限强制截断至 23 股，名义仓位不到 $5,000。",
-    "actionableFormula": "过夜极限持股数 = floor( 最大可承受极端损失 / (现价 × 20% + 滑点) )"
+    "rieslingQuote": "压力测试是假设一次较大跌幅来检查持仓。本例现价 $215、跌幅 20%、每股额外成交成本 $0.50，所以每股压力风险 $43.50；$1,000 ÷ $43.50 向下取整为 22 股。",
+    "empiricalProof": "压力测试是假设一次较大跌幅来检查持仓。本例现价 $215、跌幅 20%、每股额外成交成本 $0.50，所以每股压力风险 $43.50；$1,000 ÷ $43.50 向下取整为 22 股。",
+    "microstructureMechanic": "22 股在该情景下约亏 $957；23 股约亏 $1,000.50，已经超过 $1,000 预算。",
+    "actionableFormula": "股数 = 向下取整(1000 ÷ 43.50) = 22"
   },
   {
     "chapter": 21,
@@ -870,10 +870,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "tool-shuyu"
     ],
-    "rieslingQuote": "期权就是一张提前约好价格的限时凭证。买方花钱买权利，卖方收钱扛义务。但别看到 3 块钱就以为便宜，乘上 100 才是真金白银。",
-    "empiricalProof": "美股标准期权合约乘数 100 股；流动性匮乏的远月/深度虚值期权点差率（Spread Ratio）可达 50% 以上，买入瞬间即发生流动性腰斩。",
-    "microstructureMechanic": "门禁筛选：未平仓量 OI > 1,000，日成交量 > 500，点差占中间价比例 < 8%，否则坚决拒绝下单。",
-    "actionableFormula": "期权点差率 = (Ask - Bid) / ((Ask + Bid) / 2) ≤ 8% 且 OI ≥ 1,000"
+    "rieslingQuote": "期权链按到期日与行权价列出合约。买一（Bid）是买方报价，卖一（Ask）是卖方报价；未平仓量（OI）是尚未结束的合约数量，与今天成交多少不同。",
+    "empiricalProof": "期权链按到期日与行权价列出合约。买一（Bid）是买方报价，卖一（Ask）是卖方报价；未平仓量（OI）是尚未结束的合约数量，与今天成交多少不同。",
+    "microstructureMechanic": "点差率以中间价为分母；练习筛选阈值不是盈利保证，数量较大的订单还要看可成交数量。",
+    "actionableFormula": "点差率 = (卖一 - 买一) ÷ ((卖一 + 买一) ÷ 2)"
   },
   {
     "chapter": 22,
@@ -884,10 +884,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "master-quant"
     ],
-    "rieslingQuote": "Delta 是你手里期权的方向盘，指明它跟着股票跑得有多快；Gamma 则是踩在油门上的脚，让方向盘越来越重。",
-    "empiricalProof": "Delta 衡量单股价格对标的的一阶导数（∂V/∂S），多头 1 张 Delta 0.50 的 Call 完美等效持有 50 股 TSLA 正股暴露。",
-    "microstructureMechanic": "Gamma 二阶导数（∂²V/∂S²）：标的涨 $3，Delta 从 0.50 增至 0.62，凸性贡献为组合带来额外非线性收益 0.5 × Gamma × (ΔS)²。",
-    "actionableFormula": "新 Delta ≈ 原 Delta + Gamma × ΔS；等效正股暴露 = Delta × 100 股"
+    "rieslingQuote": "Delta 表示股价小幅变化 $1 时，期权每股报价大约变化多少。Delta 为 0.50 的一张标准合约，在当前附近约有 50 股的方向敏感度，并不等于真正持有 50 股。",
+    "empiricalProof": "Delta 表示股价小幅变化 $1 时，期权每股报价大约变化多少。Delta 为 0.50 的一张标准合约，在当前附近约有 50 股的方向敏感度，并不等于真正持有 50 股。",
+    "microstructureMechanic": "Gamma 表示股价变化 $1 时 Delta 大约变化多少。假定 Gamma 暂不变：0.50 + 0.04 × 3 ≈ 0.62。",
+    "actionableFormula": "新 Delta ≈ 原 Delta + Gamma × 股价变化"
   },
   {
     "chapter": 23,
@@ -898,10 +898,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "trade-huadian"
     ],
-    "rieslingQuote": "期权从来不是单单看涨跌，你同时在跟三个对手下棋：股价、时间、波动率。方向猜对了，时间耗尽了，照样输光。",
-    "empiricalProof": "期权四因子联合泰勒展开估值模型：总变动 ΔV ≈ (Delta×ΔS + 0.5×Gamma×ΔS²) + (Vega×ΔIV) + (Theta×Δt)。",
-    "microstructureMechanic": "股价涨 $3 贡献 +$1.68，但 IV 跌 10% 导致 Vega 亏损 -$1.20，时间流逝损耗 Theta -$0.08，整张净变动 +$0.40（合约收益 +$40）。",
-    "actionableFormula": "整张合约损益 = [ Delta×ΔS + 0.5×Gamma×(ΔS)² + Vega×ΔIV + Theta×Δt ] × 100"
+    "rieslingQuote": "先分别算股价、波动率和时间的影响再相加：本例每股方向贡献 $1.68，波动率贡献 -$1.20，时间贡献 -$0.08，合计 $0.40；标准乘数 100 对应整张 $40。",
+    "empiricalProof": "先分别算股价、波动率和时间的影响再相加：本例每股方向贡献 $1.68，波动率贡献 -$1.20，时间贡献 -$0.08，合计 $0.40；标准乘数 100 对应整张 $40。",
+    "microstructureMechanic": "Vega 表示 IV 每变化 1 个百分点时的价格变化；Theta 表示一天时间变化的近似影响。所有输入先统一为每股报价单位。",
+    "actionableFormula": "整张近似损益 = 每股近似损益 × 合约乘数"
   },
   {
     "chapter": 24,
@@ -912,10 +912,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "market-caibaoji"
     ],
-    "rieslingQuote": "开奖之后，热闹就散了。财报前虚高的隐含波动率像被戳破的气球，瞬间放气——这就是 IV Crush。",
-    "empiricalProof": "高科技成长股（如 NVDA、CRWV）财报前 IV 常高达 120%，财报公布后瞬间暴跌至 45%，Vega 暴跌直接吞噬期权全部外在时间价值。",
-    "microstructureMechanic": "双情景量化测算：小涨 2%（+$1.60），方向收益跑不赢 IV Crush 暴跌亏损，Call 净亏 -$25；大涨 10%（+$8.00）方向暴击跑赢 IV 塌陷，Call 净赚 +$380。",
-    "actionableFormula": "IV 坍塌临界平衡点：ΔS_breakeven ≈ (|Vega × ΔIV| + |Theta|) / Delta"
+    "rieslingQuote": "隐含波动率（IV）反映期权价格隐含的未来波动预期。事件后 IV 快速回落称 IV Crush；这会压低其他条件相同时的期权价格，但幅度和是否发生都不能保证。",
+    "empiricalProof": "隐含波动率（IV）反映期权价格隐含的未来波动预期。事件后 IV 快速回落称 IV Crush；这会压低其他条件相同时的期权价格，但幅度和是否发生都不能保证。",
+    "microstructureMechanic": "比较两个情景必须使用同一组期权参数和单位；大幅变化下局部敏感度可能变化，需要重新估值，不能把近似当成交保证。",
+    "actionableFormula": "总近似损益 = 方向影响 + 波动率影响 + 时间影响"
   },
   {
     "chapter": 25,
@@ -926,10 +926,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "trade-zhisun"
     ],
-    "rieslingQuote": "买一张票，再卖掉一张更远的票，把收益上限封死，同时也把最大亏损封死在付出的权利金里。不贪，才能活得长。",
-    "empiricalProof": "垂直借记牛市看涨价差（Bull Call Debit Spread）：买 210 Call 卖 225 Call，宽度 $15，净付出权利金 $4，锁定最大亏损 $400，锁定最大收益 $1,100。",
-    "microstructureMechanic": "美式期权短腿面临除息日前夕被对手方提前指派（Early Assignment）风险，账户被动做空 100 股股票并获得现金的头寸应急对冲。",
-    "actionableFormula": "最大盈利 = (高行权价 - 低行权价 - 净付借记) × 100；最大损失 = 净付借记 × 100"
+    "rieslingQuote": "看涨借记价差同时买较低行权价的看涨期权、卖同到期较高行权价的看涨期权。本例行权价 210 和 225、净支出每股 $4，到期最大损失 $400、最大盈利 $1,100，未计费用。",
+    "empiricalProof": "看涨借记价差同时买较低行权价的看涨期权、卖同到期较高行权价的看涨期权。本例行权价 210 和 225、净支出每股 $4，到期最大损失 $400、最大盈利 $1,100，未计费用。",
+    "microstructureMechanic": "卖出的合约叫短腿，买入的叫长腿。短腿被提前指派后会产生股票交付义务，长腿不会自动替你完成所有处理。",
+    "actionableFormula": "最大盈利 = (行权价差 - 每股净支出) × 100"
   },
   {
     "chapter": 26,
@@ -940,10 +940,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "tool-wangzhan"
     ],
-    "rieslingQuote": "十个人在微信群里转发同一张二手截图，看着热闹，其实只有一个不可靠的信息源。做研究，只看一手披露盖章的原件。",
-    "empiricalProof": "SEC EDGAR 官方系统：10-K（年报）、10-Q（季报）、8-K（重大事件临时公告）。严禁使用未经核验的第三方雪球/社交媒体传闻。",
-    "microstructureMechanic": "证据生存时间（Time-To-Live，TTL）：实时盘口报价 TTL 为 30 秒；新闻快讯 TTL 为 15 分钟；官方财报 TTL 为该季度；过期自动打标 Stale。",
-    "actionableFormula": "证据有效性 = (当前时间 - 采集时间戳 ≤ TTL) 且 (具有 SEC/交易所一手源) 且 (附带失效反证)"
+    "rieslingQuote": "来源回答“谁发布”，报告期回答“说的是哪段时间”，时间戳回答“何时发布或采集”。有效时限（TTL）是该用途允许数据多旧；新采集的旧消息也不自动变新。",
+    "empiricalProof": "来源回答“谁发布”，报告期回答“说的是哪段时间”，时间戳回答“何时发布或采集”。有效时限（TTL）是该用途允许数据多旧；新采集的旧消息也不自动变新。",
+    "microstructureMechanic": "30 秒行情、15 分钟快讯是练习阈值；证据能否继续使用还取决于新公告和用途。",
+    "actionableFormula": "有效性：来源可核对、报告期适用、时间满足用途、没有更新信息推翻"
   },
   {
     "chapter": 27,
@@ -954,10 +954,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "mind-qingdan"
     ],
-    "rieslingQuote": "量化就是把规矩写死在代码里，不给冲动留一点商量的余地。系统里必须有一个只管踩刹车、敢得罪所有人的黑脸风险官。",
-    "empiricalProof": "TradingAgents 核心架构原则：Fail-Closed（默认关闸拒绝）。分析员 Agent（技术、新闻、基本面）无论多么乐观，不能凌驾于风险官之上。",
-    "microstructureMechanic": "一票否决权：缺少一手来源、反证缺失、单笔风险超标（>1% 净值）时，Arbiter 坚决关闸拒绝，仅准进入 Paper 账本记录。",
-    "actionableFormula": "批准准入 = (无超时 Stale) ∧ (有明确反证) ∧ (风险预算 ≤ 1% 净值) ∧ (未处熔断期)"
+    "rieslingQuote": "默认拒绝（fail-closed）指必要条件无法确认时不放行。本课程的风险官检查来源、反证、时效和预算；多个智能体（Agent）意见一致不能补上缺失证据。",
+    "empiricalProof": "默认拒绝（fail-closed）指必要条件无法确认时不放行。本课程的风险官检查来源、反证、时效和预算；多个智能体（Agent）意见一致不能补上缺失证据。",
+    "microstructureMechanic": "拒绝时记录哪项检查不通过；模拟记录（Paper）用来练流程，不表示已获准真实下单。",
+    "actionableFormula": "必要检查全部通过才放行；缺项或异常默认拒绝"
   },
   {
     "chapter": 28,
@@ -968,10 +968,10 @@ window.CHAPTER_RIESLING_MAP = [
     "relatedIds": [
       "master-duizhao"
     ],
-    "rieslingQuote": "拆股不是送钱，是把一张大钞换成两张小钞。但挂在市场上的单子、手里握着的期权，每一个数字都要跟着变，错一个就是真金白银的漏洞。",
-    "empiricalProof": "2:1 整数拆股端到端处理：持仓股数 ×2，持仓成本 ÷2，未成交限价卖单价格 ÷2 且股数 ×2；标准期权合约数 ×2，行权价 ÷2，每张依然交割 100 股。",
-    "microstructureMechanic": "做多做空非对称尾部测试：股价上涨无上限但做空亏损无底洞；全流程生成不可篡改的 SHA-256 签名 Paper 回执与交易日志。",
-    "actionableFormula": "拆股调整：S_new = S_old × 2, P_new = P_old / 2, Limit_new = Limit_old / 2, Contracts_new = Contracts_old × 2"
+    "rieslingQuote": "拆股把同一份持仓分成更多股，不凭空创造财富。本练习按 2:1 拆股算数量与价格；实际挂单和期权如何处理仍须核对券商通知与合约调整公告。",
+    "empiricalProof": "拆股把同一份持仓分成更多股，不凭空创造财富。本练习按 2:1 拆股算数量与价格；实际挂单和期权如何处理仍须核对券商通知与合约调整公告。",
+    "microstructureMechanic": "校验摘要（SHA-256）可以帮助发现内容变化，但摘要本身不是数字签名，也不能保证记录不可篡改。",
+    "actionableFormula": "2:1练习：股数×2，每股成本÷2，总成本不变"
   }
 ];
 
@@ -994,13 +994,13 @@ window.CHAPTER_RIESLING_MAP = [
           </div>
           <div class="ta-header-title-box">
             <div class="ta-title-main">
-              <h3>🍷 TradingAgents · 雷司令投资常识精读研习舱</h3>
+              <h3>🍷 雷司令投资常识 · 参考原文</h3>
               <span class="ta-badge-engine">118篇全集</span>
               <span class="ta-badge-gate" style="background:#fef3c7;color:#b45309;border-color:#fde68a;">底层思维模型</span>
               <span class="ta-badge-gate" style="background:#e0f2fe;color:#0284c7;border-color:#bae6fd;">28章深度关联</span>
             </div>
             <div class="ta-title-sub">
-              投资常识，随手可查 · 散户亏钱解剖 · 机构对手盘攻防 · 学术实证与底层制度
+              这里保留 118 篇参考原文，不是逐篇改写的白话课程。初学者可先读章节导引，再按问题查原文；原文的研究数字、比喻和规则需结合出处与适用日期理解。
             </div>
           </div>
           <button type="button" class="btn-close-riesling btn-close-agents" aria-label="关闭">
@@ -1022,7 +1022,7 @@ window.CHAPTER_RIESLING_MAP = [
           </div>
           <!-- Right Content: Article Reader -->
           <div class="riesling-article-deck" id="rieslingArticleView">
-            <div class="riesling-article-placeholder">请从左侧选择要研习的文章</div>
+            <div class="riesling-article-placeholder">请从左侧选择参考文章；遇到术语可先回到本章白话解释。</div>
           </div>
         </div>
       </div>
@@ -1094,7 +1094,7 @@ window.CHAPTER_RIESLING_MAP = [
       keynoteHtml = '<div class="riesling-keynote-banner">' +
         '<div class="keynote-banner-head">' +
           '<span class="keynote-pill">🍷 雷司令核心心法</span>' +
-          '<small class="keynote-hint">底层第一性原理</small>' +
+          '<small class="keynote-hint">原文摘要，保留作者表述</small>' +
         '</div>' +
         '<blockquote class="keynote-quote">“' + quoteText + '”</blockquote>' +
       '</div>';
@@ -1181,23 +1181,8 @@ window.CHAPTER_RIESLING_MAP = [
   }
 
   window.openRieslingArticleModal = function(articleId) {
-    const dialog = createRieslingModal();
-    if (!dialog.open) {
-      dialog.showModal();
-    }
-    if (articleId) {
-      const btn = dialog.querySelector(`[data-art-id="${articleId}"]`);
-      if (btn) {
-        btn.click();
-        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        loadArticle(articleId);
-      }
-    } else {
-      // Default to first article
-      const firstBtn = dialog.querySelector('.riesling-nav-item');
-      if (firstBtn) firstBtn.click();
-    }
+    // 统一进入逐篇改写的阅读页；原文在阅读页按需对照。
+    window.location.assign('library.html' + (articleId ? '#' + encodeURIComponent(articleId) : ''));
   };
 
   window.toggleRieslingModal = window.openRieslingArticleModal;

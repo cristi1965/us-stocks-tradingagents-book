@@ -1,0 +1,29 @@
+# 下单与成交的消息顺序
+
+教学示意；阅读说明及相关练习见 interactive/maps.html。
+
+```mermaid
+sequenceDiagram
+    participant U as 学习者／执行方
+    participant A as 分析与风控
+    participant B as 券商
+    participant M as 市场
+    U->>A: 提供当时数据、账户约束与目标
+    A-->>U: 返回候选计划、风险与未确认事项
+    Note over U,A: AI意见不是交易授权，检查不通过就暂停
+    U->>B: 确认后提交模拟订单
+    alt 券商拒绝
+      B-->>U: 拒绝原因，不能当成成交
+    else 接受订单
+      B-->>U: 已接收回执，仍不代表成交
+      B->>M: 发送订单参与撮合
+      opt 有可成交的对手报价
+        M-->>B: 部分或全部成交
+        B-->>U: 实际数量、价格与费用
+      end
+      U->>B: 查询剩余委托或请求撤单
+      B-->>U: 最新状态；撤单请求也需确认
+    end
+    U->>U: 核对持仓与资金，记录当时证据和执行结果
+    Note over U,M: 未成交不能记持仓；成交、结算与资金可取是不同状态
+```

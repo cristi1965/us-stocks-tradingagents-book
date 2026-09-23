@@ -86,11 +86,11 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ruanxiu",
-      "（慢条斯理）……昨天卖出的钱还没 T+1 结算呢，你今天再卖就是违规套现（GFV）哦。"
+      "（慢条斯理）……先查那笔卖出款是否完成 T+1 结算。若用未结算款买入，又在原款到账前卖出，可能构成善意违规（GFV）。"
     ],
     [
       "libaoping",
-      "（小算盘敲在桌上）现金账户必须确认 $5,000 settled cash！券商罚单已经寄到门口啦！"
+      "（小算盘敲在桌上）先确认这 $5,000 是已结算现金，也就是已经完成交收、可以使用的钱。"
     ],
     [
       "luchen",
@@ -98,7 +98,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "买 CRWV 必须向下取整股数。少一股饿不死，多一股账号直接封禁。"
+      "买 CRWV 时，算出的股数要向下取整，才能不超过题目预算。"
     ],
     [
       "zhoumili",
@@ -120,11 +120,11 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "luchen",
-      "（摇拂尘）电梯跳过了楼层，神仙也得在底楼摔个狗吃屎。此乃离散跳跃！"
+      "（摇拂尘）像电梯跳过了楼层：价格从一处直接跳到另一处，中间没有机会成交。"
     ],
     [
       "ningyao",
-      "财报前不降仓位，神仙也救不了。必须按恶性缺口预留亏损！"
+      "财报前先算突然大跌会亏多少，再决定要不要减少持股。"
     ],
     [
       "chenpingan",
@@ -154,7 +154,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "libaoping",
-      "（红笔打叉）触发日损上限，强制离开屏幕，今天只准做 Paper！"
+      "（红笔打叉）触发日损上限，强制离开屏幕，今天只准做模拟练习！"
     ]
   ],
   [
@@ -164,11 +164,11 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "aliang",
-      "长得像剑，不一定握得住；上面留了那么长一根针，说明上面全是被套牢的倒霉蛋。"
+      "上面那根细线说明价格曾涨得更高，但后来回落了。单凭它看不出是谁被套住。"
     ],
     [
       "libaoping",
-      "实体才叫收盘赢了，长影线是去过但被人打回来了！"
+      "实体表示开盘和收盘之间的距离；影线记录盘中去过、但收盘没停住的位置。"
     ],
     [
       "luchen",
@@ -180,7 +180,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "看成交密集区。站不稳支撑，一律视为诱多。"
+      "还要看之前的价格和成交量。一根 K 线不能证明有人故意引你买入。"
     ]
   ],
   [
@@ -202,7 +202,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "chenpingan",
-      "记录：成交量必须除以过去 20 天同期基准，RVOL > 1.5 才能确认突破。"
+      "记录：用成交量除以过去 20 天相同时间段的平均量。本例把 RVOL > 1.5 作为检查条件，但它不能单独保证突破有效。"
     ]
   ],
   [
@@ -260,11 +260,11 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "libaoping",
-      "市价单保成交但保不住价格，限价单守价格但可能买不到！"
+      "市价单优先尽快成交，但不保证成交价；限价单守住价格，却可能买不到。"
     ],
     [
       "luchen",
-      "（摇拂尘）鱼与熊掌不可兼得。高贝塔品种，须以限价单徐徐图之。"
+      "（摇拂尘）波动大的股票尤其要看买卖差价。先写下能接受的价格，再考虑限价单。"
     ],
     [
       "chenpingan",
@@ -278,7 +278,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ruanxiu",
-      "（慢条斯理）夜间可没有 NBBO 价格保护神仙哦。几百股成交就能把价格砸上天。"
+      "（慢条斯理）盘后不能照搬常规时段的最佳报价保护（NBBO）。买卖人少时，小单也可能让价格变化很大。"
     ],
     [
       "ningyao",
@@ -300,7 +300,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "aliang",
-      "DAY 单天黑就失效。未成交的部分产生了机会成本，这叫执行短缺！"
+      "DAY 单在指定交易日结束后失效。没买到的部分也要算：后来价格变贵，会错过多少收益？"
     ],
     [
       "libaoping",
@@ -308,7 +308,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "分批成交改变了仓位计划。必须动态重新评估风险敞口。"
+      "只成交一部分，就按实际买到的股数重新算可能亏多少。"
     ]
   ],
   [
@@ -318,11 +318,11 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "luchen",
-      "（拂尘一指）红灯亮起，神仙止步！此乃重大新闻停牌或 LULD 限价熔断。"
+      "（拂尘一指）先查是不是重大消息停牌，或价格变化太快触发了交易暂停（LULD）。"
     ],
     [
       "zhoumili",
-      "（吓得捂嘴）停牌期间止损单是死掉的！等会儿重开集合拍卖会跳到哪里去呀！"
+      "（吓得捂嘴）停牌时止损单也无法成交。重新开市时，买卖双方会重新决定成交价。"
     ],
     [
       "chenpingan",
@@ -344,7 +344,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "合并同类项。多头与对冲 Put 算净敞口，不要自欺欺人。"
+      "把股票可能亏的钱，与看跌期权（Put）可能补回的钱放在一起算，再看合计损失。"
     ]
   ],
   [
@@ -358,7 +358,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "luchen",
-      "五行皆属高贝塔，同根同源何太急。本质上你只做了一笔宏观利率大赌局。"
+      "它们可能都对利率变化很敏感。名字不同，不代表不会一起跌。"
     ],
     [
       "zhoumili",
@@ -372,7 +372,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "libaoping",
-      "（小算盘直接拍桌子）净权益跌破 30% house requirement，每天还要扣年化利息！"
+      "（小算盘直接拍桌子）自己的钱占资产市值的比例，已经低于本例券商要求的 30%。借款利息还要另外付。"
     ],
     [
       "ningyao",
@@ -390,7 +390,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "（冷笑）一没确认券商 Locate 借券，二触发了 Rule 201 SSR，卖空不能低于买一价。"
+      "先让券商确认能借到股票（Locate）。本例又触发了卖空价格限制（SSR），通常必须高于当前最佳买价成交。"
     ],
     [
       "aliang",
@@ -398,7 +398,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "chenpingan",
-      "严格核查动态借券年化费率与价格测试，违规做空绝不放行。"
+      "先查借券一年要付多少费用，以及当前允许的卖空价格；条件不满足就不下单。"
     ]
   ],
   [
@@ -430,7 +430,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "会前写鹰、中、鸽三套剧本。没出右侧确认前，不准瞎伸手。"
+      "会前写三套计划：更重视压通胀、维持原计划、或更重视支持经济。等公布内容和价格反应清楚些再判断。"
     ],
     [
       "zhoumili",
@@ -444,15 +444,15 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "libaoping",
-      "CRWV 的钱在遥远的未来！折现率一升高，现在的现值就被狠狠压缩了！"
+      "如果主要指望很多年后才赚钱，利率上升时，那些未来的钱折算到今天可能就没那么值钱了。"
     ],
     [
       "ruanxiu",
-      "两根弹簧，长端变硬了，远期的大饼就不好咬啦。"
+      "想象一笔很久以后才收到的钱：等待期间能拿到的利息变多，你今天愿意为它付的钱就可能变少。"
     ],
     [
       "chenpingan",
-      "10Y-2Y 利差决定资产定价天平。久期越长，对利率波动越脆弱。"
+      "10Y-2Y 是 10 年期减去 2 年期美债收益率的差。它提供利率线索，但不能单独决定一只股票值多少钱。"
     ]
   ],
   [
@@ -488,7 +488,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "优先选择大成交量、高持仓量、紧凑点差的流动性合约。"
+      "先比较成交量、还没平仓的合约数，以及买价和卖价差多少。差价小、交易活跃，通常更容易买卖。"
     ]
   ],
   [
@@ -498,7 +498,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "aliang",
-      "Delta 0.5 相当于五十股股票！而且 Gamma 会加速，涨得越凶，你的车速越快！"
+      "一张标准合约的 Delta 0.5，当前大约相当于 50 股股票的价格影响。Gamma 提醒你：股价变了，这个等效股数也会变。"
     ],
     [
       "luchen",
@@ -520,7 +520,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "libaoping",
-      "COIN 的隐含波动率跌了十个点！Vega 损失加上 Theta 消耗，直接把本金吃光！"
+      "本例隐含波动率降了 10 个百分点。先用 Vega 算这项影响，再用 Theta 算过了一天的影响，不能直接断定本金都没了。"
     ],
     [
       "chenpingan",
@@ -542,7 +542,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "财报后双买是给做市商送钱。以后记牢二阶损益近似。"
+      "把股价、波动率和时间的影响分别算出来，再相加比较。不同涨幅会有不同结果。"
     ]
   ],
   [
@@ -560,7 +560,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "但要防备短腿深度价内被提前指派。计划里写清楚到期处置方案。"
+      "还要检查卖出的那张 Call：若对方提前行权，你可能需要交付股票。提前写好怎么处理。"
     ]
   ],
   [
@@ -570,7 +570,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "luchen",
-      "波动率损耗如春蚕食叶，每日重平衡如推石上山。震荡市里，杠杆 ETF 天生慢性自杀。"
+      "杠杆 ETF 通常追求每天的倍数。连续几天先跌再涨，累积结果不一定是原指数总涨跌的同一倍数。"
     ],
     [
       "zhoumili",
@@ -578,7 +578,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "chenpingan",
-      "非线性工具必须严格控制持有周期，绝不可作为长期信仰持仓。"
+      "每天的倍数不能直接套到几个月。先理解它怎么算，再决定持有多久。"
     ]
   ],
   [
@@ -592,7 +592,7 @@ window.COMIC_CHAPTER_BANTER = [
     ],
     [
       "ningyao",
-      "缺少一手 SEC 披露链接，缺少独立反证，风险门直接关闭！"
+      "先找到原始公告，再查支持和反对的理由。资料不够，先不下单。"
     ],
     [
       "aliang",
@@ -643,7 +643,11 @@ window.COMIC_CHAPTER_BANTER = [
       }
     }
 
-    const banter = window.COMIC_CHAPTER_BANTER[curChapter] || window.COMIC_CHAPTER_BANTER[0];
+    const banter = window.COMIC_CHAPTER_BANTER[curChapter] || [
+      ['chenpingan', '最后一章，把账户、订单、重大消息和退出计划从头检查一遍。'],
+      ['libaoping', '遇到拆股或分红，先查正式通知，再核对股数、价格和未成交订单。'],
+      ['ningyao', '资料不够就先停下。留下完整记录，才方便回头查哪里需要改。']
+    ];
     const rowsHtml = banter.map(item => {
       const [speakerKey, text] = item;
       const char = window.COMIC_THEATER_ROSTER[speakerKey] || window.COMIC_THEATER_ROSTER.chenpingan;
@@ -662,10 +666,10 @@ window.COMIC_CHAPTER_BANTER = [
     theater.innerHTML = 
       '<div class="theater-header">' +
         '<div class="theater-title-box">' +
-          '<span class="theater-badge">⚡ 落魄山量化研议委员会</span>' +
-          '<span class="theater-subtitle">现场轻小说事故剧场 · 第 ' + (curChapter + 1) + ' 章</span>' +
+          '<span class="theater-badge">⚡ 大家一起讨论</span>' +
+          '<span class="theater-subtitle">虚构情景对白 · 第 ' + (curChapter + 1) + ' 章</span>' +
         '</div>' +
-        '<span class="theater-tag">8大搞笑角色现场过招</span>' +
+        '<span class="theater-tag">用故事理解本章规则</span>' +
       '</div>' +
       '<div class="theater-dialogue-list">' +
         rowsHtml +

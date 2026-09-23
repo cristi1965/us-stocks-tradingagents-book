@@ -1,44 +1,32 @@
-# 《漫画美股》课程结构与交互调研
+# 让课程更容易学：旧调研的白话版
 
-## 结论
+这份调研原记录日期为2026-09-15。本次改的是说明方式，没有重新核实外部产品与规则。原稿留在archive/pre-full-eli5。
 
-课程不应继续按“对话、背景、例子、原则、题目”平铺累加。每章统一为四步：
+## 当时发现的问题
+一章里同时堆对话、背景、例子和规则，读者要自己找主线。增加动画和卡片并不能解决这个问题。
 
-1. 懂背景：概念、适用范围和不能推出什么。
-2. 看例子：图表或数字场景，允许查看过程。
-3. 做判断：一次只完成一个决策，不混考多个新概念。
-4. 记规则：反馈、错误原因和可迁移检查项。
+## 内容应怎样连接
+先说要解决什么问题，再给一份能算清的例子，然后让读者作一次判断，最后解释错在哪里。四步可以放在同一页，不必强迫来回切换。
 
-## 一手与开源参考
+图表要让人读到价格、时间、开盘和收盘，不能只给一条好看的线。成交量要和同一股票、可比较时段的历史量比较。
 
-- TradingView Lightweight Charts：提供价格轴、时间轴、十字线和公开坐标转换 API，适合替换手写 canvas 推算。来源：https://github.com/tradingview/lightweight-charts
-- ChartDojo：用短挑战、即时反馈、XP/连续学习组织技术分析训练；可借鉴“短练习”，不照搬形态预测。来源：https://github.com/michaelsboost/ChartDojo
-- SEC Investor.gov：订单教育明确区分 stop、stop-limit 和 trailing stop；stop 价不是保证成交价。来源：https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-15
-- BLS CPI：CPI 有总体、核心及不同时间变化口径；比较实际与预期前必须保证同口径。来源：https://www.bls.gov/cpi/questions-and-answers.htm
-- Federal Reserve SEP：经济预测包含增长、就业、通胀和适当政策利率路径，点阵图不是委员会承诺。来源：https://www.federalreserve.gov/faqs/summary-economic-projections-sep.htm
-- Options Industry Council：课程按学习路径组织期权基础、策略和风险工具。来源：https://www.optionseducation.org
+止损是触发订单的条件，不是保证成交价格。经济数据要比较同一种指标；会议上的预测也不是承诺。
 
-## 采用
+## 当时参考了什么
+- TradingView Lightweight Charts：研究怎样显示价格轴、时间轴和指针位置。
+- ChartDojo：研究短练习与即时反馈的组织方式。
+- SEC订单教育：区分触发条件与成交保证。
+- BLS CPI说明：提醒数据要先核对口径。
+- Federal Reserve预测说明：提醒预测不能当政策承诺。
+- Options Industry Council：参考期权基础到风险的学习顺序。
 
-- 固定四步学习循环和即时反馈。
-- 图表必须显示价格、时段和可读取 OHLCV。
-- 每个概念先给边界，再给操作题。
-- 进度按可验证能力记录，而不是按阅读或点击记录。
-- 错题保留原因，允许回到对应背景和例子。
+这些参考用于选择教学方式，不是收益保证。下方保留当时记录的链接，具体内容可能已更新。
 
-## 不采用
+## 原记录的资料链接
 
-- 不把 K 线形态当作确定性预测。
-- 不用盈利奖励掩盖违规决策。
-- 不接实盘自动交易。
-- 不用更多卡片和动画替代课程结构。
-
-## 后续优先级
-
-1. 盘口分档成交与订单取舍模拟。
-2. 带价格轴、时段和 tooltip 的 K 线回放。
-3. RVOL 同时段基准计算。
-4. 跳空计划损失与实际损失对照。
-5. CPI/FOMC 多分支反例。
-6. 五个期权章节各自独立的数值实验。
-
+- https://github.com/tradingview/lightweight-charts
+- https://github.com/michaelsboost/ChartDojo
+- https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-15
+- https://www.bls.gov/cpi/questions-and-answers.htm
+- https://www.federalreserve.gov/faqs/summary-economic-projections-sep.htm
+- https://www.optionseducation.org

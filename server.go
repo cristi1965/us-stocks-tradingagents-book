@@ -23,17 +23,17 @@ func (lrw *loggingResponseWriter) WriteHeader(code int) {
 }
 
 func main() {
-	port := flag.Int("port", 4180, "port to listen on")
-	dir := flag.String("dir", "interactive", "directory to serve")
+	port := flag.Int("port", 4180, "本地网页使用的端口")
+	dir := flag.String("dir", "interactive", "要打开的网页文件目录")
 	flag.Parse()
 
 	absDir, err := filepath.Abs(*dir)
 	if err != nil {
-		log.Fatalf("Invalid directory: %v", err)
+		log.Fatalf("无法读取网页目录：%v", err)
 	}
 
 	if _, err := os.Stat(absDir); os.IsNotExist(err) {
-		log.Fatalf("Directory does not exist: %s", absDir)
+		log.Fatalf("网页目录不存在：%s", absDir)
 	}
 
 	fs := http.FileServer(http.Dir(absDir))
@@ -61,18 +61,18 @@ func main() {
 	addr := fmt.Sprintf("0.0.0.0:%d", *port)
 	addr6 := fmt.Sprintf("[::]:%d", *port)
 
-	log.Printf("Starting Go HTTP Server on http://localhost:%d (and http://127.0.0.1:%d)", *port, *port)
-	log.Printf("Serving static files from: %s", absDir)
+	log.Printf("网页服务启动中：http://localhost:%d（也可打开 http://127.0.0.1:%d）", *port, *port)
+	log.Printf("网页文件来自：%s", absDir)
 
 	// Try listening on IPv4 explicitly
 	l4, err4 := net.Listen("tcp4", addr)
 	if err4 != nil {
-		log.Printf("Warning: failed to listen on IPv4 %s: %v", addr, err4)
+		log.Printf("IPv4地址暂时无法使用 %s：%v", addr, err4)
 	} else {
-		log.Printf("Listening on IPv4 %s", addr)
+		log.Printf("IPv4网页地址已就绪：%s", addr)
 		go func() {
 			if err := http.Serve(l4, handler); err != nil {
-				log.Printf("IPv4 server error: %v", err)
+				log.Printf("IPv4网页服务出错：%v", err)
 			}
 		}()
 	}
@@ -80,11 +80,11 @@ func main() {
 	// Also listen on IPv6
 	l6, err6 := net.Listen("tcp6", addr6)
 	if err6 != nil {
-		log.Printf("Warning: failed to listen on IPv6 %s: %v", addr6, err6)
+		log.Printf("IPv6地址暂时无法使用 %s：%v", addr6, err6)
 	} else {
-		log.Printf("Listening on IPv6 %s", addr6)
+		log.Printf("IPv6网页地址已就绪：%s", addr6)
 		if err := http.Serve(l6, handler); err != nil {
-			log.Printf("IPv6 server error: %v", err)
+			log.Printf("IPv6网页服务出错：%v", err)
 		}
 	}
 

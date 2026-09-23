@@ -67,7 +67,7 @@ class RiskGatekeeperAgent:
         if self.consecutive_losses >= 3:
             return {
                 "decision": TradeSignal.VETO,
-                "reason": f"触发当日 3 连亏熔断（连续亏损 {self.consecutive_losses} 笔）！系统强制冷却关闸，禁止感性报复交易。",
+                "reason": f"今天已连续亏损 {self.consecutive_losses} 笔，达到连续 3 笔亏损就暂停的规则。本次模拟不再允许买入。",
                 "shares": 0,
                 "dollar_risk": 0.0,
                 "risk_pct": 0.0
@@ -76,7 +76,7 @@ class RiskGatekeeperAgent:
         if self.daily_drawdown_pct >= self.max_daily_drawdown_limit:
             return {
                 "decision": TradeSignal.VETO,
-                "reason": f"日内总回撤已达 {self.daily_drawdown_pct*100:.1f}%，触及 2.5% 每日安全红线！系统封存今日下单权限。",
+                "reason": f"今天的回撤已达 {self.daily_drawdown_pct*100:.1f}%，达到 2.5% 的暂停线。本次模拟不再允许买入。",
                 "shares": 0,
                 "dollar_risk": 0.0,
                 "risk_pct": 0.0
@@ -86,7 +86,7 @@ class RiskGatekeeperAgent:
         if stale_quote:
             return {
                 "decision": TradeSignal.VETO,
-                "reason": "行情数据超过 TTL 时效（Stale Quote）！Fail-Closed 默认拒绝原则：绝不在无时效依据下入场。",
+                "reason": "报价已超过有效时限（TTL）。先更新报价；缺少有效报价时，默认不允许买入（Fail-Closed）。",
                 "shares": 0,
                 "dollar_risk": 0.0,
                 "risk_pct": 0.0
@@ -96,7 +96,7 @@ class RiskGatekeeperAgent:
         if stop_price >= entry_price:
             return {
                 "decision": TradeSignal.VETO,
-                "reason": f"多头止损价 (${stop_price:.2f}) 必须严格低于入场价 (${entry_price:.2f})！无止损方案绝不下单。",
+                "reason": f"多头止损价 (${stop_price:.2f}) 必须严格低于入场价 (${entry_price:.2f})！请先填好止损计划。",
                 "shares": 0,
                 "dollar_risk": 0.0,
                 "risk_pct": 0.0
@@ -106,7 +106,7 @@ class RiskGatekeeperAgent:
         if iv_percentile >= 90.0:
             return {
                 "decision": TradeSignal.VETO,
-                "reason": f"隐含波动率处于历史 {iv_percentile:.1f} 分位极高区！禁止在重大事件前夕裸买单腿期权（IV Crush 必输陷阱）。",
+                "reason": f"市场预估的波动率（IV）处于历史 {iv_percentile:.1f} 分位。本课规则不允许在这个高位单独买入期权；波动率回落会压低期权价格，但不等于一定亏损。",
                 "shares": 0,
                 "dollar_risk": 0.0,
                 "risk_pct": 0.0
@@ -128,7 +128,7 @@ class RiskGatekeeperAgent:
         if final_shares == 0:
             return {
                 "decision": TradeSignal.VETO,
-                "reason": "单股风险过大，根据 1% 风险预算允许买入股数为 0。建议调近止损或更换低波动标的。",
+                "reason": "单股风险过大，根据 1% 风险预算允许买入股数为 0。请重新检查计划；不要只为凑出股数就随意移动止损价。",
                 "shares": 0,
                 "dollar_risk": 0.0,
                 "risk_pct": 0.0
@@ -136,7 +136,7 @@ class RiskGatekeeperAgent:
 
         return {
             "decision": TradeSignal.BUY,
-            "reason": f"合规放行：单笔风险严格控制在 ${actual_dollar_risk:.2f} ({actual_risk_pct:.2f}% ≤ 1.00%)，名义敞口 ${final_shares * entry_price:,.2f}。",
+            "reason": f"模拟检查通过：按计划计算，单笔风险为 ${actual_dollar_risk:.2f} ({actual_risk_pct:.2f}% ≤ 1.00%)，买入总金额 ${final_shares * entry_price:,.2f}。",
             "shares": final_shares,
             "dollar_risk": actual_dollar_risk,
             "risk_pct": actual_risk_pct,
@@ -157,26 +157,26 @@ class FundamentalAnalystAgent:
 
         if rev_growth > 0.20:
             score += 40
-            details.append(f"营收同比增速 {rev_growth*100:.1f}%，超预期加速。")
+            details.append(f"营收同比增速 {rev_growth*100:.1f}%，达到本演示的较高增速档。")
         elif rev_growth > 0.08:
             score += 25
-            details.append(f"营收同比增速 {rev_growth*100:.1f}%，保持稳健。")
+            details.append(f"营收同比增速 {rev_growth*100:.1f}%，达到本演示的中等增速档。")
         else:
-            details.append(f"营收增速放缓 ({rev_growth*100:.1f}%)，警惕估值杀。")
+            details.append(f"营收同比增速为 {rev_growth*100:.1f}%，本演示将其归入较低档。增长不足可能使投资者不愿付原来的价格。")
 
         if pe < 30:
             score += 35
-            details.append(f"动态市盈率 P/E {pe:.1f}，在行业中位水平内。")
+            details.append(f"预期市盈率 P/E（股价相当于每股预期盈利的倍数） {pe:.1f}，低于本演示设定的 30 倍门槛。")
         else:
             score += 10
-            details.append(f"动态市盈率 P/E {pe:.1f}，估值偏高，需要强催化剂支撑。")
+            details.append(f"预期市盈率 P/E（股价相当于每股预期盈利的倍数） {pe:.1f}，达到或超过本演示门槛，需要更多证据解释这个价格是否合理。")
 
         if filing_clean:
             score += 25
-            details.append("SEC 10-Q/10-K 财报无未决诉讼与财务重述风险。")
+            details.append("本演示输入将 SEC 季报/年报（10-Q/10-K）的风险标记设为正常；程序没有核查真实文件。")
         else:
             score -= 50
-            details.append("警告：SEC 披露存在重大审计异动或内部人抛售！")
+            details.append("本演示输入将财报风险标记设为异常，需要进一步查看真实披露。")
 
         recommendation = TradeSignal.BUY if score >= 60 else (TradeSignal.HOLD if score >= 35 else TradeSignal.SELL)
         return {
@@ -199,27 +199,27 @@ class MomentumTechnicalAgent:
 
         if above_sma200:
             score += 40
-            details.append("价格位于 200 日牛熊分界线上方，大周期处于多头趋势。")
+            details.append("价格高于过去 200 天的平均价，本演示把它作为较长期上涨趋势的参考。")
         else:
             score -= 20
-            details.append("价格位于 200 日线下，属于逆势反弹，严禁重仓参与。")
+            details.append("价格低于过去 200 天的平均价；本演示认为趋势条件不足，不宜投入过多资金。")
 
         if 45 <= rsi <= 65:
             score += 30
-            details.append(f"RSI 为 {rsi:.1f}，动量健康，无顶背离或极端超买。")
+            details.append(f"RSI 为 {rsi:.1f}，位于本演示的中间区间；这个数字不能单独证明上涨可靠。")
         elif rsi > 75:
             score -= 10
-            details.append(f"RSI 处于超买区 ({rsi:.1f})，需防范高位均值回归洗盘。")
+            details.append(f"RSI 处于超买区 ({rsi:.1f})，价格短期可能涨得过快，需要留意回落。")
         else:
             score += 10
-            details.append(f"RSI 为 {rsi:.1f}，动量处于震荡休整期。")
+            details.append(f"RSI 为 {rsi:.1f}，未进入本演示的中间区间或超买区。")
 
         if volume_ratio > 1.2:
             score += 30
-            details.append(f"突破伴随放量（成交量为均量 {volume_ratio:.1f} 倍），机构吸筹迹象显著。")
+            details.append(f"突破伴随放量（成交量为均量 {volume_ratio:.1f} 倍），交易更活跃，但仅凭成交量不能确定是谁在买。")
         else:
             score += 10
-            details.append("突破量能平淡，警惕假突破诱多。")
+            details.append("成交量没有明显增加，需要留意突破后又跌回原区间。")
 
         recommendation = TradeSignal.BUY if score >= 65 else (TradeSignal.HOLD if score >= 40 else TradeSignal.SELL)
         return {
@@ -240,16 +240,16 @@ class SentimentNewsAgent:
         details = []
 
         if stale:
-            details.append(f"新闻发布已超 {ttl_minutes} 分钟（超过 60m TTL 时效门限），信息已被盘口充分消化。")
+            details.append(f"新闻发布已超 {ttl_minutes} 分钟（超过本程序 120 分钟有效时限），本演示不再把它当作新消息使用；不能据此断定市场已完全消化。")
             score = 20
         else:
-            details.append(f"消息为 {ttl_minutes} 分钟内一手权威来源披露。")
+            details.append(f"消息为 {ttl_minutes} 分钟内的新消息；本演示没有联网核查来源。")
             if news_score > 0.4:
                 score = 80
-                details.append("舆情呈结构性利好，评级普遍上调。")
+                details.append("本演示输入的新闻情绪偏正面。")
             elif news_score < -0.3:
                 score = 10
-                details.append("负面舆情集中，存在做空机构报告阴影。")
+                details.append("本演示输入的新闻情绪偏负面。")
             else:
                 score = 50
                 details.append("市场讨论度中性。")
@@ -314,36 +314,36 @@ def run_loss_autopsy():
     """
     Mathematical autopsy of the 6-year -$30,000 loss and the recovery roadmap.
     """
-    print(f"{YELLOW}{BOLD}【告别感性 · 六年美股三万刀亏损深度数学解剖报告】{RESET}\n")
-    print(f"{DIM}真实样本：账户起始本金 $100,000，历经 6 年感性主观交易，累计净亏 -$30,000 (当前净值 $70,000)。{RESET}\n")
+    print(f"{YELLOW}{BOLD}【用数字复盘：六年美股亏损三万美元的教学例子】{RESET}\n")
+    print(f"{DIM}教学假设：账户起始本金 $100,000，经过 6 年交易，累计净亏 -$30,000 (当前净值 $70,000)。{RESET}\n")
 
     # Math of Drawdown
-    print(f"{WHITE}{BOLD}1. 亏损复利对称性陷阱（散户为什么越亏越难回本）：{RESET}")
+    print(f"{WHITE}{BOLD}1. 亏损后为什么需要更大的涨幅才能回本：{RESET}")
     print(f"   · 本金亏损 10% ($90,000) ➜ 回本只需上涨：{BOLD}+11.1%{RESET}")
     print(f"   · 本金亏损 20% ($80,000) ➜ 回本需要上涨：{BOLD}+25.0%{RESET}")
-    print(f"   · 本金亏损 30% ($70,000) ➜ 回本需要上涨：{RED}{BOLD}+42.86%{RESET} （当前真实处境）")
+    print(f"   · 本金亏损 30% ($70,000) ➜ 回本需要上涨：{RED}{BOLD}+42.86%{RESET} （本例当前情况）")
     print(f"   · 本金亏损 50% ($50,000) ➜ 回本需要翻倍：{RED}{BOLD}+100.0%{RESET}\n")
 
-    print(f"{WHITE}{BOLD}2. 过去 6 年核心亏损病灶对照表：{RESET}")
+    print(f"{WHITE}{BOLD}2. 本例要检查的四种交易习惯：{RESET}")
     table = [
-        ("致命病灶 1：感性重仓，单笔亏掉数千刀", "单笔未设 1% 止损（$1,000），一次大跌直接回撤 8%~15%", "1% 资本生命线", "单笔亏损严格锁死在 ≤ $1,000"),
-        ("致命病灶 2：越跌越买，逆势加仓摊平", "Martingale 赌徒心理，不断接下落飞刀，导致仓位失控爆仓", "左侧右侧边界", "趋势未确认绝不加仓，破位立即出场"),
-        ("致命病灶 3：连亏之后报复性加杠杆", "心态崩溃，急于一两天翻本，加大手数造成二次重创", "三连亏日内熔断", "当日连续 3 笔止损，强制停机关闸 24 小时"),
-        ("致命病灶 4：重大事件前夕裸买期权", "赌财报或 CPI 裸买虚值 Call/Put，遭遇 IV Crush 权利金归零", "波动率悬崖防御", "重大事件拒绝单腿买方，改用垂直价差锁死亏损"),
+        ("待检查习惯 1：感性重仓，单笔亏掉数千刀", "单笔未设 1% 止损（$1,000），一次大跌直接回撤 8%~15%", "单笔 1% 风险预算", "计划损失不超过 $1,000；跳空或成交偏差可能让实际损失更大"),
+        ("待检查习惯 2：越跌越买，逆势加仓摊平", "不断加钱摊低买入均价，如果还在下跌，亏损金额会继续放大", "先确认下跌是否停止", "趋势未确认就不加仓；跌破事先约定的位置时按计划退出"),
+        ("待检查习惯 3：连亏之后报复性加杠杆", "心态崩溃，急于一两天翻本，加大手数造成二次重创", "三连亏日内熔断", "当日连续 3 笔止损后暂停交易；本演示只展示拒绝结果，不设置真实倒计时"),
+        ("待检查习惯 4：重大事件前夕裸买期权", "赌财报或通胀数据，单独买入虚值期权；波动率回落可能造成亏损，到期仍无行权价值才会归零", "防范期权波动率回落", "重大事件前不单独买入期权；研究价差时仍要检查交割和到期风险"),
     ]
     for title, desc, cure_title, cure_desc in table:
         print(f"  {RED}❌ {title}{RESET}")
         print(f"     现象：{desc}")
-        print(f"     {GREEN}🛡️ 破局铁律（{cure_title}）：{cure_desc}{RESET}\n")
+        print(f"     {GREEN}🛡️ 对应的控制规则（{cure_title}）：{cure_desc}{RESET}\n")
 
-    print(f"{WHITE}{BOLD}3. TradingAgents 量化纪律重生路线图：{RESET}")
+    print(f"{WHITE}{BOLD}3. 用 TradingAgents 演示如何按规则检查：{RESET}")
     print(f"   · 设定当前总资产 $70,000，单笔 1% 最大风险预算 = {BOLD}${70000*0.01:.2f}{RESET}。")
     print(f"   · 严格执行 2:1 盈亏比门槛：单笔潜在收益 ≥ $1,400 才允许入场。")
-    print(f"   · 即使胜率仅有 45%，在 2:1 盈亏比与 1% 风控下，每 100 笔交易期望收益：")
+    print(f"   · 即使胜率仅有 45%，在 2:1 盈亏比与 1% 风控下，每 100 笔交易平均收益假设：")
     expectancy = (0.45 * 1400) - (0.55 * 700)
     print(f"     数学期望 E = (45% × $1,400) - (55% × $700) = {GREEN}{BOLD}+${expectancy:.2f} / 笔{RESET}。")
-    print(f"     100 笔交易理论复利收益：{GREEN}{BOLD}+${expectancy * 100:,.2f} (+{(expectancy*100/70000)*100:.1f}%){RESET}，完全收复 $30k 失地！")
-    print(f"\n{CYAN}💡 结论：决定你在美股生存的不是预测明天的行情，而是用风控公式把感性冲动关进制度的笼子里。{RESET}\n")
+    print(f"     按固定金额计算的 100 笔理论期望收益（未计成本）：{GREEN}{BOLD}+${expectancy * 100:,.2f} (+{(expectancy*100/70000)*100:.1f}%){RESET}。这低于 $30,000，不能保证回本。")
+    print(f"\n{CYAN}💡 结论：先写清能承受多少损失，再决定买多少。期望收益只是基于假设的平均值，不是未来收益承诺。{RESET}\n")
 
 
 def run_demo():
@@ -371,7 +371,7 @@ def run_demo():
         },
         {
             "ticker": "NVDA_EVENT",
-            "name": "英伟达财报前夕 (高 IV 散户高危陷阱)",
+            "name": "英伟达财报前夕 (高预估波动率教学情景)",
             "scenario": "全网狂热看多，但 IV 处于 96% 极高位，散户冲动裸买 Call",
             "data": {
                 "price": 128.00,
@@ -389,7 +389,7 @@ def run_demo():
         },
         {
             "ticker": "TSLA_STALE",
-            "name": "特斯拉 (过期消息诱多场景)",
+            "name": "特斯拉 (使用旧消息的教学情景)",
             "scenario": "基于社交媒体 3 小时前的传闻冲动下单",
             "data": {
                 "price": 248.00,
@@ -424,20 +424,20 @@ def run_demo():
         s = eval_res["sentiment"]
         rg = eval_res["risk_guard"]
 
-        print(f" 📊 [基本面智能体]: 评分 {f['score']:.0f} | 建议: {f['recommendation']} | {f['summary']}")
-        print(f" 📈 [动量技术智能体]: 评分 {t['score']:.0f} | 建议: {t['recommendation']} | {t['summary']}")
-        print(f" 📰 [舆情时效智能体]: 评分 {s['score']:.0f} | 建议: {s['recommendation']} | {s['summary']}")
+        print(f" 📊 [公司经营与价格分析]: 评分 {f['score']:.0f} | 建议: {f['recommendation']} | {f['summary']}")
+        print(f" 📈 [价格走势分析]: 评分 {t['score']:.0f} | 建议: {t['recommendation']} | {t['summary']}")
+        print(f" 📰 [新闻情绪与时间检查]: 评分 {s['score']:.0f} | 建议: {s['recommendation']} | {s['summary']}")
 
-        print(f"\n {MAGENTA}{BOLD}🛡️ [风控官终审裁决（一票否决权）]:{RESET}")
+        print(f"\n {MAGENTA}{BOLD}🛡️ [风险检查结果（任一规则不通过就拒绝）]:{RESET}")
         if rg["decision"] == TradeSignal.BUY:
-            print(f"   {GREEN}{BOLD}✅ 裁决：批准下单 (BUY){RESET}")
-            print(f"   · 严守 1% 风险：单笔最大损失限制为 {BOLD}${rg['dollar_risk']:.2f}{RESET} ({rg['risk_pct']:.2f}% of $100,000)")
-            print(f"   · 科学测算仓位：建议买入 {BOLD}{rg['shares']} 股{RESET} (名义本金占用: ${rg['notional']:,.2f})")
+            print(f"   {GREEN}{BOLD}✅ 结果：允许模拟买入 (BUY){RESET}")
+            print(f"   · 严守 1% 风险：按止损价估算的单笔损失为 {BOLD}${rg['dollar_risk']:.2f}{RESET} ({rg['risk_pct']:.2f}% of $100,000)")
+            print(f"   · 按本例公式计算：可模拟买入 {BOLD}{rg['shares']} 股{RESET} (买入金额: ${rg['notional']:,.2f})")
             print(f"   · 风控依据：{rg['reason']}")
         else:
-            print(f"   {RED}{BOLD}❌ 裁决：一票否决 (VETO / FAIL-CLOSED){RESET}")
+            print(f"   {RED}{BOLD}❌ 结果：拒绝本次模拟买入 (VETO / FAIL-CLOSED){RESET}")
             print(f"   · 否决原因：{rg['reason']}")
-            print(f"   · 执行动作：强制关闸，允许股数 = 0，保全本金！")
+            print(f"   · 本次结果：允许买入股数 = 0，不提交真实订单。")
         print("\n")
 
 
@@ -446,7 +446,7 @@ def run_audit(tickers_str: str, equity: float = 100000.0):
     sys_engine = MultiAgentSystem(equity=equity)
     tickers = [t.strip().upper() for t in tickers_str.split(",") if t.strip()]
 
-    print(f"正在对标的池进行风控审计：{tickers}，账户总资金：${equity:,.2f}...\n")
+    print(f"正在检查这些股票的模拟风险：{tickers}，账户总资金：${equity:,.2f}...\n")
     print(f"{'代码':<8} | {'入场价':<8} | {'止损价':<8} | {'每股风险':<10} | {'允许买入股数':<12} | {'风险占用($)':<12} | {'风控状态'}")
     print("-" * 85)
 
@@ -473,16 +473,16 @@ def run_audit(tickers_str: str, equity: float = 100000.0):
         status = f"{GREEN}放行{RESET}" if rg["decision"] == TradeSignal.BUY else f"{RED}否决{RESET}"
         print(f"{t:<8} | ${p_entry:<7.2f} | ${p_stop:<7.2f} | ${rg.get('per_share_risk', 0.0):<9.2f} | {rg['shares']:<12} | ${rg['dollar_risk']:<11.2f} | {status}")
 
-    print("\n💡 审计依据：所有仓位均按 1% 资本生命线（$1,000）严格倒推，单股风险越大，股数自动缩减。")
+    print("\n💡 审计依据：所有股数均按输入账户资产的 1% 风险预算倒算，单股风险越大，股数自动缩减。")
 
 
 def main():
     parser = argparse.ArgumentParser(
         description="TradingAgents Institutional Quantitative Terminal & Risk Guardian"
     )
-    parser.add_argument("--demo", action="store_true", help="运行多智能体研议与风控否决全流程演示")
-    parser.add_argument("--autopsy", action="store_true", help="打印 6 年 $30,000 亏损深度数学解剖与回本路线图")
-    parser.add_argument("--audit", type=str, help="对指定代码列表进行 1% 仓位与风控门禁审计 (逗号分隔，如 AAPL,NVDA,MSFT)")
+    parser.add_argument("--demo", action="store_true", help="运行多个分析角色和风险检查的完整教学演示")
+    parser.add_argument("--autopsy", action="store_true", help="打印 6 年 $30,000 亏损教学复盘与回本所需涨幅")
+    parser.add_argument("--audit", type=str, help="对指定代码列表进行 1% 仓位与风险规则检查 (逗号分隔，如 AAPL,NVDA,MSFT)")
     parser.add_argument("--equity", type=float, default=100000.0, help="设定账户总资产 (默认 $100,000)")
 
     args = parser.parse_args()

@@ -3,7 +3,7 @@
   "mode": "book-pdf",
   "title": "漫画美股：TradingAgents 从 K 线到期权",
   "domain": "U.S. equity markets, options, macroeconomics, and AI-assisted research",
-  "audience": "具备约 6 年实践、熟悉股票但容易 all-in 或使用过高杠杆，希望用数据、纪律和 TradingAgents 重建美股决策闭环的中文进阶学习者",
+  "audience": "希望用普通中文逐步学习股票、期权与模拟研究的读者；不假定已掌握英文术语或具备特定年限的经验",
   "language": "zh-CN",
   "jurisdiction": "not-applicable",
   "intended_use": "private study",
@@ -17,7 +17,7 @@
     "chunk_max_chars": 2000
   },
   "style": {
-    "direction": "warm modern anime chat with restrained market diagrams for an experienced, risk-seeking practitioner",
+    "direction": "Plain-language Chinese lessons: concrete question, short explanation, worked example, practice and specific feedback. Optional dialogue must explain the same example.",
     "visual_traits": [],
     "palette": [],
     "line_and_texture": "",

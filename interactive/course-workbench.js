@@ -40,7 +40,7 @@ function enhanceLessonStructure() {
   title.after(roadmap);
 
   const phases = [
-    makePhase(1, '先把来龙去脉讲清楚', '知道它是什么、为什么影响资产定价与流动性，以及不能从中推出什么。', [guide, background, term, ...reality].filter(Boolean)),
+    makePhase(1, '先把来龙去脉讲清楚', '弄懂它是什么，为什么影响价格和买卖，以及它不能告诉你什么。', [guide, background, term, ...reality].filter(Boolean)),
     makePhase(2, '跟着一个具体场景走', '先看人物怎么想，再用数字或图把概念落地。', [story, example].filter(Boolean)),
     makePhase(3, '现在轮到你判断', '一次只解决当前问题；答错会告诉你缺了哪条证据。', [decision].filter(Boolean)),
     makePhase(4, '把规则带去下一章', '记住边界和动作，不背孤立术语。', [principle, recap].filter(Boolean))
@@ -52,14 +52,14 @@ function enhanceLessonStructure() {
     const locked = !v2Done.has(v2Active);
     ruleButton.setAttribute('aria-disabled', String(locked));
     ruleButton.classList.toggle('locked', locked);
-    ruleButton.title = locked ? '先完成“做判断”并形成 Paper 回执' : '';
+    ruleButton.title = locked ? '先完成“做判断”，保存模拟练习记录' : '';
     return locked;
   }
 
   function showPhase(number, moveFocus = false) {
     if (number === 4 && syncRuleLock()) {
       const feedback = lessonStage.querySelector('#lessonFeedback');
-      if (feedback) feedback.textContent = '先完成“做判断”并形成 Paper 回执，才能打开本章规则。';
+      if (feedback) feedback.textContent = '先完成“做判断”，保存模拟练习记录，才能打开本章规则。';
       showPhase(3, true);
       return;
     }
@@ -103,7 +103,7 @@ v2Complete = function(ok, button) {
     const locked = !v2Done.has(v2Active);
     ruleButton.setAttribute('aria-disabled', String(locked));
     ruleButton.classList.toggle('locked', locked);
-    ruleButton.title = locked ? '先完成“做判断”并形成 Paper 回执' : '';
+    ruleButton.title = locked ? '先完成“做判断”，保存模拟练习记录' : '';
   }
 };
 
@@ -127,55 +127,8 @@ v2Render();
 
 // Office Stealth & Safety Mode (职场防窥/摸鱼保护模式)
 (function initOfficeStealth() {
-  const SENSITIVE_MAP = [
-    [/漫画美股/g, '量化研习'],
-    [/美股市场机制/g, '微观市场机制'],
-    [/美股/g, '境外标的'],
-    [/炒股/g, '量化交易'],
-    [/股票/g, '标的资产'],
-    [/梭哈/g, '顶格配置']
-  ];
-
-  function sanitizeNode(node) {
-    if (node.nodeType === 3) {
-      let text = node.nodeValue;
-      if (!text || (!text.includes('股') && !text.includes('梭哈'))) return;
-      for (const [re, rep] of SENSITIVE_MAP) {
-        text = text.replace(re, rep);
-      }
-      if (text !== node.nodeValue) node.nodeValue = text;
-    } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
-      for (let i = 0; i < node.childNodes.length; i++) {
-        sanitizeNode(node.childNodes[i]);
-      }
-    }
-  }
-
-  function sanitizeTitle() {
-    if (document.title.includes('美股') || document.title.includes('股票')) {
-      document.title = '数据科学与量化决策训练系统';
-    }
-  }
-
-  function applyStealth() {
-    sanitizeTitle();
-    sanitizeNode(document.body);
-  }
-
-  applyStealth();
-
-  // Watch for dynamic DOM modifications
-  const observer = new MutationObserver((mutations) => {
-    for (const m of mutations) {
-      if (m.type === 'childList') {
-        m.addedNodes.forEach(node => sanitizeNode(node));
-      } else if (m.type === 'characterData') {
-        sanitizeNode(m.target);
-      }
-    }
-    sanitizeTitle();
-  });
-  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  // Hide the screen only on request; never rewrite teaching text or answers.
+  const originalTitle = document.title;
 
   // Escape key double-tap quick discreet toggle / panic
   let lastEsc = 0;
@@ -183,8 +136,8 @@ v2Render();
     if (e.key === 'Escape') {
       const now = Date.now();
       if (now - lastEsc < 400) {
-        document.title = 'Analytics & Metric Workbench';
-        document.body.classList.toggle('stealth-ultra');
+        const hidden = document.body.classList.toggle('stealth-ultra');
+        document.title = hidden ? '工作台' : originalTitle;
       }
       lastEsc = now;
     }
