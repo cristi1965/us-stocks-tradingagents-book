@@ -940,7 +940,7 @@ body > header {
   font-weight: 600 !important;
 }
 .answer-right::after {
-  content: "✓ 决策正确";
+  content: "✓ 本题通过";
   margin-left: auto !important;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -6736,5 +6736,4 @@ dialog#rieslingModal::backdrop {
   color: #0f766e !important;
   background: #ccfbf1 !important;
 }
-
 

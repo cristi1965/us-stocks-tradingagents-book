@@ -54,39 +54,39 @@ function reduceTeachingEvent(state,event) {
   const p=event.payload;
   if(event.type==='ORDER_ACCEPTED'||event.type==='ORDER_CANDIDATE_RECORDED'||event.type==='ORDER_REJECTED')state.orders[event.entityId]={id:event.entityId,version:1,fills:[],filledQty:0,remainingQty:p.qty??0,status:event.type==='ORDER_REJECTED'?'REJECTED':p.status||'ACCEPTED',...p};
   if(event.type==='FILL_RECORDED'){
-    const order=state.orders[p.orderId];if(!order)throw new Error(`Fill references missing order ${p.orderId}`);
+    const order=state.orders[p.orderId];if(!order)throw new Error(`找不到这笔成交对应的订单：${p.orderId}`);
     if(order.fills.some(fill=>fill.id===event.entityId))return;
-    if(order.status==='REJECTED'||order.status==='CANCELED_DAY_END')throw new Error(`Fill on closed order ${order.id}`);
+    if(order.status==='REJECTED'||order.status==='CANCELED_DAY_END')throw new Error(`订单已经关闭，不能再记录成交：${order.id}`);
     if((p.side||order.side)==='SELL_SHORT'){
       const locate=Object.values(state.locates).find(row=>row.symbol===p.symbol&&row.status==='ACTIVE'&&row.locatedQty>=p.qty);
-      if(!locate)throw new Error(`Short fill exceeds active locate for ${p.symbol}`);
+      if(!locate)throw new Error(`${p.symbol} 的卖空数量超过当前已确认可借的股数`);
     }
     order.fills.push({id:event.entityId,qty:p.qty,price:p.price,settlementDate:p.settlementDate});order.filledQty+=p.qty;order.remainingQty=order.qty-order.filledQty;order.status=order.remainingQty?'PARTIAL':'FILLED';order.version++;
     const executionSide=p.side||order.side,sign=executionSide==='SELL_SHORT'||executionSide==='SELL'?-1:1,id=`position-${p.symbol}`;const old=state.positions[id]||{id,symbol:p.symbol,kind:'stock',qty:0,avg:0,source:'FILLS'};const nextQty=old.qty+sign*p.qty;old.avg=nextQty?((old.avg*Math.abs(old.qty)+p.price*p.qty)/Math.abs(nextQty)):0;old.qty=nextQty;state.positions[id]=old;
     const amount=p.qty*p.price;if(executionSide==='BUY'){state.account.cash-=amount;state.account.settledCash-=amount;state.account.payables.push({fillId:event.entityId,amount,settlementDate:p.settlementDate,status:'PENDING_SETTLEMENT'})}else state.account.receivables.push({fillId:event.entityId,amount,settlementDate:p.settlementDate,status:'PENDING_SETTLEMENT'});
   }
-  if(event.type==='ORDER_EXPIRED'){const order=state.orders[event.entityId];if(!order)throw new Error('Expiry references missing order');if(order.remainingQty!==p.remainingQty)throw new Error('Expiry remaining quantity mismatch');order.status='CANCELED_DAY_END';order.version++;order.execution={executedPriceCost:p.executedPriceCost,opportunityCost:p.opportunityCost,fees:p.fees,totalImplementationShortfall:p.totalImplementationShortfall}}
-  if(event.type==='MARKET_STATE_CHANGED'){const old=state.marketBySymbol[event.entityId]||{state:p.from};if(old.state!==p.from)throw new Error(`Illegal market transition ${old.state} to ${p.to}`);state.marketBySymbol[event.entityId]={...old,state:p.to,reason:p.reason,version:(old.version||0)+1}}
+  if(event.type==='ORDER_EXPIRED'){const order=state.orders[event.entityId];if(!order)throw new Error('找不到需要设为到期失效的订单');if(order.remainingQty!==p.remainingQty)throw new Error('订单剩余股数与到期记录不一致');order.status='CANCELED_DAY_END';order.version++;order.execution={executedPriceCost:p.executedPriceCost,opportunityCost:p.opportunityCost,fees:p.fees,totalImplementationShortfall:p.totalImplementationShortfall}}
+  if(event.type==='MARKET_STATE_CHANGED'){const old=state.marketBySymbol[event.entityId]||{state:p.from};if(old.state!==p.from)throw new Error(`市场状态不能从 ${old.state} 直接变为 ${p.to}`);state.marketBySymbol[event.entityId]={...old,state:p.to,reason:p.reason,version:(old.version||0)+1}}
   if(event.type==='LOCATE_GRANTED')state.locates[event.entityId]={id:event.entityId,...p,status:'ACTIVE'};
   if(event.type==='BORROW_STATUS_CHANGED')state.borrows[event.entityId]={id:event.entityId,...p,status:p.to};
   if(event.type==='OPTION_ASSIGNED'){
-    const short=state.positions[p.contractId],long=state.positions[p.longLegId];if(!short||short.qty>=0)throw new Error('Assignment requires an existing short option lot');if(!long)throw new Error('Referenced long leg is missing');short.qty+=1;short.assignmentState='ASSIGNED';
+    const short=state.positions[p.contractId],long=state.positions[p.longLegId];if(!short||short.qty>=0)throw new Error('只有账户里已卖出的期权，才能记录被要求交割');if(!long)throw new Error('找不到配套买入的期权');short.qty+=1;short.assignmentState='ASSIGNED';
     const id='assigned-stock',old=state.positions[id]||{id,symbol:p.symbol,kind:'stock',qty:0,avg:p.strike,source:'ASSIGNMENT'};old.qty+=p.stockQty;state.positions[id]=old;state.account.receivables.push({eventId:event.id,amount:p.cashReceivable,settlementDate:'NEXT_VERIFIED_BUSINESS_DAY'});long.assignmentState=p.longLegAction;
   }
   if(event.type==='CORPORATE_ACTION_APPLIED'){
-    if(state.corporateActions[p.actionId])return;const position=state.positions[p.positionId],option=state.positions[p.optionPositionId];if(!position||!option)throw new Error('Corporate action position missing');position.qty*=p.ratio;position.avg/=p.ratio;option.qty*=p.optionRatio;option.strike*=p.optionStrikeRatio;state.orders[p.openOrderId]={id:p.openOrderId,symbol:p.symbol,side:'SELL',qty:p.oldOrderQty*p.ratio,price:p.oldOrderPrice/p.ratio,status:'OPEN_ADJUSTED',version:1};state.corporateActions[p.actionId]={...p,status:'APPLIED'};state.optionDeliverable={symbol:p.symbol,contracts:option.qty,strike:option.strike,sharesPerContract:p.newOptionDeliverable,status:'CONFIRMED_BY_SCENARIO_SOURCE'};
+    if(state.corporateActions[p.actionId])return;const position=state.positions[p.positionId],option=state.positions[p.optionPositionId];if(!position||!option)throw new Error('找不到需要进行拆股等调整的持仓');position.qty*=p.ratio;position.avg/=p.ratio;option.qty*=p.optionRatio;option.strike*=p.optionStrikeRatio;state.orders[p.openOrderId]={id:p.openOrderId,symbol:p.symbol,side:'SELL',qty:p.oldOrderQty*p.ratio,price:p.oldOrderPrice/p.ratio,status:'OPEN_ADJUSTED',version:1};state.corporateActions[p.actionId]={...p,status:'APPLIED'};state.optionDeliverable={symbol:p.symbol,contracts:option.qty,strike:option.strike,sharesPerContract:p.newOptionDeliverable,status:'CONFIRMED_BY_SCENARIO_SOURCE'};
   }
   if(event.type==='CORPORATE_ACTION_BLOCKED')state.corporateActions[event.entityId]={...p,status:'BLOCKED'};
   if(event.type==='CASH_LOT_CREATED')state.account.receivables.push({id:event.entityId,...p});
   if(event.type==='MARGIN_SCENARIO_RECORDED'||event.type==='SCENARIO_RECORDED')state.scenarios[event.entityId]=p;
-  if(event.type==='EVIDENCE_RECORDED'){if(p.evidenceType==='QUOTE'&&p.ageSeconds>p.ttlSeconds)throw new Error('Evidence is stale for its declared TTL');if(p.evidenceType==='NEWS'&&p.ageSeconds>3600)throw new Error('News evidence is stale');state.evidence[event.entityId]={...p,status:'FRESH'};}
+  if(event.type==='EVIDENCE_RECORDED'){if(p.evidenceType==='QUOTE'&&p.ageSeconds>p.ttlSeconds)throw new Error('报价已超过设置的有效时限，请更新报价');if(p.evidenceType==='NEWS'&&p.ageSeconds>3600)throw new Error('新闻已超过有效时限，请更新来源');state.evidence[event.entityId]={...p,status:'FRESH'};}
 }
 
 function teachingLedgerInvariants(state) {
   const errors=[];
-  Object.values(state.orders).forEach(order=>{if(order.fills&&Number.isFinite(order.qty)){const filled=order.fills.reduce((n,f)=>n+f.qty,0);if(filled>order.qty)errors.push(`${order.id}: overfill`);if(filled!==order.filledQty||order.remainingQty!==order.qty-filled)errors.push(`${order.id}: fill totals`)}});
-  Object.values(state.positions).forEach(position=>{const priced=position.kind==='option'?Number.isFinite(position.strike)&&Number.isFinite(position.multiplier):Number.isFinite(position.avg);if(!Number.isFinite(position.qty)||!priced)errors.push(`${position.id}: invalid position`)});
-  if(!Number.isFinite(state.account.cash)||!Number.isFinite(state.account.settledCash)||state.account.settledCash>state.account.cash)errors.push('account cash invariant');
+  Object.values(state.orders).forEach(order=>{if(order.fills&&Number.isFinite(order.qty)){const filled=order.fills.reduce((n,f)=>n+f.qty,0);if(filled>order.qty)errors.push(`${order.id}: 成交股数超过订单股数`);if(filled!==order.filledQty||order.remainingQty!==order.qty-filled)errors.push(`${order.id}: 已成交和剩余股数对不上`)}});
+  Object.values(state.positions).forEach(position=>{const priced=position.kind==='option'?Number.isFinite(position.strike)&&Number.isFinite(position.multiplier):Number.isFinite(position.avg);if(!Number.isFinite(position.qty)||!priced)errors.push(`${position.id}: 持仓数量或价格不是有效数字`)});
+  if(!Number.isFinite(state.account.cash)||!Number.isFinite(state.account.settledCash)||state.account.settledCash>state.account.cash)errors.push('现金账目对不上：请检查金额，以及已结算现金是否超过总现金');
   return errors;
 }
 

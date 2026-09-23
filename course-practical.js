@@ -3,53 +3,53 @@ const practicalValidateFallback = v3Validate;
 const practicalExplainFallback = explainInvalid;
 
 const PRACTICAL_TITLES = {
-  1: '完整仓位反推与结算', 10: '部分成交与订单状态', 11: '停牌重开后的真实损失',
-  12: '风险簇净压力', 14: '杠杆与维持保证金', 15: '卖空 locate 与 SSR',
-  16: 'CPI 首次值与修订值', 19: '财报尾部反推仓位', 20: '期权链流动性筛选',
-  22: 'Greeks 联合损益', 23: 'IV Crush 双情景', 24: '价差与指派终态',
+  1: '算出能买多少，并核对账目', 10: '部分成交与订单状态', 11: '停牌重开后的真实损失',
+  12: '一组相关持仓一起下跌会亏多少', 14: '杠杆与维持保证金', 15: '卖空：确认可借股数与价格限制',
+  16: 'CPI 首次值与修订值', 19: '财报后大跌时，最多能买多少', 20: '比较期权报价，看看哪张更容易成交',
+  22: '把股价、时间、波动率的影响一起算', 23: '波动率回落：小涨和大涨分别会怎样', 24: '期权价差被要求交割后，账户会怎样',
   26: '按证据类型检查时效'
 };
 Object.entries(PRACTICAL_TITLES).forEach(([index, title]) => { V2_TITLES[+index][0] = title; });
 
-function practicalLab(intro, fields, button = '核对并写入 Paper 证据') {
-  return `<div class="practical-lab"><div class="lab-brief"><b>市场现实关卡</b><p>${intro}</p></div><div class="lab-grid">${fields}</div><output class="lab-preview" data-practical-preview>修改数字后，这里会显示计算过程。</output><button data-run>${button}</button></div>`;
+function practicalLab(intro, fields, button = '核对并保存模拟练习记录') {
+  return `<div class="practical-lab"><div class="lab-brief"><b>把市场规则算进来</b><p>${intro}</p></div><div class="lab-grid">${fields}</div><output class="lab-preview" data-practical-preview>修改数字后，这里会显示计算过程。</output><button data-run>${button}</button></div>`;
 }
 const field = (label, id, value, extra = '') => `<label>${label}<input id="${id}" value="${value}" ${extra}></label>`;
 const select = (label, id, options) => `<label>${label}<select id="${id}"><option value="">请选择</option>${options.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></label>`;
 
 v2Control = function(type, index) {
-  if (index === 1) return practicalLab('账户 $100,000，风险 0.8%，入场 $100，止损 $96，每股摩擦 $0.20。先算预算，再向下取整股数。',
-    field('风险预算（美元）','psBudget','', 'type="number"') + field('最大股数','psShares','', 'type="number"') + field('名义仓位（美元）','psNotional','', 'type="number"'));
+  if (index === 1) return practicalLab('账户 $100,000，风险 0.8%，入场 $100，止损 $96，每股成交价偏差与费用 $0.20。先算预算，再向下取整股数。',
+    field('风险预算（美元）','psBudget','', 'type="number"') + field('最大股数','psShares','', 'type="number"') + field('持仓金额（股数 × 股价）（美元）','psNotional','', 'type="number"'));
   if (index === 10) return practicalLab('常规时段用 DAY 限价买 1,000 股；300 股成交 $49.90，400 股成交 $50.00，剩余未成交。决策时中间价 $49.80。',
-    select('交易时段','fillSession',[['regular','常规时段 9:30-16:00 ET'],['extended','延长时段']]) + select('TIF','fillTif',[['day','DAY'],['ioc','IOC']]) + field('已成交股数','fillQty','', 'type="number"') + field('成交均价','fillAvg','', 'type="number" step="0.001"') + field('未成交股数','fillOpen','', 'type="number"') + field('已成交价差（美元）','fillShortfall','', 'type="number" step="0.01"') + field('未成交机会成本（收盘 $50.20）','fillOpportunity','', 'type="number"') + field('费用（美元）','fillFees','', 'type="number"') + field('完整 implementation shortfall','fillTotal','', 'type="number"') + select('DAY 单收盘终态','fillEndState',[['cancelled','剩余 300 股失效/撤销'],['forever','永久保持 PARTIAL']]));
+    select('交易时段','fillSession',[['regular','常规时段 9:30-16:00 ET'],['extended','延长时段']]) + select('订单有效期（TIF）','fillTif',[['day','DAY：只在当天有效'],['ioc','IOC：立即成交，剩余撤销']]) + field('已成交股数','fillQty','', 'type="number"') + field('成交均价','fillAvg','', 'type="number" step="0.001"') + field('未成交股数','fillOpen','', 'type="number"') + field('已成交价差（美元）','fillShortfall','', 'type="number" step="0.01"') + field('未成交机会成本（收盘 $50.20）','fillOpportunity','', 'type="number"') + field('费用（美元）','fillFees','', 'type="number"') + field('总执行成本（implementation shortfall）','fillTotal','', 'type="number"') + select('DAY 订单收盘后怎么办','fillEndState',[['cancelled','剩余 300 股失效/撤销'],['forever','一直保留部分成交状态']]));
   if (index === 11) return practicalLab('200 股在 $100 买入，止损触发价 $95；新闻停牌后以 $82 重开。再区分 LULD、全市场熔断和新闻停牌。',
-    field('计划损失（美元）','haltPlanLoss','', 'type="number"') + field('实际损失（美元）','haltActualLoss','', 'type="number"') + field('额外缺口损失（美元）','haltExtraLoss','', 'type="number"') + select('新闻停牌订单状态','haltState',[['pending','等待重开拍卖'],['filled95','已按 95 成交']]) + select('LULD 完整链路','luldAction',[['chain','15 秒限价状态未解除 → 至少 5 分钟暂停 → 重开'],['account','等同账户自设熔断']]) + select('MWCB 阈值与层级','mwcbThresholds',[['full','Level 1/2/3 = 7%/13%/20%'],['wrong','5%/10%/15%']]) + select('MWCB Level 1/2（3:25 ET 前）','mwcb1Action',[['pause','市场暂停 15 分钟'],['close','当天永久关闭']]) + select('MWCB Level 1/2（3:25 ET 后）','mwcbLateAction',[['continue','不因 Level 1/2 暂停'],['pause','仍暂停 15 分钟']]) + select('MWCB Level 3','mwcb3Action',[['close','当天停止交易'],['pause','只暂停 15 分钟']]));
-  if (index === 12) return practicalLab('科技股 +$50,000、QQQ +$30,000、Put 的 Delta 对冲 -$20,000。科技簇压力情景为 -8%。负暴露能减轻损失。',
+    field('计划损失（美元）','haltPlanLoss','', 'type="number"') + field('实际损失（美元）','haltActualLoss','', 'type="number"') + field('额外缺口损失（美元）','haltExtraLoss','', 'type="number"') + select('新闻停牌订单状态','haltState',[['pending','等待重开拍卖'],['filled95','已按 95 成交']]) + select('个股价格限制（LULD）的处理步骤','luldAction',[['chain','15 秒限价状态未解除 → 至少 5 分钟暂停 → 重开'],['account','等同账户自设熔断']]) + select('全市场熔断（MWCB）的跌幅门槛','mwcbThresholds',[['full','Level 1/2/3 = 7%/13%/20%'],['wrong','5%/10%/15%']]) + select('MWCB Level 1/2（3:25 ET 前）','mwcb1Action',[['pause','市场暂停 15 分钟'],['close','当天永久关闭']]) + select('MWCB Level 1/2（3:25 ET 后）','mwcbLateAction',[['continue','不因 Level 1/2 暂停'],['pause','仍暂停 15 分钟']]) + select('MWCB Level 3','mwcb3Action',[['close','当天停止交易'],['pause','只暂停 15 分钟']]));
+  if (index === 12) return practicalLab('科技股 +$50,000、QQQ +$30,000、Put 的 Delta 对冲 -$20,000。这组科技持仓的假设跌幅为 -8%。反向持仓在这个情景里能抵消一部分损失。',
     field('科技股情景损益','clusterStock','', 'type="number"') + field('QQQ 情景损益','clusterEtf','', 'type="number"') + field('Put 情景损益','clusterHedge','', 'type="number"') + field('组合压力损失','clusterNetLoss','', 'type="number"'));
-  if (index === 14) return (practicalLab('保证金账户：自有 $50,000、借款 $50,000，标的跌 30%，house requirement 30%，借款年息 12% 持有 30 天。现金账户另有 $5,000 settled cash 与 $10,000 尚未结算卖出款。',
-    field('下跌后资产市值','marginAssets','', 'type="number"') + field('30 天借款利息','marginInterest','', 'type="number" step="0.01"') + field('扣利息后账户权益','marginEquity','', 'type="number" step="0.01"') + field('保证金率（%）','marginRatio','', 'type="number" step="0.01"') + select('三层保证金规则','marginLayers',[['layers','Reg T 通常 50% 初始 / FINRA 通常 25% 多头维持 / 券商 house 可更高'],['same','三者都是 30%']]) + select('保证金处理','marginStatus',[['call','低于 30% house requirement，可能补资或强平'],['safe','没有任何风险']]) + field('现金账户当前可用 settled cash','settledAvailable','', 'type="number"') + select('用 $12,000 买入后当日卖出','settlementDecision',[['reject','拒绝：其中 $7,000 依赖未结算卖出款'],['allow','允许且没有结算风险']]) + select('结算日历状态','settlementCalendar',[['verified','已核对下一个营业日'],['missing','没日历也直接假定明天']])));
-  if (index === 15) return (practicalLab('申请卖空 200 股，locate 只确认 150 股；股价 $45，年化借券费假设 8%，持有 30 天。标的相较前收跌 10% 后触发 SSR，当天剩余时间及下一交易日适用价格测试。',
-    field('最多允许模拟股数','shortQty','', 'type="number"') + field('30 天借券费（美元）','shortBorrowCost','', 'type="number" step="0.01"') + select('下单处理','shortStatus',[['restricted','缩到可借数量，并遵守 SSR 价格测试'],['sell200','直接卖空 200 股']]) + select('SSR 执行价要求','ssrExecution',[['aboveBid','不得在当前 NBBO 买价或更低价执行/展示；short-exempt 例外需单独标记'],['atBid','可在当前买价直接砸盘']]) + select('若 locate 完全缺失','noLocateDecision',[['reject','拒绝建立空仓'],['guess','沿用昨天可借状态']]) + select('持仓期可借状态撤回','borrowRecallDecision',[['review','停止新增并核对券商回补要求'],['ignore','忽略并继续加空']])));
+  if (index === 14) return (practicalLab('保证金账户：自有 $50,000、借款 $50,000，标的跌 30%，券商要求的维持保证金比例 30%，借款年息 12% 持有 30 天。现金账户另有 $5,000 已结算现金 与 $10,000 尚未结算卖出款（卖出后尚未完成钱和证券交收）。',
+    field('下跌后资产市值','marginAssets','', 'type="number"') + field('30 天借款利息','marginInterest','', 'type="number" step="0.01"') + field('扣利息后账户权益','marginEquity','', 'type="number" step="0.01"') + field('保证金率（%）','marginRatio','', 'type="number" step="0.01"') + select('三层保证金规则','marginLayers',[['layers','Reg T 通常 50% 初始 / FINRA 通常 25% 多头维持 / 券商 house 可更高'],['same','三者都是 30%']]) + select('保证金处理','marginStatus',[['call','低于 30% 券商要求的维持保证金比例，可能补资或强平'],['safe','没有任何风险']]) + field('现金账户当前可用 已结算现金','settledAvailable','', 'type="number"') + select('用 $12,000 买入后当日卖出','settlementDecision',[['reject','拒绝：其中 $7,000 依赖未结算卖出款'],['allow','允许且没有结算风险']]) + select('结算日历状态','settlementCalendar',[['verified','已核对下一个营业日'],['missing','没日历也直接假定明天']])));
+  if (index === 15) return (practicalLab('申请卖空 200 股，已确认可借数量（locate）只有 150 股；股价 $45，年化借券费假设 8%，持有 30 天。标的相较前收跌 10% 后触发 SSR，当天剩余时间及下一交易日适用价格测试。',
+    field('最多允许模拟股数','shortQty','', 'type="number"') + field('30 天借券费（美元）','shortBorrowCost','', 'type="number" step="0.01"') + select('下单处理','shortStatus',[['restricted','缩到可借数量，并遵守 SSR 价格测试'],['sell200','直接卖空 200 股']]) + select('卖空限制（SSR）下的成交价格要求','ssrExecution',[['aboveBid','不得在全市场最优买价（NBBO bid）或更低价执行/展示；允许豁免的卖空订单（short-exempt）需单独标记'],['atBid','可在当前买价直接砸盘']]) + select('若没有确认可借股票（locate）','noLocateDecision',[['reject','拒绝建立空仓'],['guess','沿用昨天可借状态']]) + select('持仓期可借状态撤回','borrowRecallDecision',[['review','停止新增并核对券商回补要求'],['ignore','忽略并继续加空']])));
   if (index === 16) return practicalLab('同口径 CPI 共识 3.0%；首次公布 3.2%，后来修订为 3.1%。回放事件日只能使用当时可见的首次值。',
-    field('事件日 surprise（百分点）','cpiFirst','', 'type="number" step="0.1"') + field('修订后 surprise（百分点）','cpiRevised','', 'type="number" step="0.1"') + select('回测事件日使用哪个值','cpiVintage',[['first','首次公布 3.2%'],['revised','修订后 3.1%']]));
-  if (index === 19) return practicalLab('账户允许财报尾部损失 $1,000；标的 $100，压力缺口 20%，另留每股 $0.50 摩擦。',
-    field('每股压力风险','earnRiskPerShare','', 'type="number" step="0.01"') + field('最大股数','earnShares','', 'type="number"') + field('名义仓位','earnNotional','', 'type="number"') + field('压力损失','earnLoss','', 'type="number" step="0.01"'));
-  if (index === 20) return (practicalLab('同一策略期限下比较两张 Call。A: Bid 2.95×180 / Ask 3.10×220 / 当日量 4,200 / OI 12,400；B: Bid 1.20×3 / Ask 2.10×5 / 当日量 12 / OI 18。计划买 20 张。',
-    field('A 中间价','chainMidA','', 'type="number" step="0.001"') + field('A 点差率（%）','chainSpreadA','', 'type="number" step="0.01"') + field('B 点差率（%）','chainSpreadB','', 'type="number" step="0.01"') + field('计划订单张数','chainOrderQty','', 'type="number"') + select('更可执行的候选','chainPick',[['a','A：点差、报价尺寸、成交量与 OI 均较好'],['b','B：报价更便宜所以一定更好']]) + select('能否保证 20 张全按 Ask 成交','chainGuarantee',[['no','不能；盘口是快照，不是成交保证'],['yes','能，Ask size 已经保证']])));
-  if (index === 22) return (practicalLab('多头 Call 1 张：Delta .50、Gamma .04、Vega .12/IV 点、Theta -$0.08/天。标的 +$3，IV -10 点，过 1 天。',
-    select('仓位与合约方向','greekSide',[['longCall','多头 Call'],['shortCall','空头 Call'],['longPut','多头 Put']]) + field('Delta 贡献（每股）','greekDelta','', 'type="number" step="0.01"') + field('Gamma 贡献（每股）','greekGamma','', 'type="number" step="0.01"') + field('合计变化（每股）','greekUnit','', 'type="number" step="0.01"') + field('整张合约变化（美元）','greekContract','', 'type="number" step="0.01"') + select('近似边界','greekBoundary',[['local','局部近似；大幅变动需重算或用定价模型'],['exact','任何幅度都精确']])));
-  if (index === 23) return practicalLab('沿用上一章 Greeks 做二阶教学近似。情景 A 标的只涨 $2；情景 B 标的大涨 $8。两者都是 IV -10 点、过 1 天；大幅变动时实战必须重算 Greeks 或用定价模型。',
-    field('情景 A 二阶近似损益','crushSmall','', 'type="number" step="0.01"') + field('情景 B 二阶教学近似','crushLarge','', 'type="number" step="0.01"') + select('你能推出什么','crushConclusion',[['conditional','方向正确可能亏，也可能赚，取决于各项贡献'],['alwaysLose','IV Crush 后 Call 一定亏'],['alwaysWin','股价涨 Call 一定赚']]));
-  if (index === 24) return practicalLab('买 105 Call、卖 115 Call，净借记 $3，乘数 100。到期前短 Call 被指派，长 Call 尚未处理。',
-    field('最大亏损（美元）','spreadLoss','', 'type="number"') + field('最大盈利（美元）','spreadProfit','', 'type="number"') + field('盈亏平衡价','spreadBreakeven','', 'type="number" step="0.01"') + field('指派后股票数量','assignedShares','', 'type="number"') + field('指派现金变化','assignedCash','', 'type="number"') + select('下一步','assignmentAction',[['verify','核对券商截止时间、购买力并处理长腿'],['ignore','价差定义风险，所以无需处理']]));
+    field('事件日 公布值减预期（surprise，百分点）','cpiFirst','', 'type="number" step="0.1"') + field('修订后 公布值减预期（surprise，百分点）','cpiRevised','', 'type="number" step="0.1"') + select('回测事件日使用哪个值','cpiVintage',[['first','首次公布 3.2%'],['revised','修订后 3.1%']]));
+  if (index === 19) return practicalLab('账户为财报后极端下跌预留的损失上限为 $1,000；标的 $100，假设跳空下跌 20%，另留每股 $0.50 的成交价偏差与费用。',
+    field('每股压力风险','earnRiskPerShare','', 'type="number" step="0.01"') + field('最大股数','earnShares','', 'type="number"') + field('持仓金额（股数 × 股价）','earnNotional','', 'type="number"') + field('压力损失','earnLoss','', 'type="number" step="0.01"'));
+  if (index === 20) return (practicalLab('比较同一策略、同一期限的两张看涨期权（Call）。Bid 是买方报价，Ask 是卖方报价，× 后是可交易张数，OI 是未平仓合约数。A: Bid 2.95×180 / Ask 3.10×220 / 当日量 4,200 / OI 12,400；B: Bid 1.20×3 / Ask 2.10×5 / 当日量 12 / OI 18。计划买 20 张。',
+    field('A 中间价','chainMidA','', 'type="number" step="0.001"') + field('A 点差率（%）','chainSpreadA','', 'type="number" step="0.01"') + field('B 点差率（%）','chainSpreadB','', 'type="number" step="0.01"') + field('计划订单张数','chainOrderQty','', 'type="number"') + select('哪张更容易按计划买到','chainPick',[['a','A：点差、报价上可买卖的数量、成交量与 OI 均较好'],['b','B：报价更便宜所以一定更好']]) + select('能否保证 20 张全按 Ask 成交','chainGuarantee',[['no','不能；盘口是快照，不是成交保证'],['yes','能，Ask size 已经保证']])));
+  if (index === 22) return (practicalLab('买入看涨期权 1 张。Delta 表示股价变化的影响，Gamma 表示这种敏感度会怎样变化，Vega 表示波动率影响，Theta 表示时间影响。参数：Delta .50、Gamma .04、Vega .12/IV 点、Theta -$0.08/天。标的 +$3，IV -10 点，过 1 天。',
+    select('仓位与合约方向','greekSide',[['longCall','多头 Call'],['shortCall','空头 Call'],['longPut','多头 Put']]) + field('Delta 贡献（每股）','greekDelta','', 'type="number" step="0.01"') + field('Gamma 贡献（每股）','greekGamma','', 'type="number" step="0.01"') + field('合计变化（每股）','greekUnit','', 'type="number" step="0.01"') + field('整张合约变化（美元）','greekContract','', 'type="number" step="0.01"') + select('这个粗算什么时候适用','greekBoundary',[['local','小幅变化时的粗算；大幅变动需重算或用定价模型'],['exact','任何幅度都精确']])));
+  if (index === 23) return practicalLab('沿用上一章 Greeks 做计入 Gamma 的教学粗算。情景 A 标的只涨 $2；情景 B 标的大涨 $8。两者都是 IV -10 点、过 1 天；大幅变动时实战必须重算 Greeks 或用定价模型。',
+    field('情景 A 计入 Gamma 后粗算的盈亏','crushSmall','', 'type="number" step="0.01"') + field('情景 B 计入 Gamma 的教学粗算','crushLarge','', 'type="number" step="0.01"') + select('你能推出什么','crushConclusion',[['conditional','方向正确可能亏，也可能赚，取决于各项贡献'],['alwaysLose','IV Crush 后 Call 一定亏'],['alwaysWin','股价涨 Call 一定赚']]));
+  if (index === 24) return practicalLab('买 105 Call、卖 115 Call，每股净支出 $3，乘数 100。到期前卖出的 Call 被要求交割（指派），买入的 Call 还没处理。',
+    field('最大亏损（美元）','spreadLoss','', 'type="number"') + field('最大盈利（美元）','spreadProfit','', 'type="number"') + field('盈亏平衡价','spreadBreakeven','', 'type="number" step="0.01"') + field('指派后股票数量','assignedShares','', 'type="number"') + field('指派现金变化','assignedCash','', 'type="number"') + select('下一步','assignmentAction',[['verify','核对券商截止时间、购买力并处理买入的那份期权'],['ignore','价差有预计亏损上限，所以无需处理']]));
   if (index === 26) {
     const gate = practicalControlFallback(type, index).replace(/<button data-run>.*?<\/button>/, '');
-    return `${gate}${practicalLab('行情、新闻和财报文件不能共用“24 小时”。本题另检查 15 秒前的报价，课程阈值为 30 秒。',
-      select('证据类型','evidenceType',[['quote','实时行情'],['news','新闻'],['filing','财报文件']]) + field('采集后经过（秒）','evidenceAge','15', 'type="number"') + field('行情阈值（秒）','evidenceTtl','30', 'type="number"') + select('风险门','evidenceDecision',[['accept','时效合格，可继续 Paper'],['reject','统一按 24 小时拒绝']]))}`;
+    return `${gate}${practicalLab('行情、新闻和财报文件不能共用“24 小时”。本题另检查 15 秒前的报价，课程门槛为 30 秒。',
+      select('证据类型','evidenceType',[['quote','实时行情'],['news','新闻'],['filing','财报文件']]) + field('采集后经过（秒）','evidenceAge','15', 'type="number"') + field('行情门槛（秒）','evidenceTtl','30', 'type="number"') + select('风险门','evidenceDecision',[['accept','时效合格，可继续模拟练习'],['reject','统一按 24 小时拒绝']]))}`;
   }
   if (index === 27) {
     const original = practicalControlFallback(type, index);
-    return `<div class="corporate-check"><div class="lab-brief"><b>总验收附加关：公司行动与非对称尾部</b><p>2:1 普通整数拆股前 100 股、均价 $80、卖出限价 $100；标准 Call 1 张、执行价 $100、交割 100 股。本题的标准调整为合约数翻倍、执行价减半、每张仍交割 100 股；非标准行动必须查 OCC memo。</p></div><div class="lab-grid">${field('调整后股数','corpShares','', 'type="number"')}${field('调整后均价','corpAvg','', 'type="number"')}${field('调整后限价','corpLimit','', 'type="number"')}${field('调整后期权合约数','corpOptionContracts','', 'type="number"')}${field('调整后执行价','corpOptionStrike','', 'type="number"')}${field('每张交割股数','corpDeliverable','', 'type="number"')}${select('现金分红后的历史价格','dividendAction',[['adjust','保留原始价，并另存复权序列'],['gap','一律当成暴跌信号']])}${select('并购后交割物不清楚','mergerAction',[['unavailable','缺官方条款/OCC memo，风险门拒绝'],['assume','仍假设固定 100 股']])}${field('做多 100 股下跳 18% 损失','tailLongLoss','', 'type="number"')}${field('做空 100 股上跳 25% 损失','tailShortLoss','', 'type="number"')}</div></div>${original}`;
+    return `<div class="corporate-check"><div class="lab-brief"><b>总验收附加关：拆股等公司事项，以及做多和做空的极端损失</b><p>2:1 普通整数拆股前 100 股、均价 $80、卖出限价 $100；标准 Call 1 张、执行价 $100、交割 100 股。本题的标准调整为合约数翻倍、执行价减半、每张仍交割 100 股；非标准行动必须查 OCC 官方合约调整通知。</p></div><div class="lab-grid">${field('调整后股数','corpShares','', 'type="number"')}${field('调整后均价','corpAvg','', 'type="number"')}${field('调整后限价','corpLimit','', 'type="number"')}${field('调整后期权合约数','corpOptionContracts','', 'type="number"')}${field('调整后执行价','corpOptionStrike','', 'type="number"')}${field('每张交割股数','corpDeliverable','', 'type="number"')}${select('现金分红后的历史价格','dividendAction',[['adjust','保留原始价格，另外保存扣除分红等影响后的价格'],['gap','一律当成暴跌信号']])}${select('并购后交割物不清楚','mergerAction',[['unavailable','缺官方条款/OCC 官方合约调整通知，风险门拒绝'],['assume','仍假设固定 100 股']])}${field('做多 100 股下跳 18% 损失','tailLongLoss','', 'type="number"')}${field('做空 100 股上跳 25% 损失','tailShortLoss','', 'type="number"')}</div></div>${original}`;
   }
   return practicalControlFallback(type, index);
 };
@@ -84,7 +84,7 @@ function practicalResult(index) {
   if (!tests[index]) return null;
   const wrong = tests[index].filter(([id,val,tol]) => tol === 'select' ? document.querySelector('#'+id)?.value !== val : !closeEnough(id,val,tol)).map(([id]) => id);
   const base = index === 26 ? practicalValidateFallback(V2_TITLES[index][1]) : true;
-  return {ok:base&&!wrong.length, wrong, message:'有字段不符合该场景的计算或市场状态。'};
+  return {ok:base&&!wrong.length, wrong, message:'有些填写内容与题目中的计算结果或市场规则不一致。'};
 }
 
 v3Validate = function(type) {
@@ -100,34 +100,34 @@ explainInvalid = function() {
   practicalLastResult.wrong.forEach(id => document.querySelector('#'+id)?.setAttribute('aria-invalid','true'));
   const wrongRules = practicalLastResult.wrong.filter(id => document.querySelector('#'+id)?.tagName === 'SELECT');
   const wrongMath = practicalLastResult.wrong.filter(id => !wrongRules.includes(id));
-  const reasons = [wrongMath.length ? `算式或单位错误：${wrongMath.length} 项` : '', wrongRules.length ? `市场规则或状态错误：${wrongRules.length} 项` : ''].filter(Boolean).join('；');
+  const reasons = [wrongMath.length ? `请检查计算和单位：${wrongMath.length} 项` : '', wrongRules.length ? `请检查规则和订单状态：${wrongRules.length} 项` : ''].filter(Boolean).join('；');
   lessonFeedback.textContent = `未通过：${reasons}。红框处请修改；正确答案不会自动填入。`;
 };
 
 const PRACTICAL_PREVIEWS = {
-  1:'预算 = 100,000 × 0.8%；股数 = floor(预算 ÷ (|100-96|+0.20))；最后检查名义仓位。',
-  10:'均价 = 成交金额 ÷ 已成交数量。完整 implementation shortfall = 已成交价差 $110 + 未成交 300 股的机会成本 $120 + 费用 $7 = $237；DAY 单剩余数量收盘失效。',
+  1:'预算 = 100,000 × 0.8%；股数 = floor(预算 ÷ (|100-96|+0.20))，floor 表示向下取整；最后检查持仓金额（股数 × 股价）。',
+  10:'均价 = 成交金额 ÷ 已成交数量。总执行成本（implementation shortfall） = 已成交价差 $110 + 未成交 300 股的机会成本 $120 + 费用 $7 = $237；DAY 单剩余数量收盘失效。',
   11:'计划损失按触发价算；实际损失按重开可成交价算；两者差额就是缺口多付的代价。',
-  12:'三项情景损益相加；对冲为正贡献，压力损失取净损益的相反数。',
-  14:'利息=50,000×12%×30/365；权益=70,000-50,000-利息；保证金率=权益÷资产。现金账户只把 settled cash 当可重复使用资金。',
-  15:'可下数量不超过 locate 数量；借券费 = 市值 × 年化费率 × 30/365。',
-  16:'surprise = 公布值 - 同口径共识；事件回放必须冻结当时可见版本。',
+  12:'三项情景损益相加；对冲为正贡献，压力损失用正数表示，因此取合计盈亏的相反数。',
+  14:'利息=50,000×12%×30/365；权益=70,000-50,000-利息；保证金率=权益÷资产。现金账户只把 已结算现金 当可重复使用资金。',
+  15:'可卖空股数不超过已确认可借股数（locate）；借券费 = 市值 × 年化费率 × 30/365。',
+  16:'与预期的差（surprise）= 公布值 - 同口径共识；事件回放必须冻结当时可见版本。',
   19:'每股压力风险 = 100×20%+0.50；股数向下取整，再复算总损失。',
-  20:'中间价=(Bid+Ask)/2；点差率=(Ask-Bid)/中间价。还要比较订单数量、报价尺寸和成交量；盘口快照不保证成交。',
-  22:'先确认多空与 Call/Put 的符号；每股变化≈Δ×dS + 0.5×Γ×dS² + Vega×dIV点数 + Theta×天数。它只是局部近似。',
-  23:'分别代入 dS=2 与 dS=8。这是二阶教学近似，只用来理解方向；大波动会让 Greeks 变化，不能把 +$400 当成精确报价。',
-  24:'宽度=10；最大亏损=借记×100；最大盈利=(宽度-借记)×100；短 Call 指派产生 -100 股。',
-  26:'报价阈值按秒；新闻按分钟；财报文件按报告期与版本。阈值是课程演练规则，不代表所有券商。'
+  20:'中间价=(Bid+Ask)/2；点差率=(Ask-Bid)/中间价。还要比较订单数量、报价上可买卖的数量和成交量；盘口快照不保证成交。',
+  22:'先确认多空与 Call/Put 的符号；每股变化≈Δ×dS + 0.5×Γ×dS² + Vega×dIV点数 + Theta×天数。它只是小幅变化时的粗算。',
+  23:'分别代入 dS=2 与 dS=8。这是计入 Gamma 的教学粗算，只用来理解方向；大波动会让 Greeks 变化，不能把 +$400 当成精确报价。',
+  24:'两份期权执行价之差（宽度）=10；最大亏损=每股净支出（借记）×100；最大盈利=(宽度-借记)×100；卖出的 Call 被要求交割后，产生 -100 股（欠 100 股）。',
+  26:'报价门槛按秒；新闻按分钟；财报文件按报告期与版本。门槛是课程演练规则，不代表所有券商。'
 };
 
 const MARKET_REALITY = {
-  10:['延长时段与订单生命周期','盘前盘后不沿用常规时段的全部报价保护，券商可限制订单类型；Day/GTC/IOC 等 TIF 会改变未成交部分如何处理。','FINRA Extended-Hours Trading / Trading Terms','https://www.finra.org/investors/insights/extended-hours-trading'],
+  10:['延长时段与订单生命周期','盘前盘后不沿用常规时段的全部报价保护，券商可限制订单类型；订单有效期（TIF）决定剩余部分怎么办：DAY 当天有效，GTC 撤销前有效，IOC 立即成交后撤销剩余部分。','FINRA Extended-Hours Trading / Trading Terms','https://www.finra.org/investors/insights/extended-hours-trading'],
   11:['停牌、LULD 与重开','止损触发不等于成交。个股价格带、新闻停牌、全市场熔断和账户自设熔断是四套不同机制；重开可能进入拍卖。','NYSE Trading Information / Auctions','https://www.nyse.com/trade/auctions'],
-  14:['T+1、已结算资金与保证金版本','多数美股现为 T+1；现金账户要区分 settled cash。盘中保证金规则及券商过渡状态具有时效性，必须记录规则版本和 house requirement。','FINRA Frequent Intraday Trading','https://www.finra.org/investors/insights/frequent-intraday-trading'],
-  15:['卖空不是点一下 SELL','建立空仓前通常需要 locate。较前收跌 10% 触发 SSR 后，价格测试适用于当天剩余时间及下一交易日。可借状态、成本与券商限制都依赖时点。','SEC Regulation SHO','https://www.sec.gov/investor/pubs/regsho.htm'],
-  19:['official close、盘后价与重开价','16:00 ET official close、盘后最后成交和次日开盘不是同一个价格。财报仓位要按不可连续成交的尾部缺口反推。','FINRA Extended-Hours Trading','https://www.finra.org/investors/insights/extended-hours-trading'],
-  24:['定义风险仍有到期操作风险','美股/ETF 期权通常可提前行权；短腿可能提前指派。到期自动行权、反向指令、盘后波动和券商截止时间会改变次日股票与现金状态。','OIC Option Life Cycle','https://www.optionseducation.org/news/understanding-the-life-cycle-of-an-option-trade'],
-  27:['公司行动必须穿透整本账','拆股、分红、并购会同时影响原始/复权价格、持仓、未成交订单和期权交割物；期权调整以 OCC memo 为准。','FINRA Corporate Actions','https://www.finra.org/investors/insights/corporate-actions-public-companies-what-you-should-know']
+  14:['T+1、已结算资金与保证金版本','多数美股现为 T+1；现金账户要区分 已结算现金。盘中保证金规则及券商过渡状态具有时效性，必须记录规则版本和 券商要求的维持保证金比例。','FINRA Frequent Intraday Trading','https://www.finra.org/investors/insights/frequent-intraday-trading'],
+  15:['卖空不是点一下 SELL','卖空前通常要先确认能借到股票（locate）。较前收跌 10% 触发 SSR 后，价格测试适用于当天剩余时间及下一交易日。可借状态、成本与券商限制都依赖时点。','SEC Regulation SHO','https://www.sec.gov/investor/pubs/regsho.htm'],
+  19:['官方收盘价、盘后价与重开价','16:00 ET 官方收盘价、盘后最后成交和次日开盘不是同一个价格。财报仓位要按可能跳空、无法按原价成交的坏情况倒算。','FINRA Extended-Hours Trading','https://www.finra.org/investors/insights/extended-hours-trading'],
+  24:['预计亏损有上限，到期操作仍要检查','美股/ETF 期权通常可提前行权；卖出的那份期权可能提前被要求交割。到期自动行权、反向指令、盘后波动和券商截止时间会改变次日股票与现金状态。','OIC Option Life Cycle','https://www.optionseducation.org/news/understanding-the-life-cycle-of-an-option-trade'],
+  27:['拆股、分红、并购时要检查所有相关账目','拆股、分红、并购会同时影响原始/复权价格、持仓、未成交订单和期权交割物；期权调整以 OCC 官方合约调整通知 为准。','FINRA Corporate Actions','https://www.finra.org/investors/insights/corporate-actions-public-companies-what-you-should-know']
 };
 
 function refreshPracticalPreview() {
@@ -142,20 +142,20 @@ function storePracticalState(index) {
   const inputs = {};
   lessonStage.querySelectorAll('.decision-surface input,.decision-surface select,.decision-surface textarea').forEach(el => { if (el.id) inputs[el.id] = el.value; });
   const outcomes = {
-    1:'风险预算 $800，190 股，名义仓位 $19,000。',
-    10:'常规时段 DAY 限价单成交 700 股，剩余 300 股收盘失效；完整 implementation shortfall 为 $237。',
-    11:'新闻停牌单进入 PENDING_REOPEN；LULD、MWCB Level 1/3 已按不同状态处理。计划损失 $1,000，重开情景损失 $3,600。',
-    12:'科技风险簇净压力损失 $4,800，含 Put 对冲 +$1,600。',
-    14:'扣除 30 天利息后权益 $19,506.85、保证金率 27.87%，低于 30% house requirement；现金账户只有 $5,000 settled cash 可用。',
-    15:'locate 只覆盖 150 股；SSR 状态下按价格测试处理。无 locate 拒绝，可借状态撤回时进入 REVIEW。',
-    16:'事件日固定首次值 surprise +0.2，修订后为 +0.1。',
-    19:'尾部每股风险 $20.50，最多 48 股，压力损失 $984。',
-    20:'计划 20 张；候选 A 中间价 $3.025、点差率 4.96%，报价尺寸与成交量更匹配，但不保证全按 Ask 成交。',
+    1:'风险预算 $800，190 股，持仓金额（股数 × 股价） $19,000。',
+    10:'常规时段 DAY 限价单成交 700 股，剩余 300 股收盘失效；总执行成本（implementation shortfall） 为 $237。',
+    11:'新闻停牌单进入等待恢复交易状态（PENDING_REOPEN）；个股价格限制（LULD）和全市场熔断（MWCB）1/3 级已分别处理。计划损失 $1,000，重开情景损失 $3,600。',
+    12:'科技一组相关持仓一起下跌会亏多少损失 $4,800，含 Put 对冲 +$1,600。',
+    14:'扣除 30 天利息后权益 $19,506.85、保证金率 27.87%，低于 30% 券商要求的维持保证金比例；现金账户只有 $5,000 已结算现金 可用。',
+    15:'确认可借股票只覆盖 150 股；SSR 状态下按价格测试处理。没确认可借股票就拒绝，可借状态撤回时进入待核对状态（REVIEW）。',
+    16:'事件日按首次公布值计算，与预期差 +0.2，修订后为 +0.1。',
+    19:'极端下跌情景下每股风险 $20.50，最多 48 股，压力损失 $984。',
+    20:'计划 20 张；候选 A 中间价 $3.025、点差率 4.96%，报价上可买卖的数量与成交量更匹配，但不保证全按 Ask 成交。',
     22:'多头 Call 的 Greeks 联合近似 +$0.40/股，标准合约约 +$40；大幅变动需重算。',
     23:'同样 IV Crush，小涨的二阶近似 -$20，大涨的教学近似 +$400；后者不是精确定价。',
-    24:'价差最大亏损 $300、最大盈利 $700、平衡价 $108；短腿指派后暂为 -100 股。',
-    26:'报价年龄 15 秒，低于本课 30 秒阈值；仅允许继续 Paper。',
-    27:'2:1 拆股后 200 股、均价 $40、限价 $50；标准期权变为 2 张、执行价 $50、每张仍交割 100 股。缺并购条款或 OCC memo 时拒绝。'
+    24:'两份合约按计划一起持有至到期时，价差最大亏损 $300、最大盈利 $700、平衡价 $108；短腿指派后暂为 -100 股。',
+    26:'报价距现在 15 秒，低于本课 30 秒门槛；仅允许继续模拟练习。',
+    27:'2:1 拆股后 200 股、均价 $40、限价 $50；标准期权变为 2 张、执行价 $50、每张仍交割 100 股。缺并购条款或 OCC 官方合约调整通知 时拒绝。'
   };
   const source = MARKET_REALITY[index];
   const migrated = migrateTeachingLedger(sim.practicalLedger, sim.marketChecks);
@@ -177,7 +177,7 @@ v2Journal = function() {
   const passed = Object.values(sim.marketChecks || {}).filter(row => row.status === 'passed').length;
   const badge = document.createElement('div');
   badge.className = 'reality-proof';
-  badge.innerHTML = `<span>实战计算回执</span><b>${passed}/14</b><small>保存输入、结果与规则版本</small>`;
+  badge.innerHTML = `<span>已保存的计算记录</span><b>${passed}/14</b><small>保存输入、结果与规则版本</small>`;
   tradeJournal.querySelector('#openTools')?.before(badge);
 };
 
@@ -189,7 +189,7 @@ v2Complete = function(ok, button) {
     return;
   }
   practicalCompleteBase(ok, button);
-  if (stored?.outcome) lessonFeedback.textContent = `计算与状态迁移都正确。${stored.outcome}`;
+  if (stored?.outcome) lessonFeedback.textContent = `计算正确，订单和账户的处理也符合本题规则。${stored.outcome}`;
 };
 
 const practicalRenderBase = v2Render;

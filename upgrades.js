@@ -6,7 +6,7 @@ const remember = key => {
 
 const riskForm = document.querySelector('.risk-form');
 const riskBufferLabel = document.createElement('label');
-riskBufferLabel.innerHTML = '每股滑点 / 跳空缓冲（美元/股）<input id="riskBuffer" type="number" min="0" value="2">';
+riskBufferLabel.innerHTML = '每股为成交价偏差或跳空预留的钱（美元/股）<input id="riskBuffer" type="number" min="0" value="2">';
 riskForm.append(riskBufferLabel);
 const riskWarning = document.createElement('p');
 riskWarning.id = 'riskWarning';
@@ -21,9 +21,9 @@ function verifiedRisk(recordEvidence = false) {
   const buffer = +document.querySelector('#riskBuffer').value;
   const problems = [];
   if (!(eq > 0)) problems.push('账户净值必须大于 0');
-  if (!(pct > 0 && pct <= 2)) problems.push('单笔风险应在 0% 到 2% 之间');
+  if (!(pct > 0 && pct <= 2)) problems.push('单笔计划风险必须大于 0%、不超过 2%');
   if (!(enter > 0 && exit > 0)) problems.push('价格必须大于 0');
-  if (exit >= enter) problems.push('这是多头计算器，止损必须低于入场价');
+  if (exit >= enter) problems.push('这里计算的是先买入、后卖出的持仓，止损必须低于入场价');
   if (buffer < 0) problems.push('滑点缓冲不能为负数');
   if (problems.length) {
     lossBudget.textContent = shares.textContent = notional.textContent = '--';
@@ -68,7 +68,7 @@ function optionEstimate(recordEvidence = false) {
   const k1 = +strike.value, k2 = +shortStrike.value, debit = +premium.value, spot = +spotPrice.value, days = +daysToExpiry.value, iv = +impliedVol.value;
   shortStrikeLabel.hidden = strategy.value !== 'spread';
   if (![k1, debit, spot, days, iv].every(value => Number.isFinite(value) && value > 0)) {
-    optionCoach.textContent = '不能计算：现价、行权价、净支出、到期天数和隐含波动率都必须是有限正数。';
+    optionCoach.textContent = '不能计算：现价、行权价、净支出、到期天数和隐含波动率都必须是大于 0 的有效数字。';
     return;
   }
   if (strategy.value === 'spread' && (!Number.isFinite(k2) || k2 <= k1 || debit >= k2 - k1)) {
@@ -76,7 +76,7 @@ function optionEstimate(recordEvidence = false) {
     return;
   }
   const expectedMove = spot * iv / 100 * Math.sqrt(days / 365);
-  optionCoach.textContent = `一倍标准差的教学估算约 ±$${expectedMove.toFixed(2)}。它不是目标价；价差还要现场检查两条腿的流动性、分腿成交风险、短腿提前指派与到期处理。`;
+  optionCoach.textContent = `用当前波动率粗算的波动幅度（一倍标准差）约 ±$${expectedMove.toFixed(2)}。它不是目标价；价差还要现场检查两份合约是否好买卖、是否只成交其中一份、卖出的合约是否提前被要求交割，以及到期如何处理。`;
   if (recordEvidence === true) remember('options-parameters');
 }
 [strategy, strike, shortStrike, premium, spotPrice, daysToExpiry, impliedVol].forEach(el => el.addEventListener('input', () => optionEstimate(true)));
@@ -89,7 +89,7 @@ drawPayoff = function (recordEvidence = false) {
   const isSpread = strategy.value === 'spread', width = sell - buy;
   pen.clearRect(0, 0, chart.width, chart.height);
   pen.strokeStyle = '#d9d4c8'; pen.beginPath(); pen.moveTo(40, chart.height / 2); pen.lineTo(chart.width - 20, chart.height / 2); pen.stroke();
-  if (![buy, debit, spot, days, iv].every(value => Number.isFinite(value) && value > 0)) { payoffSummary.textContent = '参数无效：所有价格、净支出、到期天数和隐含波动率都必须是有限正数。'; return; }
+  if (![buy, debit, spot, days, iv].every(value => Number.isFinite(value) && value > 0)) { payoffSummary.textContent = '参数无效：所有价格、净支出、到期天数和隐含波动率都必须是大于 0 的有效数字。'; return; }
   if (isSpread && (!Number.isFinite(sell) || width <= 0 || debit >= width)) { payoffSummary.textContent = '参数无效：卖出行权价必须更高，且净支出必须低于价差宽度。'; return; }
   pen.beginPath();
   for (let spot = 70; spot <= 140; spot++) {
@@ -98,24 +98,24 @@ drawPayoff = function (recordEvidence = false) {
     spot === 70 ? pen.moveTo(px, py) : pen.lineTo(px, py);
   }
   pen.strokeStyle = '#3b8b61'; pen.lineWidth = 3; pen.stroke();
-  payoffSummary.textContent = isSpread ? '价差有效。最大亏损 $' + (debit * 100) + '；最大盈利 $' + ((width - debit) * 100) + '。另需检查两条腿流动性、分腿成交风险、短腿提前指派与到期处理。' : '最大亏损 $' + (debit * 100) + '；盈亏平衡价 $' + (buy + debit) + '。到期前价格还受 Delta、Gamma、Theta 与 Vega 影响。';
+  payoffSummary.textContent = isSpread ? '价差有效。最大亏损 $' + (debit * 100) + '；最大盈利 $' + ((width - debit) * 100) + '。另需检查两份合约是否好买卖、是否只成交其中一份、卖出的合约是否提前被要求交割，以及到期如何处理。' : '最大亏损 $' + (debit * 100) + '；盈亏平衡价 $' + (buy + debit) + '。到期前价格还受股价、股价敏感度变化、时间和波动率影响（对应 Delta、Gamma、Theta、Vega）。';
   if (recordEvidence === true) remember('option-payoff');
 };
 [strategy, strike, shortStrike, premium, spotPrice, daysToExpiry, impliedVol].forEach(el => el.addEventListener('input', () => drawPayoff(true)));
 drawPayoff();
 
 const macroPanel = document.querySelector('[data-panel="macro"]');
-macroPanel.querySelector('p').insertAdjacentHTML('afterend', '<div class="lab-inputs"><label>公布值<input id="macroActual" type="number" step="0.1" value="3.2"></label><label>市场预期<input id="macroConsensus" type="number" step="0.1" value="3.0"></label><label>前值<input id="macroPrior" type="number" step="0.1" value="3.1"></label><label>10Y 变化（bp）<input id="tenYearMove" type="number" value="8"></label><label>美元指数变化（%）<input id="dollarMove" type="number" step="0.1" value="0.4"></label></div>');
+macroPanel.querySelector('p').insertAdjacentHTML('afterend', '<div class="lab-inputs"><label>公布值<input id="macroActual" type="number" step="0.1" value="3.2"></label><label>市场预期<input id="macroConsensus" type="number" step="0.1" value="3.0"></label><label>前值<input id="macroPrior" type="number" step="0.1" value="3.1"></label><label>10 年期国债收益率变化（bp）<input id="tenYearMove" type="number" value="8"></label><label>美元指数变化（%）<input id="dollarMove" type="number" step="0.1" value="0.4"></label></div>');
 const originalMacro = runMacro.onclick;
 runMacro.onclick = () => {
   const fields = [macroActual, macroConsensus, macroPrior, tenYearMove, dollarMove];
   if (fields.some(field => field.value.trim() === '') || fields.some(field => !Number.isFinite(+field.value))) {
-    macroOutput.textContent = '请先填完公布值、市场预期、前值、10Y 变化和美元指数变化。';
+    macroOutput.textContent = '请先填完公布值、市场预期、前值、10 年期国债收益率变化和美元指数变化。';
     return false;
   }
   originalMacro();
   const surprise = +macroActual.value - +macroConsensus.value;
-  macroOutput.textContent += ` 数据惊喜值 ${surprise >= 0 ? '+' : ''}${surprise.toFixed(1)}；10Y ${+tenYearMove.value >= 0 ? '+' : ''}${tenYearMove.value}bp；美元 ${+dollarMove.value >= 0 ? '+' : ''}${dollarMove.value}%。先观察资产是否按同一叙事定价，再决定风险。`;
+  macroOutput.textContent += ` 公布值减市场预期 ${surprise >= 0 ? '+' : ''}${surprise.toFixed(1)}；10Y ${+tenYearMove.value >= 0 ? '+' : ''}${tenYearMove.value}bp；美元 ${+dollarMove.value >= 0 ? '+' : ''}${dollarMove.value}%。先看债券、股票和美元的反应是否一致，再决定是否增加风险。`;
   remember('macro-scenario');
   return true;
 };
@@ -159,15 +159,15 @@ runAgents.onclick = () => {
       : /^https:\/\/(www\.)?(sec\.gov|federalreserve\.gov|bls\.gov|home\.treasury\.gov)\//i.test(source);
   if (!sourceMatchesType) reasons.push(`${evidenceType === 'quote' ? '行情' : evidenceType === 'news' ? '新闻' : '文件'}来源与证据类型不匹配`);
   if (age < 0) reasons.push('证据时间不能在未来');
-  if (evidenceType === 'quote' && age > 30 / 3600) reasons.push('行情已超过本课 30 秒阈值');
-  if (evidenceType === 'news' && age > 1) reasons.push('新闻已超过本课 60 分钟阈值');
+  if (evidenceType === 'quote' && age > 30 / 3600) reasons.push('行情已超过本课 30 秒时限');
+  if (evidenceType === 'news' && age > 1) reasons.push('新闻已超过本课 60 分钟时限');
   if (evidenceType === 'filing' && agentReportPeriod.value.trim().length < 4) reasons.push('官方文件必须记录报告期');
   if (agentArtifactVersion.value.trim().length < 3) reasons.push('缺少文件或模型版本');
   if (!/^https:\/\/(www\.)?(sec\.gov|federalreserve\.gov|bls\.gov|home\.treasury\.gov)\//i.test(source)) reasons.push('缺少允许的一手官方 HTTPS 证据链接');
-  if (bullCase.value.trim().length < 20) reasons.push('看多证据不足');
-  if (bearCase.value.trim().length < 20) reasons.push('缺少反证');
+  if (bullCase.value.trim().length < 20) reasons.push('请用至少 20 个字写清支持上涨的证据');
+  if (bearCase.value.trim().length < 20) reasons.push('请用至少 20 个字写清可能推翻判断的证据');
   if (!(Number.isFinite(loss) && loss > 0 && loss <= currentEquity * 0.02)) reasons.push('最大损失必须大于 0 且不超过净值 2%');
-  if (invalidCase.value.trim().length < 15) reasons.push('失效条件不足');
+  if (invalidCase.value.trim().length < 15) reasons.push('请用至少 15 个字写清出现什么情况就放弃原判断');
   if (reasons.length) {
     agentVerdict.textContent = `风险官拒绝：${reasons.join('；')}。`;
     return;
@@ -177,7 +177,7 @@ runAgents.onclick = () => {
   const receipt = {id: `paper-${Date.now().toString(36)}`, time: new Date().toLocaleString(), loss, source, sourceAsOf:agentTime.value, evidenceType, reportPeriod:snapshot.reportPeriod, artifactVersion:snapshot.artifactVersion, inputSnapshot:snapshot, modelConfig:'TRADINGAGENTS_TEACHING_GATE_V2'};
   rows.push(receipt);
   localStorage.setItem('manga-us-paper-receipts', JSON.stringify(rows.slice(-20)));
-  agentVerdict.textContent = `风险官允许进入 Paper：${receipt.id}。不允许自动实盘。`;
+  agentVerdict.textContent = `风险检查通过，可继续模拟交易：${receipt.id}。这不会提交真实订单。`;
   remember('agent-risk-gate');
   renderReceipts();
 };
@@ -212,7 +212,7 @@ openChapter = function (i) {
   chapterContent.innerHTML = `
     <p class="kicker">第 ${i + 1} 章 · ${chapterGroup(i)}</p><h2>${c.t}</h2>
     <div class="chapter-dialogue"><img src="assets/chat-avatars/${avatar}" alt="${speaker}"><div><b>${speaker} · 今日局面</b><p>${d.scene}</p></div></div>
-    <section class="chapter-depth-block"><h3>先抓住这一件事</h3><p>${c.m}</p><div class="number-case"><b>数字落地</b><p>${d.example}</p></div></section>
+    <section class="chapter-depth-block"><h3>先抓住这一件事</h3><p>${c.m}</p><div class="number-case"><b>用数字算一遍</b><p>${d.example}</p></div></section>
     <section class="chapter-depth-grid"><article><h3>三步决策</h3><ol>${d.steps.map(item => `<li>${item}</li>`).join('')}</ol></article><article class="danger-panel"><h3>最容易踩的坑</h3><ul>${d.traps.map(item => `<li>${item}</li>`).join('')}</ul></article></section>
     <section class="chapter-check"><h3>上场前检查</h3>${d.check.map(item => `<label><input type="checkbox"><span>${item}</span></label>`).join('')}</section>
     <section class="chapter-task"><h3>实战任务</h3><p>${c.task}</p><textarea class="chapter-note" placeholder="写下你的判断、数字和失效条件。内容只保存在当前浏览器。"></textarea></section>
@@ -232,7 +232,7 @@ openChapter = function (i) {
     if (+selected.value === c.a) {
       courseDone.add(i);
       localStorage.setItem('manga-us-chapters', JSON.stringify([...courseDone]));
-      feedback.textContent = '通过：判断、检查表和实战记录已组成学习证据。';
+      feedback.textContent = '通过：判断、检查表和实战记录已组成学习记录。';
       renderChapters(); updateProgress();
     } else feedback.textContent = `未通过：${c.m}`;
   };

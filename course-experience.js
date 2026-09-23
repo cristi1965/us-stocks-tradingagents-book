@@ -257,7 +257,7 @@
   const TRADINGAGENTS_SCENARIOS = {
     nvda_earnings: {
       id: 'nvda_earnings',
-      name: 'NVDA 财报前夕 (高 IV 悬崖 · 115% 波动率坍塌)',
+      name: 'NVDA 财报前：IV 为 115% 的示例',
       ticker: 'NVDA',
       spot: '$120.00',
       ivRank: 'IV 处于 98% 历史分位 (115%)',
@@ -267,14 +267,14 @@
       options: [
         {
           id: 'naked_call',
-          badge: '🚨 散户感性心魔',
+          badge: '🚨 未经充分检查的做法',
           name: '单腿裸买 125 Call 赌业绩翻倍',
           desc: '权利金支出 $5,000 (占净值 5.0%) · 无反证 · 财报后面临 IV Crush 毁灭性贬值',
           type: 'bad'
         },
         {
           id: 'spread_hedge',
-          badge: '🛡️ 量化纪律对冲',
+          badge: '🛡️ 先检查风险的做法',
           name: '115/125 垂直借记价差 (Debit Spread)',
           desc: '买入 115 Call 同时卖出 125 Call 对冲 IV · 锁死最大亏损 $300 (0.3% 净值) · 反证完备',
           type: 'good'
@@ -286,7 +286,7 @@
           { role: 'TechAnalyst', badge: '阿良·技术面', text: '日线多头排列，量比 RVOL 达 1.8，突破迹象明显，社区看多情绪极端过热。', cls: 'purple' },
           { role: 'FundAnalyst', badge: '陈平安·基本面', text: '财报预期极度苛刻，买方市场已计入超高预期，缺少下行反证与估值缓冲。', cls: 'yellow' },
           { role: 'TraderAgent', badge: '周米粒·交易员', text: '申报候选订单：单腿裸买 125 Call 10 张，权利金支出 $5,000。', cls: 'white' },
-          { role: 'RiskManager', badge: '宁姚·风险官', text: '🚨 FAIL-CLOSED 严厉关闸！违反第 24 章：高 IV 裸买期权在事件后将遭遇 IV Crush 90% 贬值；且单笔风险 $5,000 严重超出 1% 净值安全红线！', cls: 'red' }
+          { role: 'RiskManager', badge: '宁姚·风险官', text: '🚨 FAIL-CLOSED 严厉关闸！违反第 24 章：高 IV 期权可能在消息公布后跌价；本例没有证据支持 90% 的确定跌幅；且单笔风险 $5,000 严重超出 1% 净值安全红线！', cls: 'red' }
         ],
         good: [
           { role: 'DataAgent', badge: '数据员', text: '抓取 NVDA 盘口价格 $120.00，数据源 SEC EDGAR / SIP 实时通道，TTL 合格。', cls: 'cyan' },
@@ -299,17 +299,17 @@
       verdicts: {
         bad: {
           status: 'rejected',
-          title: '宁姚 · 风险官关闸令 (FAIL-CLOSED VETO)',
+          title: '宁姚：这个方案暂不通过',
           rule: '【触犯法则】第 24 章 (波动率坍塌) & 第 1 章 (单笔 1% 预算)',
-          detail: '高 IV 裸买期权胜率极低，单笔最大潜在亏损 $5,000 超过总资本 1% 安全上限。',
+          detail: '本例单独买入看涨期权，最多可能损失 $5,000，超过本情景的 1% 本金上限；不能仅凭 IV 推断胜率。',
           action: '强制关闸 · 允许下单 = 0 · 保全真实本金 $100,000'
         },
         good: {
           status: 'accepted',
-          title: '量化风控终审放行令 (COMPLIANCE APPROVED)',
+          title: '示例方案通过检查',
           rule: '【符合法则】第 24 章 (垂直价差防线) & 第 27 章 (反证完备)',
-          detail: '通过卖出高行权价期权抹平 IV 风险，最大已知损失固定为 $300.00 (0.30% ≤ 1.00%)。',
-          action: '准予放行 · 生成加密 Paper 审计凭单 · 写入不可篡改账本'
+          detail: '本例同时买卖两张期权，净支出 $300.00 (0.30% ≤ 1.00%)。价差可减小部分波动率影响，但不能消除全部风险。',
+          action: '示例方案通过 · 保存本地模拟记录'
         }
       },
       pyCode: `# TradingAgents 工业级自动化风控流：NVDA 财报高 IV 守护门禁
@@ -349,7 +349,7 @@ class NVDAEarningsRiskPipeline:
     },
     tsla_extended: {
       id: 'tsla_extended',
-      name: 'TSLA 盘后异动 (流动性真空 · 宽点差陷阱)',
+      name: 'TSLA 盘后：买价和卖价相差很大',
       ticker: 'TSLA',
       spot: '$215.00',
       ivRank: '买卖点差 $6.00 (2.75%)',
@@ -359,14 +359,14 @@ class NVDAEarningsRiskPipeline:
       options: [
         {
           id: 'market_order',
-          badge: '🚨 散户感性心魔',
+          badge: '🚨 未经充分检查的做法',
           name: '突发拉升 3% 立即打市价单 500 股追涨',
           desc: '盘后做市商抽离流动性 · 市价单将被打穿至卖二卖三 · 预计滑点损失 $3,000+',
           type: 'bad'
         },
         {
           id: 'limit_order',
-          badge: '🛡️ 量化纪律对冲',
+          badge: '🛡️ 先检查风险的做法',
           name: '收缩至 100 股，挂限价买单 $215.50 被动排队',
           desc: '规模收缩 80% · 锁定被动限价单 · 避免打穿盘口 · 耐心等待真实对手盘',
           type: 'good'
@@ -389,14 +389,14 @@ class NVDAEarningsRiskPipeline:
       verdicts: {
         bad: {
           status: 'rejected',
-          title: '宁姚 · 风险官关闸令 (FAIL-CLOSED VETO)',
+          title: '宁姚：这个方案暂不通过',
           rule: '【触犯法则】第 10 章 (延长时段与执行成本)',
           detail: '盘后流动性枯竭时打市价单，等同于向做市商赠送无风险滑点利润！',
           action: '强制关闸 · 撤销市价买单 · 保全本金'
         },
         good: {
           status: 'accepted',
-          title: '量化风控终审放行令 (COMPLIANCE APPROVED)',
+          title: '示例方案通过检查',
           rule: '【符合法则】第 10 章 (被动限价与订单路由)',
           detail: '严格执行被动限价与微型测试仓位，消除滑点黑洞风险。',
           action: '准予放行 · 生成限价申报小票 · 等待撮合'
@@ -438,7 +438,7 @@ class TSLAExtendedHoursPipeline:
     },
     semis_cluster: {
       id: 'semis_cluster',
-      name: '半导体高贝塔组合 (跨标的多因子净压力共振)',
+      name: '半导体组合：几只股票可能一起亏',
       ticker: 'SOXX/NVDA/AMD',
       spot: '$224.50',
       ivRank: 'Beta 2.2 · 加息敏感簇',
@@ -448,14 +448,14 @@ class TSLAExtendedHoursPipeline:
       options: [
         {
           id: 'naked_longs',
-          badge: '🚨 散户感性心魔',
+          badge: '🚨 未经充分检查的做法',
           name: '同时加仓 NVDA + AMD + TSM 三大多头',
           desc: '以为分散到三只标的，实际同一行业因子净暴露 $45,000 · 利率上冲时三只同时暴跌',
           type: 'bad'
         },
         {
           id: 'cluster_hedged',
-          badge: '🛡️ 量化纪律对冲',
+          badge: '🛡️ 先检查风险的做法',
           name: '配置 SOXS 反向对冲，净 Delta 压降至安全阈值',
           desc: '计算净行业因子敞口 · 匹配反向对冲头寸 · 保证在利率上冲压力测试下净损失 ≤ 2%',
           type: 'good'
@@ -479,14 +479,14 @@ class TSLAExtendedHoursPipeline:
       verdicts: {
         bad: {
           status: 'rejected',
-          title: '宁姚 · 风险官关闸令 (FAIL-CLOSED VETO)',
+          title: '宁姚：这个方案暂不通过',
           rule: '【触犯法则】第 12 章 (多因子净风险簇共振)',
-          detail: '同因子假分散陷阱：三只标的同跌共振，极端宏观事件下将遭受毁灭性穿仓！',
+          detail: '三只股票可能受同一行业消息影响而一起跌，合计损失超过本例预算。',
           action: '强制关闸 · 拦截订单 · 要求重新计算组合协方差'
         },
         good: {
           status: 'accepted',
-          title: '量化风控终审放行令 (COMPLIANCE APPROVED)',
+          title: '示例方案通过检查',
           rule: '【符合法则】第 12 章 (行业簇净敞口管理)',
           detail: '有效运用反向对冲抵消系统性因子冲击，压力测试损失符合风控红线。',
           action: '准予放行 · 生成组合平衡审计凭证'
@@ -518,7 +518,7 @@ class SemiClusterRiskPipeline:
     },
     fomc_macro: {
       id: 'fomc_macro',
-      name: 'FOMC 利率决议 (数据发布窗口 · 滑点与假突破)',
+      name: '美联储公布利率决定：先观察还是立刻下单',
       ticker: 'SPY/QQQ',
       spot: '$550.00',
       ivRank: '距决议发布 5 分钟',
@@ -528,14 +528,14 @@ class SemiClusterRiskPipeline:
       options: [
         {
           id: 'gamble_release',
-          badge: '🚨 散户感性心魔',
+          badge: '🚨 未经充分检查的做法',
           name: '决议公布前 2 分钟挂双向突破单赌暴涨暴跌',
           desc: '数据公布瞬间流动性瞬间归零 · 买卖点差扩大 10 倍 · 触发上下双向假突破扫损',
           type: 'bad'
         },
         {
           id: 'blackout_window',
-          badge: '🛡️ 量化纪律对冲',
+          badge: '🛡️ 先检查风险的做法',
           name: '启动决议静默期 (Blackout Window)，全部撤单离场观望',
           desc: '公布前 15 分钟至公布后 30 分钟严禁开立新仓 · 等待市场充分吸收并确立趋势后再研判',
           type: 'good'
@@ -546,7 +546,7 @@ class SemiClusterRiskPipeline:
           { role: 'DataAgent', badge: '数据员', text: '读取日历：距离美联储利率决议公布仅剩 120 秒，盘口订单深度骤降 80%。', cls: 'cyan' },
           { role: 'TechAnalyst', badge: '阿良·技术面', text: '分时波动收敛至三角形末端，即将爆发方向性大行情。', cls: 'purple' },
           { role: 'TraderAgent', badge: '周米粒·交易员', text: '申报双向突破挂单：上方挂突破买单，下方挂破位卖单。', cls: 'white' },
-          { role: 'RiskManager', badge: '宁姚·风险官', text: '🚨 FAIL-CLOSED 严厉关闸！违反第 16/27 章：宏观窗口做市商撤单避险，流动性真空将导致双向极端滑点，两边扫损爆仓概率 95%，绝不放行！', cls: 'red' }
+          { role: 'RiskManager', badge: '宁姚·风险官', text: '🚨 FAIL-CLOSED 严厉关闸！违反第 16/27 章：宏观窗口做市商撤单避险，流动性真空将导致双向极端滑点，价格可能上下反复触发止损；本例没有证据支持 95% 的爆仓概率，绝不放行！', cls: 'red' }
         ],
         good: [
           { role: 'DataAgent', badge: '数据员', text: '监测到当前处于高危宏观事件前夕窗口 (Blackout Window)。', cls: 'cyan' },
@@ -558,14 +558,14 @@ class SemiClusterRiskPipeline:
       verdicts: {
         bad: {
           status: 'rejected',
-          title: '宁姚 · 风险官关闸令 (FAIL-CLOSED VETO)',
+          title: '宁姚：这个方案暂不通过',
           rule: '【触犯法则】第 16/27 章 (宏观静默与流动性真空)',
-          detail: '宏观决议公布瞬间做市商撤单，任何限价单都可能遭遇恶性滑点，属于散户典型赌博。',
+          detail: '宏观决议公布瞬间做市商撤单，限价单可能无法成交；转成市价的止损单则可能以较差价格成交，要区分订单类型。',
           action: '强制关闸 · 自动撤单 · 启动 30 分钟静默冷却'
         },
         good: {
           status: 'accepted',
-          title: '量化风控终审放行令 (COMPLIANCE APPROVED)',
+          title: '示例方案通过检查',
           rule: '【符合法则】第 16 章 (事件静默与反证)',
           detail: '严格遵守宏观决议静默防线，抵御不可预知剧烈随机波动。',
           action: '准予放行 · 记录防御性避险审计'
@@ -596,256 +596,256 @@ class FOMCMacroRiskPipeline:
   // 1.0 Comprehensive Data-Logic-Discipline Paradigm Mapping (28 Chapters)
   const PARADIGM_TRINITY = {
   0: {
-    title: '单笔最大损失',
+    title: '先算买多少',
     isCritical: true,
     data: '标的 TSLA 现价 $215，止损 $211（每股风险 $4.20 含摩擦），账户 $100k 预算 $800 (0.8%)，严格反推限买 190 股。',
-    logic: '仓位是控制犯错代价的阀门。无论对 TSLA 多看好，必须由最大承受亏损反推，绝不先买满再找止损。',
-    discipline: 'TSLA 单笔真实损失绝对严禁超过净值 1%（$1,000）；哪怕账户有充裕购买力，也绝不多买 1 股。',
+    logic: '每股可能亏多少，乘以股数，就是这笔计划可能亏的钱。先定能承受的损失，再算能买多少。',
+    discipline: '本例另设 1%（$1,000）的上限。不要把可用资金多，理解成可以多冒险；跳空仍可能让实际亏损超过计划。',
     trap: '凭感觉大注买 TSLA，赚 $200 慌忙落袋，亏 $2,000 舍不得割肉甚至加仓摊平，单笔黑天鹅直接爆仓。',
-    cure: '坚持“先定承受损失、再算每股风险、最后反推股数”三步铁律。'
+    cure: '先定亏损预算，再算每股风险，最后把股数向下取整。'
   },
   1: {
-    title: '结算资金约束',
+    title: '确认钱能不能用',
     isCritical: false,
     data: '买入算力云 CRWV 现价 $80；美股 T+1 结算周期；现金账户可用 Settled Cash 决定实际买力。',
-    logic: '现金账户必须用已结算资金付款。用未结算卖出款买入 CRWV 并当日卖出会构成 Good Faith Violation。',
-    discipline: '下单 CRWV 前必须核对已结算资金（settled cash），未结算资金严禁做日内回转交易。',
+    logic: '卖出股票后，钱通常要等结算完成。现金账户若用这笔未结算的钱买入，又在原款到账前卖出，可能构成善意违规（GFV）。',
+    discipline: '下单前查看券商显示的已结算现金（settled cash），不要只看账户总余额。',
     trap: '以为账户浮动数字是立即可用的自有现金，频繁买卖 CRWV 导致违规被券商冻结 90 天。',
-    cure: '建立 T+1 结算日历核算门禁，未结算资金在成交前一律 Fail-Closed 拦截。'
+    cure: '查清结算日期和可用现金；不能确认，就先不买。'
   },
   2: {
-    title: '隔夜跳空真相',
+    title: '止损不保证卖价',
     isCritical: true,
     data: '持有 CRWV 现价 $80 设 $76 止损；财报夜遭遇突发算力指引下调，次日直接以 $65 跳空开盘（-18.7%）。',
-    logic: '止损单是触发单，不是保价单！CRWV 开盘直接跳过 $76 止损价，第一笔只能在盘口 $65 恶性撮合。',
-    discipline: 'CRWV 财报日前夕必须大幅降仓，将极端跳空缺口直接计入每股最大损失预算，绝不侥幸赌财报。',
+    logic: '止损价只是触发卖单的条件。若价格直接从 $80 跳到 $65，就可能无法在 $76 卖出。',
+    discipline: '财报前先算价格突然下跳时会亏多少，再决定是否减少持股。',
     trap: '迷信 Stop Loss 能保命，财报夜满仓赌 CRWV 暴利，第二天开盘遭遇断崖跳空，穿透止损直接深套。',
-    cure: '由最坏情况的跳空幅度（如 -20%）反推过夜仓位，超限部分在收盘前无条件平仓。'
+    cure: '本例用 -20% 的跳空来检查仓位；这是练习假设，不是最大跌幅保证。'
   },
   3: {
-    title: '连续亏损熔断',
+    title: '连亏后先停手',
     isCritical: true,
     data: '操作 3 倍杠杆半导体 SOXL；日内连续两笔各止损 $800，触及单日最大亏损线 -1.6%（$1,600）。',
-    logic: 'SOXL 连续亏损后大脑皮质醇激增，极易进入赌徒心理，引发报复性加倍加仓（Revenge Trading）。',
-    discipline: '交易 SOXL 触及单日亏损线或 2 连亏，第一动作是立刻合上电脑离开屏幕！当日绝对禁止开新仓。',
+    logic: '连续亏损后，人容易急着赚回来，反而买得更多、借得更多，让下一次损失更大。',
+    discipline: '本例到单日亏损上限或连续亏 2 笔就停止新交易，先核对订单和剩余持仓。',
     trap: '亏损后急红了眼，想用 SOXL 3 倍杠杆“一把翻本”，结果在心态彻底失衡下一天亏光数月本金。',
-    cure: '建立机械化熔断协议：触线即停手，转入 Paper 账本复盘，直到理性完全接管情绪。'
+    cure: '提前写好停手条件。触发后暂停新单，记录错误原因，再安排复盘。'
   },
   4: {
-    title: '一根 K 线与价格',
+    title: 'K 线记录了什么',
     isCritical: false,
     data: 'TSLA 日 K 线：开 $210、高 $225、低 $205、收 $220；长上影线记录冲高 $225 遇阻，实体记录收盘。',
-    logic: '价格是多空订单撮合的历史客观痕迹，TSLA 上影线说明高位筹码出逃；图形是滞后统计描述。',
-    discipline: '严禁单凭 TSLA 盘中一根冲高大阳线就脑补“主力突破明天必涨”；没有量价与收盘确认坚决不追。',
+    logic: 'K 线只告诉你价格到过哪里、最后收在哪里；不能单凭影线断定是谁在买卖或为什么买卖。',
+    discipline: '一根上涨 K 线不能保证明天上涨。先看前后走势、成交量和是否收盘。',
     trap: '看到 TSLA 单日大阳线冲动追高，买在 $225 长上影线顶部，次日回调割肉。',
-    cure: '拆解实体与影线背后的真实争夺，结合相对成交量（RVOL）客观评估。'
+    cure: '先认开盘、收盘、最高、最低，再与之前的成交量比较。'
   },
   5: {
-    title: '成交量与 RVOL',
+    title: '成交量要跟什么比',
     isCritical: false,
     data: 'COIN 突破时成交 120 万股看似很多，但过去 20 日同期均量 200 万股，相对成交量 RVOL 仅 0.6。',
-    logic: '美股开盘与收盘是天然流动性高峰，单纯绝对量无意义；COIN 缩量冲高往往是做市商诱多的假突破。',
-    discipline: 'COIN 相对成交量 RVOL < 1.0 的突破坚决不跟；量价背离时等待后续确认，宁可错过绝不买套。',
+    logic: '120 万股是否多，要与相同时间段的平常成交量比。成交少不能单独证明有人故意诱导买入。',
+    discipline: '本例 RVOL < 1.0 时先不追入；这是练习规则，不是所有市场通用的判断线。',
     trap: '单看 COIN 分时成交量柱子高大就以为机构爆买，其实量比极低，被虚假冲高诱多套牢。',
-    cure: '将成交量与自身历史同周期严格对比，非放量异动坚决视为噪音。'
+    cure: '把今天与过去相同时间段比较，再结合价格变化判断。'
   },
   6: {
-    title: '趋势还是区间',
+    title: '高点低点怎么变',
     isCritical: false,
     data: 'CRWV 上升波段高点从 $75 升到 $90，低点从 $70 升到 $82；若后续回调跌破 $80 则上升结构破坏。',
-    logic: '结构先于均线。CRWV 创出更低的低点（Lower Low）就是上升趋势实质破坏，均线走平存在严重滞后。',
-    discipline: '一旦 CRWV 关键结构低点被放量击穿，止损坚决执行，绝不因为均线还在上方就擅自后移止损点。',
+    logic: '连续更高的高点和低点，支持上升趋势的判断。跌破事先选定的低点，就要重新检查这个判断。',
+    discipline: '按事先写好的失效条件处理，不要因为亏了钱就把止损不断往下移。',
     trap: 'CRWV 亏损后自我催眠“AI算力大趋势还在”，不断下调止损线，直到深陷泥潭。',
-    cure: '客观标注波段高低点序列，前低跌破即判定结构失效，机械化执行离场。'
+    cure: '标出前几个高点和低点，写清跌到哪里需要重新判断。'
   },
   7: {
-    title: '关键区域与失效',
+    title: '支撑是一片区域',
     isCritical: false,
     data: 'TSLA 在 $209~$214 形成密集成交支撑区；三次下探止跌；放量跌破 $209 则判定区域失效。',
-    logic: '市场供求订单是连续分布的厚度区域，而非几何单点；TSLA 支撑区放量跌破后立即转化为未来阻力。',
-    discipline: '不把 TSLA $210 整数价当刚性铁底；支撑区放量跌破后严禁抄底，反弹至原支撑位果断减仓。',
+    logic: '价格曾多次在某片区域止跌，说明那里曾有买盘。跌破后可能变成阻力，但需要后续走势确认。',
+    discipline: '不要认定 $210 一定守得住；按事先写好的条件判断支撑是否失效。',
     trap: '把 TSLA $210 当成不可跌破的信仰底，跌破后继续补仓，最终被击穿平仓。',
-    cure: '划定价格反应区域而非单点，做好破位后的角色互换应对预案。'
+    cure: '圈出支撑区域，提前写好跌破后怎么处理。'
   },
   8: {
-    title: '订单类型与取舍',
+    title: '订单有不同取舍',
     isCritical: false,
     data: 'COIN 盘口买一 $220、卖一 $221.50（点差率 0.68%）；大额市价单滑点可达 $223，限价 $221.20 守住成本。',
-    logic: '市价单优先保证成交而牺牲价格确定性；限价单守住价格上限而牺牲成交确定性。没有两全其美的订单。',
-    discipline: '交易高贝塔的 COIN 绝对严禁用市价单；大额订单必须分批挂被动限价单。',
+    logic: '市价单优先尽快成交，但不保证价格，也不是任何时候都能成交；限价单限制最差可接受价格，但可能一直成交不了。',
+    discipline: '本练习对波动较大的 COIN 使用限价单，并检查是否只成交了一部分。',
     trap: '在流动性波动的 COIN 上无脑按市价买入，瞬间吃在最差卖档，买入即账面亏损 1.5%。',
-    cure: '下单前先查盘口点差，宽点差下只挂被动限价单，耐心等待撮合。'
+    cure: '先看买价和卖价差多少，再决定愿意接受的价格和等待时间。'
   },
   9: {
-    title: '交易时段与保护',
+    title: '盘前盘后有什么不同',
     isCritical: true,
     data: 'CRWV 常规时段（09:30-16:00 EST）vs 延长时段；盘后缺乏 NBBO 保护，点差常常扩大 5~10 倍。',
-    logic: '延长时段无交易所 NBBO 强制保护，做市商抽离流动性，几手小单就能把 CRWV 打出 8% 虚假影线。',
-    discipline: '延长时段交易 CRWV 严禁使用市价单；盘后交易必须大幅缩量至平时的 1/3 以下，且必须挂限价单。',
+    logic: '盘前盘后的买卖人手可能更少，报价差可能更大，不能照搬常规时段的价格保护和成交经验。',
+    discipline: '本例盘后只用限价单，股数不超过平时的 1/3；实际可用订单要查券商规则。',
     trap: '盘后看到 CRWV 传闻小作文，急不可耐打市价单追高，成交在荒谬天价，次日开盘暴跌 15%。',
-    cure: '区分 16:00 官方收盘价与盘后噪音，盘后仅作为观察窗口，开启 ETH 模式防洗盘。'
+    cure: '分清常规收盘价和盘后成交价，打开延长时段图表观察变化。'
   },
   10: {
-    title: '部分成交与生命周期',
+    title: '下单之后还要看什么',
     isCritical: false,
     data: 'TSLA 挂 1,000 股 DAY 单；300 股成交在 $212，400 股在 $212.50，收盘自动撤销剩余 300 股。',
-    logic: '订单提交不等于全部成交。DAY 单收盘未成交部分自动撤销，敞口不匹配会打乱 TSLA 风控计划。',
-    discipline: 'TSLA 部分成交发生后，立即重新核算剩余风险敞口并重设止损单，绝不放任不管。',
+    logic: '提交 1,000 股的订单，不代表已经买到 1,000 股。要逐笔核对成交数量和价格。',
+    discipline: '部分成交后，按实际持股重新检查可能亏多少，并核对止损订单的股数。',
     trap: '以为提交了 1,000 股 TSLA 就算完成了，收盘只成交了 300 股却不知情，风控比例彻底失真。',
-    cure: '跟踪订单完整生命周期，收盘前主动核对终态并做敞口再平衡。'
+    cure: '查清已成交、未成交和已取消的数量，再决定下一步。'
   },
   11: {
-    title: '停牌熔断与拍卖',
+    title: '停牌时为什么卖不了',
     isCritical: false,
     data: 'CRWV 因突发重大战略重组被交易所新闻停牌（Halt）；盘中止损单无法成交；重开集合竞价在 $65。',
-    logic: '停牌期间所有连续撮合停止，盘中止损单无法即时生效；CRWV 重开价格由集合竞价供求决定。',
-    discipline: '遭遇 CRWV 停牌保持冷静，重开拍卖后以真实成交价重新计算亏损，若超限坚决出场。',
+    logic: '停牌时交易暂停。重新开市的价格取决于当时愿意买卖的人，不一定是停牌前的价格。',
+    discipline: '先查停牌原因、订单状态和重新开市安排；不要把点击撤单当成已经撤销。',
     trap: '误以为 CRWV 停牌时挂了止损就能按停牌前价格逃跑，重开暴跌后心理崩溃乱砍仓。',
-    cure: '清晰认知停牌重开拍卖机制，把停牌跳空列入不可控极端风险严格防备。'
+    cure: '提前算价格跳过止损时的损失，并留出处理余地。'
   },
   12: {
-    title: '风险簇净压力',
+    title: '几笔持仓可能一起亏',
     isCritical: true,
     data: '组合同时持仓芯片股 +$50k、SOXL +$30k、CRWV 算力云 +$20k；在半导体 -8% 压力情景下共振亏损。',
-    logic: 'SOXL 与 CRWV 在 AI 算力与科技流动性紧缩时相关性逼近 1.0，本质是同一笔单向高杠杆暴露。',
-    discipline: '必须将 SOXL、CRWV 等同属芯片算力因子的标的合并为一个风险簇，严格设定风险簇总敞口。',
+    logic: '股票代码不同，不代表风险不同。同受芯片行业、利率或市场情绪影响的持仓，可能同时下跌。',
+    discipline: '把可能一起跌的持仓合起来计算损失，不要逐笔都合格就认定总风险合格。',
     trap: '买了 SOXL 又买了 CRWV 和科技股，以为代码不同就是分散风险，加息杀估值时三者同向暴跌。',
-    cure: '采用压力测试测算风险簇净损益，引入期权反向对冲或短债做真分散。'
+    cure: '选一个共同下跌的情景，合计各笔盈亏，再看是否超过预算。'
   },
   13: {
-    title: '高贝塔资产共振',
+    title: '高波动持仓一起看',
     isCritical: false,
     data: 'SOXL（Beta ~3.2）、COIN（Beta ~2.8）、TSLA（Beta ~2.1）；高贝塔资产在加息周期杀跌共振。',
-    logic: '牛市里高 Beta 标的顺风顺水让人产生超额错觉，但在估值杀跌期会产生踩踏共振，相关性迅速升至 1。',
-    discipline: '高 Beta 资产池（SOXL/COIN/TSLA）必须设定硬性占比上限，行情走弱时优先减持，守住防守底仓。',
+    logic: 'Beta 用来描述价格对市场变化的敏感程度。历史上波动大，不代表未来每次都按同一个倍数变化。',
+    discipline: '给高波动持仓设总上限，并检查其他持仓是否也会受同一个原因影响。',
     trap: '牛市赚了点钱就膨胀，把防守现金全部换成 3 倍做多 SOXL，一波半导体回调直接本金腰斩。',
-    cure: '严格隔离高 Beta 暴露，确保组合中始终保有真实的低相关防守底仓。'
+    cure: '除了看股票数量，还要看持仓会不会在同一件事发生时一起亏。'
   },
   14: {
-    title: '杠杆与维持保证金',
+    title: '借钱买股会放大什么',
     isCritical: true,
     data: '自有 $50k、融资借款 $50k 买入 3 倍杠杆 SOXL；半导体跌 30% 放大为净值缩水 60%，触发 30% 维持线。',
-    logic: '券商给你的“购买力”是借款额度！SOXL 下跌时，借款额不变，自有净值呈 3 倍杠杆级缩水。',
-    discipline: '交易高波动标的永远按自有净值（Equity）计算风险预算，严禁借杠杆补仓 SOXL。',
+    logic: '股价下跌时，欠券商的钱不会跟着减少，所以自己剩余的钱会下降得更快；利息还要另外算。',
+    discipline: '用扣除负债后的账户净值计算风险预算，不把借款额度当成自己的钱。',
     trap: '把券商给的 4 倍杠杆当成自己的本金全仓买入 SOXL，稍微一个 5% 的日常波动就被券商强平爆仓。',
-    cure: '严格区分“借款额度”与“风险预算”，严禁借杠杆补仓做多高杠杆标的。'
+    cure: '分开记资产市值、借款、利息和自己的净值，再查券商维持要求。'
   },
   15: {
-    title: '卖空与 SSR 限制',
+    title: '做空前先查什么',
     isCritical: false,
     data: 'TSLA 盘中跌幅超 10% 触发 Rule 201 SSR；券商 Locate 借券费率跳升；卖单禁止低于最佳买价。',
-    logic: '做空 TSLA 面临借券费持续消耗与轧空风险；触发 SSR 后卖单只能在高于买价（Uptick）处被动排队。',
-    discipline: '未获得合规合法 Locate 坚决不做空 TSLA；警惕在 TSLA 极度超卖时盲目追空引发轧空爆仓。',
+    logic: '做空先要确认能借到股票，并支付借券费。价格上涨会造成亏损；SSR 生效时还受卖空价格限制。',
+    discipline: '未确认借券就不提交卖空单；还要检查借券费、召回风险和当前价格限制。',
     trap: '看到 TSLA 暴跌就盲目市价追空，触及 SSR 订单被拒，反弹时遭遇散户强力轧空直接被拉爆。',
-    cure: '严格核准借券成本与 SSR 挂单规则，做空必须配合严格的止损保护。'
+    cure: '核对借券数量和费用，再制定价格上涨时的退出方案。'
   },
   16: {
-    title: 'CPI 预期差与版本',
+    title: '公布值要与预期比较',
     isCritical: false,
     data: 'CPI 实际值 3.2% vs 预期值 3.0%（预期差 +0.2）；加密高贝塔 COIN 盘中瞬间跳水 -4.5%。',
-    logic: '宏观数字本身不是方向按钮，市场交易的是预期差！复盘 COIN 当时走势只能用首次公布值。',
-    discipline: 'CPI 等重大数据公布前严禁赌 COIN 单边方向；复盘必须锁定历史初值，杜绝偷看修正值。',
+    logic: '市场在公布前已有预期。复盘当天的价格变化，要用当时能看到的数据，不能偷用后来修订的数字。',
+    discipline: '不要只看 CPI 高低就猜涨跌；保留首次公布值、预期值和各自来源。',
     trap: '看到 CPI 数字偏高就主观断定 COIN 必跌而盲目做空，结果利空出尽市场大幅反弹被打脸。',
-    cure: '以预期差（Surprise）为核心依据，观察跨资产即时联动后再做决策。'
+    cure: '先算公布值比预期高或低多少，再看市场如何反应。'
   },
   17: {
-    title: 'FOMC 条件剧本',
+    title: '会前准备几种结果',
     isCritical: false,
     data: 'FOMC 声明偏鹰令 2Y 美债利率飙升 15bp；TSLA 盘中下挫 $8；会前准备三套剧本。',
-    logic: '美联储决议伴随三次价格重估波浪，TSLA 会前必须根据鹰派、中性、鸽派制定执行树。',
-    discipline: '决议公布前主动收紧 TSLA 敞口；公布瞬间保持空仓观察，等待 2Y 利率确认再行动。',
+    logic: '声明、利率预测和发布会可能提供不同信息，价格也可能反复变化。偏鹰是更重视压通胀，偏鸽是更重视支持经济。',
+    discipline: '会前分别写好偏鹰、中性、偏鸽时怎么做；公布时先观察，不急着猜第一下涨跌。',
     trap: '决议公布前 5 分钟全仓买入 TSLA 单向期权赌运气，声明公布后被双向大幅扫盘多空双爆。',
-    cure: '条件剧本先于仓位动作，决议公布窗口保持轻仓或空仓观察。'
+    cure: '先写“如果出现什么，就做什么”，再决定要不要持仓。'
   },
   18: {
-    title: '美债收益率与久期',
+    title: '利率为什么影响估值',
     isCritical: false,
     data: '10 年期美债收益率上升 18bp；远期高增长现金流折现的算力股 CRWV 估值承压下挫 6.5%。',
-    logic: '无风险收益率上升压制成长股远期估值乘数！久期越长，对利率波动越敏感，CRWV 首当其冲。',
-    discipline: '利率不确定期严禁在远期高估值成长股 CRWV 上过度加杠杆，理解利率敏感度。',
+    logic: '同样一笔未来才拿到的钱，折算到今天值多少会受利率影响。利率上升时，主要依靠远期盈利的公司估值可能承压。',
+    discipline: '不要把利率上升理解成股价必跌；同时检查公司盈利、价格和已有持仓。',
     trap: '忽略宏观利率上行，在加息周期顶峰满仓高估值未盈利成长股，遭遇估值腰斩。',
-    cure: '搞懂久期与成长股估值的反向关系，按利率周期动态平衡敞口。'
+    cure: '比较收益率变化和公司预期盈利，再检查自己是否押了太多同类风险。'
   },
   19: {
-    title: '财报尾部反推仓位',
+    title: '财报前算突然下跌',
     isCritical: true,
     data: 'TSLA 财报前暗含 20% 极端预期缺口；账户仅允许 $1,000 损失；每股风险 $42.50，限买 23 股。',
-    logic: 'TSLA 财报夜是离散跳跃，日常止损单在跳空面前形同虚设！仓位必须由极端压力缺口反推。',
-    discipline: '预算 $1,000 ÷ 每股压力风险 $42.50 = 23 股，名义仓位严格限制在 23 股以内，超额一律平仓。',
+    logic: '财报后价格可能直接跳过止损价。要用假设的跳空幅度估算损失，不能只用日常止损距离。',
+    discipline: '本例预算 $1,000 ÷ 每股压力风险 $42.50，向下取整为 23 股；更大的跳空仍可能超预算。',
     trap: '财报前抱有侥幸心理，满仓持有 TSLA，盘后跳空低开 15%，一笔亏掉全年收益。',
-    cure: '财报前执行极端缺口逆向反推，将最大可能损失精确限制在可承受范围。'
+    cure: '先算假设的大跌会亏多少，再决定财报前能留多少股。'
   },
   20: {
-    title: '期权链流动性筛选',
+    title: '期权便宜不一定好买卖',
     isCritical: false,
     data: 'COIN 活跃月平价 Call（Bid 8.20 / Ask 8.60，点差率 4.7%）；远月虚值 Call 点差率高达 54.5%。',
-    logic: '期权一张代表 100 股！买卖点差高达 30% 以上的 COIN 期权买入即被做市商吃掉巨额利润。',
-    discipline: '坚决不买点差率 > 10% 或 OI < 500 的冷门 COIN 期权；期权成本必须先乘 100 算清美元支出。',
+    logic: '标准股票期权通常按每股报价，一张通常对应 100 股。买卖报价差大，会增加进出成本。',
+    discipline: '本例排除点差率 > 10% 或未平仓量 OI < 500 的合约；这些是练习筛选条件，不保证一定成交。',
     trap: '看着一张虚值期权报价 $0.30 以为便宜，一口气买 50 张，点差高达 50%，买入瞬间亏损，想卖无接盘。',
-    cure: '坚持高流动性期权筛选门禁，严守点差率与未平仓量红线。'
+    cure: '先算整张价格和买卖差价，再查成交量、未平仓量和到期日。'
   },
   21: {
-    title: 'Delta 与 Gamma',
+    title: '期权跟随股价的幅度',
     isCritical: false,
     data: '买入 TSLA 210 Call 1 张（Delta 0.50 等效 50 股 TSLA）；股价涨 $3 后 Delta 增至 0.62。',
-    logic: 'Delta 衡量期权相当于持有多少股 TSLA，Gamma 决定股价波动时期权 Delta 暴增的速度。',
-    discipline: '时刻把 TSLA 期权持仓折算为实际股票名义暴露，严禁把期权当成廉价彩票无限买入。',
+    logic: 'Delta 粗略表示股价变 $1 时期权每股价格变多少；Gamma 表示股价变化时 Delta 又会变多少。',
+    discipline: '用 Delta × 100 × 张数估算相当于多少股的价格影响；这只是当前附近的近似值。',
     trap: '买了 10 张 TSLA Call 以为才花几千块，其实等效于持有 500 股 TSLA，股价稍微下挫就血本无归。',
-    cure: '以 Delta 等效股数纳入账户总风险预算统一计算。'
+    cure: '把期权换成大约等效的股数，再与其他持仓一起检查。'
   },
   22: {
-    title: 'Greeks 联合损益',
+    title: '期权的四种价格影响',
     isCritical: false,
     data: '多头 COIN Call：Delta .50 + Gamma .04 + Vega .12/IV点 + Theta -$0.08/天；标的 +$3，整张赚 $40。',
-    logic: '期权价值不仅取决于 COIN 方向，还受波动率和时间流逝联合主导。标的原地不动期权每天都在贬值。',
-    discipline: '算清持仓 COIN 每天要付出多少时间损耗，短期方向未兑现时果断止损，绝不死扛单腿买方。',
+    logic: '期权价格同时受股价、波动预期和时间影响。股价不变时，其他因素仍可能让期权涨价或跌价。',
+    discipline: '把 Delta、Gamma、Vega、Theta 的影响分别算清楚；不要只看股价方向。',
     trap: '买入 COIN 看涨期权后标的横盘一周，期权价值被 Theta 和波动率磨损掉 60%。',
-    cure: '联合计算四项 Greeks 贡献，算清时间成本与盈亏平衡速度。'
+    cure: '把四项近似变化相加，并注意模型只适合当前附近的小幅变化。'
   },
   23: {
-    title: 'IV Crush 双情景',
+    title: '财报后期权为什么可能跌',
     isCritical: true,
     data: 'COIN 财报前 IV 110% vs 财报后 IV 45%；情景 A（小涨 $2 净亏 -$20）；情景 B（暴涨 $8 净赚 +$400）。',
-    logic: 'COIN 财报公布后不确定性消除，做市商报价的 IV 发生雪崩（IV Crush）！小涨根本跑不赢 IV 暴跌！',
-    discipline: '坚决不在重大事件前夕裸买高 IV 的 COIN 虚值 Call！这是散户在美股亏损的最隐蔽重灾区。',
+    logic: '消息公布后，市场愿意为不确定性支付的钱可能减少。这种隐含波动率快速下降叫 IV Crush，可能抵消股价上涨带来的收益。',
+    discipline: '本例避免财报前只买高 IV 的看涨期权；先比较股价小涨和大涨两种结果。',
     trap: '财报前花重金买 COIN Call，财报公布股价微涨 2%，第二天开盘期权暴跌 50%，方向看对却亏惨。',
-    cure: '认清波动率悬崖，方向收益必须跑赢 IV 暴跌与时间损耗才能获利，重大事件前拒绝裸买。'
+    cure: '分别计算方向、波动率和时间的影响，看合计结果，而不是只看涨跌。'
   },
   24: {
-    title: '价差与到期处理',
+    title: '同时买卖期权有什么代价',
     isCritical: true,
     data: 'TSLA 买 210 Call 卖 225 Call（Debit Spread）；净借记 $3，最大亏损 $300，最大盈利 $1,200。',
-    logic: '用卖出更高行权价期权，抵消买入端的时间衰减与高 IV 成本，用盈利封顶换取 TSLA 亏损绝对受控！',
-    discipline: '彻底告别裸买期权！交易 TSLA 必须采用垂直价差（Vertical Spread），事前锁死最大亏损底线。',
+    logic: '本例买较低执行价的 Call、卖较高执行价的 Call，减少净支出，同时限制最大盈利；到期前还要处理提前指派等问题。',
+    discipline: '先写清两张期权的执行价、到期日、净支出和指派后的处理方式。',
     trap: '习惯性裸买单腿期权，频繁遭遇 100% 归零；或做价差不知短腿在除息日前会被提前指派。',
-    cure: '散户在期权市场生存的唯一武器：垂直价差锁定风险，制定到期指派应对预案。'
+    cure: '算清完整价差的盈亏上限，并检查是否需要在到期前平仓。'
   },
   25: {
-    title: '证据类型与 TTL',
+    title: '资料能用多久',
     isCritical: false,
     data: 'CRWV 证据时效阈值 TTL（实时盘口 30 秒，新闻快讯 60 分钟，SEC 10-Q 季度财报）；一手出处。',
-    logic: '市场行情瞬息万变，拿着 10 分钟前过期的 CRWV 报价或无出处的论坛研报决策，等同于盲人摸象。',
-    discipline: 'CRWV 数据超过 TTL 一律标记为 Stale 失效；缺少 SEC 一手出处与证伪条件的决策坚决拒绝放行。',
+    logic: '报价几秒就可能变化，公司财报的使用期限则不同。TTL 就是这类资料允许使用多久。',
+    discipline: '按资料类型检查更新时间和原始来源；过期或查不到来源，就暂停使用。',
     trap: '根据社交媒体上转发的未经核实的 CRWV 算力假新闻冲动开仓，接在主力出货的最顶峰。',
-    cure: '建立证据时效审计与一手来源链条，过期数据一律 Fail-Closed 关闸。'
+    cure: '保存来源、公布时间、采集时间和失效条件，再做判断。'
   },
   26: {
-    title: '风险官关闸 Fail-Closed',
+    title: '资料不够就不下单',
     isCritical: true,
-    data: 'Fail-Closed 默认拒绝原则；针对 TSLA/CRWV/COIN/SOXL 四大神票设一票否决权；证伪条件清单。',
-    logic: '哪怕全网分析师一致强烈看多 TSLA 或 CRWV，只要缺少反面证伪依据或超出了风险预算，系统必须关闸！',
-    discipline: '无反证绝不下单，超限坚决拒绝！每一笔交易事前必须明确写下“什么情况下证明我错了立即出场”。',
+    data: 'Fail-Closed 默认拒绝原则；针对 TSLA/CRWV/COIN/SOXL 四只示例股票或基金设一票否决权；证伪条件清单。',
+    logic: '几个 AI 助手赞同一个观点，不等于有几份独立证据。资料不足或预计亏损超预算，仍然应该拒绝方案。',
+    discipline: '下单前写下：出现什么事实说明我可能错了，以及准备怎么退出。',
     trap: '被牛市狂热情绪感染，没有任何止损和反证计划，凭盲目信仰满仓冲进去当接盘侠。',
-    cure: '赋予风控一票否决权，坚持 Fail-Closed 铁律，不把命运交给冲动和盲信。'
+    cure: '让风险检查有权拒绝交易；fail-closed 就是条件不满足时默认不放行。'
   },
   27: {
-    title: '最终交易日总验收',
+    title: '把一笔交易从头检查',
     isCritical: false,
-    data: 'TSLA 3:1 拆股四项一致调整（股数翻倍、均价减半、挂单减半、期权执行价减半）；非对称跳空测算。',
-    logic: '真实市场伴随公司行动、分红拆股与非对称尾部风险，只有端到端串联闭环的交易系统才能长存。',
-    discipline: '每一笔交易必须保留可回放审计凭证；全流程严格遵循闭环检验。',
+    data: '教学情景：TSLA 按 3:1 拆股。股票数量变为3倍，每股成本变为原来的1/3；挂单价格与数量要按适用规则核对，期权如何调整要查看对应合约公告。不要把2:1拆股的翻倍、减半规则套到这里。',
+    logic: '拆股和分红可能改变股数、价格或订单条件。把下单前、成交后和退出时需要检查的事情连起来。',
+    discipline: '保存每一步用的资料、判断和订单状态，方便事后核对。',
     trap: '拆股后忘记撤销调整旧限价单，导致被交易所按异常价格成交造成无谓亏损。',
-    cure: '完成端到端公司行动调整与全链路 Paper 凭证生成，做到知行合一。'
+    cure: '核对公司行动通知，再检查模拟记录是否完整。'
   }
 };
 
@@ -860,8 +860,8 @@ class FOMCMacroRiskPipeline:
     const toolbar = document.createElement('div');
     toolbar.className = 'lab-smart-toolbar';
     toolbar.innerHTML = `
-      <button type="button" class="btn-smart-steps">💡 展开算式解析与推导逻辑</button>
-      <button type="button" class="btn-smart-fill">✨ 智能一键填入计算值</button>
+      <button type="button" class="btn-smart-steps">💡 看每一步怎么算</button>
+      <button type="button" class="btn-smart-fill">✨ 填入示例答案</button>
     `;
 
     const card = document.createElement('div');
@@ -869,8 +869,8 @@ class FOMCMacroRiskPipeline:
     card.hidden = true;
     card.innerHTML = `
       <div class="derivation-header">
-        <b>量化推导步骤与理论依据</b>
-        <small>理解公式结构，拒绝死记硬背</small>
+        <b>一步一步算给你看</b>
+        <small>先看每个数字从哪里来，再自己算一遍</small>
       </div>
       <ol class="derivation-steps">
         ${data.steps.map(step => `<li>${step}</li>`).join('')}
@@ -879,7 +879,7 @@ class FOMCMacroRiskPipeline:
 
     toolbar.querySelector('.btn-smart-steps').onclick = () => {
       card.hidden = !card.hidden;
-      toolbar.querySelector('.btn-smart-steps').textContent = card.hidden ? '💡 展开算式解析与推导逻辑' : '收起推导逻辑';
+      toolbar.querySelector('.btn-smart-steps').textContent = card.hidden ? '💡 看每一步怎么算' : '收起计算步骤';
     };
 
     toolbar.querySelector('.btn-smart-fill').onclick = () => {
@@ -914,8 +914,8 @@ class FOMCMacroRiskPipeline:
         <div class="waterline-head">
           <div class="waterline-title">
             <span class="waterline-icon">🌊</span>
-            <b>动态风控标尺 · 实时单笔损失推演</b>
-            <span class="waterline-pill-rule">1% 资本生命线</span>
+            <b>拖动滑块，算这笔交易可能亏多少</b>
+            <span class="waterline-pill-rule">本例亏损上限：本金的 1%</span>
           </div>
           <div class="waterline-equity-badge">
             基准账户: <b>$100,000</b> | 红线预算: <b class="waterline-budget-text">$1,000 (1.0%)</b>
@@ -957,7 +957,7 @@ class FOMCMacroRiskPipeline:
         <!-- Quick Scenario Presets -->
         <div class="waterline-presets">
           <div class="preset-header-bar">
-            <span class="preset-label">⚡ 常见实战场景推演</span>
+            <span class="preset-label">⚡ 试试不同的买入股数</span>
           </div>
           <div class="preset-button-row">
             <button type="button" class="btn-risk-preset is-active" data-shares="400" data-stop="48">
@@ -1070,7 +1070,7 @@ class FOMCMacroRiskPipeline:
         tooltip.textContent = `$${dollarRisk.toFixed(0)} · ${riskPct.toFixed(2)}% (熔断)`;
         status.className = 'insight-status red';
         status.textContent = `🚫 状态评估：单笔风险 $${dollarRisk.toFixed(2)} (${riskPct.toFixed(2)}%) · 散户亏损黑洞！Fail-Closed 强制熔断否决开仓！`;
-        insightText.innerHTML = `🚨 <b>散户6年亏损典型病灶：</b>单笔亏损高达 $${dollarRisk.toFixed(2)} (${riskPct.toFixed(2)}%)！一次突发黑天鹅或跳空低开将造成永久性重创，这是 -$30,000 亏损的直接罪魁祸首！系统拒绝放行。`;
+        insightText.innerHTML = `🚨 <b>本例风险提醒：</b>单笔亏损高达 $${dollarRisk.toFixed(2)} (${riskPct.toFixed(2)}%)！一次突发黑天鹅或跳空低开将造成永久性重创，不能用一次计算解释 -$30,000 的历史亏损。本例按预算拒绝方案。`;
       }
     }
 
@@ -1138,8 +1138,8 @@ class FOMCMacroRiskPipeline:
       }
     }
 
-    const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined) 
-      ? window.v2Active 
+    const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined)
+      ? window.v2Active
       : (typeof v2Active !== 'undefined' ? v2Active : +(localStorage.getItem('manga-us-v2-active') || 0));
 
     const background = document.querySelector('.background-card');
@@ -1152,7 +1152,7 @@ class FOMCMacroRiskPipeline:
     if (depth) {
       factsHtml = `
         <div class="cockpit-card facts-card">
-          <div class="cockpit-card-title">📌 <b>场景基准与已知事实</b></div>
+          <div class="cockpit-card-title">📌 <b>题目已经告诉你的事</b></div>
           <p class="facts-scene">${depth.scene}</p>
           ${depth.example ? `<div class="facts-example"><b>数据参考：</b>${depth.example}</div>` : ''}
         </div>
@@ -1163,7 +1163,7 @@ class FOMCMacroRiskPipeline:
     if (story) {
       dialogueHtml = `
         <div class="cockpit-card dialogue-card">
-          <div class="cockpit-card-title">⚡ <b>决策委员会研议现场</b></div>
+          <div class="cockpit-card-title">⚡ <b>听听大家怎么想</b></div>
           <div class="dialogue-compact-list">${story.innerHTML}</div>
         </div>
       `;
@@ -1173,7 +1173,7 @@ class FOMCMacroRiskPipeline:
     if (reality) {
       realityHtml = `
         <div class="cockpit-card reality-card">
-          <div class="cockpit-card-title">📐 <b>微观机制依据</b></div>
+          <div class="cockpit-card-title">📐 <b>交易为什么会这样</b></div>
           <p>${reality.querySelector('p')?.innerHTML || reality.textContent.trim()}</p>
           ${reality.querySelector('a') ? `<div class="reality-ref">${reality.querySelector('a').outerHTML}</div>` : ''}
         </div>
@@ -1191,7 +1191,7 @@ class FOMCMacroRiskPipeline:
     if (ruleWhy) {
       ruleHtml = `
         <div class="cockpit-card rule-card">
-          <div class="cockpit-card-title">🛡️ <b>本章风控铁律</b></div>
+          <div class="cockpit-card-title">🛡️ <b>本章要记住的规则</b></div>
           <p>“${ruleWhy}”</p>
         </div>
       `;
@@ -1203,29 +1203,29 @@ class FOMCMacroRiskPipeline:
       paradigmHtml = `
         <div class="cockpit-card paradigm-card">
           <div class="cockpit-card-title">
-            <span>⚖️</span> <b>本章破局信条：告别感性 · 坚守三原则</b>
-            ${paradigmInfo.isCritical ? '<span class="critical-tag">🔥 核心救命防线</span>' : ''}
+            <span>⚖️</span> <b>做决定前，先问这三个问题</b>
+            ${paradigmInfo.isCritical ? '<span class="critical-tag">🔥 重点规则</span>' : ''}
           </div>
           <div class="paradigm-trinity-grid">
             <div class="trinity-item data-box">
-              <div class="trinity-head"><span class="badge-blue">📊 走数据 (Data)</span></div>
+              <div class="trinity-head"><span class="badge-blue">📊 有哪些数字</span></div>
               <p>${paradigmInfo.data}</p>
             </div>
             <div class="trinity-item logic-box">
-              <div class="trinity-head"><span class="badge-purple">🧠 走逻辑 (Logic)</span></div>
+              <div class="trinity-head"><span class="badge-purple">🧠 为什么这样判断</span></div>
               <p>${paradigmInfo.logic}</p>
             </div>
             <div class="trinity-item discipline-box">
-              <div class="trinity-head"><span class="badge-emerald">🛡️ 走纪律 (Discipline)</span></div>
+              <div class="trinity-head"><span class="badge-emerald">🛡️ 到什么条件就停手</span></div>
               <p>${paradigmInfo.discipline}</p>
             </div>
           </div>
           <div class="banned-trap-alert">
             <div class="trap-head">
-              <span class="trap-icon">⚠️</span> <b>告别感性心魔（6年亏损典型病灶）：</b>
+              <span class="trap-icon">⚠️</span> <b>容易犯的错：</b>
             </div>
             <p class="trap-desc">❌ ${paradigmInfo.trap}</p>
-            <div class="trap-cure"><b>💡 破局解法：</b>${paradigmInfo.cure}</div>
+            <div class="trap-cure"><b>💡 可以怎么改：</b>${paradigmInfo.cure}</div>
           </div>
         </div>
       `;
@@ -1237,12 +1237,12 @@ class FOMCMacroRiskPipeline:
       taCodeHtml = `
         <div class="cockpit-card tradingagents-code-card">
           <div class="tradingagents-code-head" onclick="this.nextElementSibling.hidden = !this.nextElementSibling.hidden;">
-            <span>🤖 <b>TradingAgents 工程落地代码</b> (${taCode.module})</span>
+            <span>🤖 <b>用 Python 表达规则的示例</b> (${taCode.module})</span>
             <span class="tradingagents-code-badge">展开源码 ▾</span>
           </div>
           <div class="tradingagents-code-body" hidden>
             <pre><code>${taCode.code}</code></pre>
-            <div class="tradingagents-code-note">💡 本章知识直接映射为工业级多智能体系统的 Python 核心门禁。</div>
+            <div class="tradingagents-code-note">💡 这是说明规则的示意代码，类名和接口需自行实现；复制后不能直接连接券商。</div>
           </div>
         </div>
       `;
@@ -1282,7 +1282,7 @@ class FOMCMacroRiskPipeline:
       feedbackBox = document.createElement('div');
       feedbackBox.id = 'decisionSimFeedback';
       feedbackBox.className = 'decision-sim-feedback';
-      feedbackBox.innerHTML = '💡 <b>即时探索：</b>鼠标悬停下方选项，左侧风控标尺将动态实时推演该决策的风险水位！';
+      feedbackBox.textContent = '先读题目，再选答案。左侧计算器是独立练习，不能用它判断本题是否答对。';
       const decisionList = phase3.querySelector('.decision-list');
       if (decisionList) decisionList.before(feedbackBox);
     }
@@ -1292,24 +1292,15 @@ class FOMCMacroRiskPipeline:
         btn.setAttribute('data-key', String(i + 1));
       }
       btn.addEventListener('mouseenter', () => {
-        const text = btn.textContent || '';
-        if (/加倍|重仓|全部|翻倍|市价追|赌一把|不设止损/i.test(text)) {
-          if (waterlineCard && typeof waterlineCard._simulateRisk === 'function') waterlineCard._simulateRisk(800, 4.0);
-          if (feedbackBox) feedbackBox.innerHTML = '🚨 <b>选项推演：散户加倍/追涨陷阱</b> · 风险敞口失控，左侧水银标尺飙升至 3.2% 亏损黑洞，触发风控官一票否决！';
-        } else if (/四成|跌了再想|摊平/i.test(text)) {
-          if (waterlineCard && typeof waterlineCard._simulateRisk === 'function') waterlineCard._simulateRisk(500, 3.2);
-          if (feedbackBox) feedbackBox.innerHTML = '⚠️ <b>选项推演：过大敞口无止损</b> · 缺乏亏损预算约束，盘中微小回调即可击穿 2.0% 警戒线，诱发心态崩溃。';
-        } else {
-          if (waterlineCard && typeof waterlineCard._simulateRisk === 'function') waterlineCard._simulateRisk(190, 4.2);
-          if (feedbackBox) feedbackBox.innerHTML = '✅ <b>选项推演：量化风控铁律</b> · 单笔最大损失锚定在 $800 (0.80%) ≤ 1.0% 安全线，严守纪律，准予合规放行！';
-        }
+        // Wording is not numeric evidence. Only the chapter validator grades choices.
+        if (feedbackBox) feedbackBox.textContent = '想一想：题目给了哪些数字或事实，能支持这个选项？选定后会显示检查结果。';
       });
       btn.addEventListener('mouseleave', () => {
         if (waterlineCard && typeof waterlineCard._simulateRisk === 'function') {
           waterlineCard._simulateRisk(null);
         }
         if (feedbackBox) {
-          feedbackBox.innerHTML = '💡 <b>即时探索：</b>鼠标悬停下方选项，左侧风控标尺将动态实时推演该决策的风险水位！';
+          feedbackBox.textContent = '先读题目，再选答案。左侧计算器是独立练习，不能用它判断本题是否答对。';
         }
       });
     });
@@ -1340,10 +1331,10 @@ class FOMCMacroRiskPipeline:
     }
 
     if (toggleBtn) {
-      toggleBtn.innerHTML = isStreamMode 
-        ? '<b>📖</b><span>全景通读</span>' 
-        : '<b>🎯</b><span>双翼驾驶舱</span>';
-      toggleBtn.title = isStreamMode ? '点击切换为双翼驾驶舱专注模式' : '点击切换为全景通读模式（所有内容完整展示）';
+      toggleBtn.innerHTML = isStreamMode
+        ? '<b>📖</b><span>整章一起看</span>'
+        : '<b>🎯</b><span>一步一步学</span>';
+      toggleBtn.title = isStreamMode ? '点击切换为一步一步学' : '点击切换为整章一起看';
     }
 
     stage.classList.toggle('stream-mode', isStreamMode);
@@ -1357,8 +1348,8 @@ class FOMCMacroRiskPipeline:
         try { phasesStore = JSON.parse(localStorage.getItem('manga-us-workbench-phases') || '{}'); }
         catch (_) { phasesStore = {}; }
       }
-      const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined) 
-        ? window.v2Active 
+      const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined)
+        ? window.v2Active
         : (typeof v2Active !== 'undefined' ? v2Active : +(localStorage.getItem('manga-us-v2-active') || 0));
       const activeNumber = phasesStore ? (phasesStore[curChapter] || 1) : 1;
       phases.forEach(p => { p.hidden = p.id !== `lesson-phase-${activeNumber}`; });
@@ -1377,13 +1368,8 @@ class FOMCMacroRiskPipeline:
       const feedback = document.getElementById('lessonFeedback');
       if (!ok) {
         if (feedback) {
-          const failureComics = [
-            `⚠️ <b>宁姚：</b>风险超出设定边界！<b>崔东山：</b>先生天台风好大啊学生好冷！<b>阿良：</b>别凭直觉瞎猜，左侧看清楚场景数据。<b>周米粒：</b>摔下去会断骨头呀！可重新做决定。`,
-            `⚠️ <b>宁姚：</b>风险超出设定边界！<b>周米粒：</b>本金小包裹快抱紧！<b>陆沉：</b>贫道掐指一算此卦大凶宜立刻撤单！<b>阿良：</b>别凭直觉瞎猜。可重新做决定。`,
-            `⚠️ <b>宁姚：</b>风险超出设定边界！<b>阮秀：</b>（嚼桂花糕）……可是你的保证金已经破线了呀。<b>李宝瓶：</b>算盘核算不通过！<b>周米粒：</b>摔下去会断骨头呀！可重新做决定。`,
-            `⚠️ <b>宁姚：</b>风险超出设定边界！<b>阿良：</b>阿良叔叔当年也这么猛，后来去落魄山后山劈柴了。<b>周米粒：</b>大水怪咬你一口！可重新做决定。`
-          ];
-          feedback.innerHTML = failureComics[Math.floor(Math.random() * failureComics.length)];
+          // Keep the validator's explanation, including the field that needs fixing.
+          if (!feedback.textContent.trim()) feedback.textContent = '这次还没通过。请按题目提示检查答案，再试一次。';
           feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         setTimeout(() => {
@@ -1398,14 +1384,7 @@ class FOMCMacroRiskPipeline:
         }, 500);
       } else {
         if (feedback) {
-          const successComics = [
-            `✨ <b>宁姚：</b>决策符合风控底线。<b>陈平安：</b>已记入 Paper 台账。<b>崔东山：</b>先生神机妙算，学生这就把天台毯子收起来！`,
-            `✨ <b>宁姚：</b>决策符合风控底线。<b>陈平安：</b>已记入 Paper 台账。<b>周米粒：</b>右护法宣布本金安全着陆！奖励一颗桂花糖！`,
-            `✨ <b>宁姚：</b>决策符合风控底线。<b>陈平安：</b>已记入 Paper 台账。<b>李宝瓶：</b>算盘核验通过，数据逻辑纪律三红线全达标！`,
-            `✨ <b>宁姚：</b>决策符合风控底线。<b>陈平安：</b>已记入 Paper 台账。<b>陆沉：</b>妙哉！小友这一手风险对冲破了天地卦象！`,
-            `✨ <b>宁姚：</b>决策符合风控底线。<b>陈平安：</b>已记入 Paper 台账。<b>阮秀：</b>（咽下桂花糕）这次总算没有被券商强平啦。`
-          ];
-          feedback.innerHTML = successComics[Math.floor(Math.random() * successComics.length)];
+          if (!feedback.textContent.trim()) feedback.textContent = '答案通过了本题检查。接下来看看本章规则。';
           feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         renderJournalLiveReceipts();
@@ -1472,8 +1451,8 @@ class FOMCMacroRiskPipeline:
     const tools = document.createElement('div');
     tools.className = 'header-tools';
     tools.innerHTML = `
-      <button type="button" id="openRieslingBtn" class="riesling-pill" title="雷司令投资常识精读研习舱 · 118篇全集 (快捷键 R)">
-        🍷 雷司令文集 (118篇)
+      <button type="button" id="openRieslingBtn" class="riesling-pill" title="118篇逐篇改写的通俗讲解，可对照原文 (快捷键 R)">
+        📖 通俗讲解 (118篇)
       </button>
       <button type="button" id="openTradingAgentsBtn" class="tradingagents-pill" title="TradingAgents 多智能体量化实操台 (快捷键 M)">
         🤖 TradingAgents
@@ -1542,12 +1521,12 @@ class FOMCMacroRiskPipeline:
             <div class="ta-title-center">
               <div class="ta-title-main">
                 <span class="ta-app-icon">🤖</span>
-                <h3>TradingAgents 多智能体实操舱 · 仿真量化工作台</h3>
-                <span class="ta-badge-engine">v2.4 Production Suite</span>
-                <span class="ta-badge-gate">🛡️ Fail-Closed Gate</span>
+                <h3>TradingAgents：几个 AI 角色如何一起检查交易</h3>
+                <span class="ta-badge-engine">v2.4 情景演示</span>
+                <span class="ta-badge-gate">🛡️ 条件不足就拒绝</span>
               </div>
               <div class="ta-title-sub">
-                TauricResearch 开源多智能体架构 · 28 章量化风控守则自动化代码审查沙盒
+                用预设对白演示 28 章规则；这里不会调用模型、获取实时行情或下单。
               </div>
             </div>
             <button type="button" class="btn-close-agents" aria-label="关闭">
@@ -1562,12 +1541,12 @@ class FOMCMacroRiskPipeline:
               <div class="arena-section">
                 <div class="arena-section-head">
                   <span class="arena-step-tag">01</span>
-                  <b>选择机构实操标的与情景</b>
+                  <b>选一个练习场景</b>
                 </div>
                 <select id="arenaScenarioSelect" class="arena-select">
-                  <option value="nvda_earnings">NVDA 财报前夕 (高 IV 悬崖 · 115% 波动率坍塌)</option>
-                  <option value="tsla_extended">TSLA 盘后异动 (流动性真空 · 宽点差陷阱)</option>
-                  <option value="semis_cluster">半导体高贝塔组合 (跨标的多因子净压力共振)</option>
+                  <option value="nvda_earnings">NVDA 财报前：IV 为 115% 的示例</option>
+                  <option value="tsla_extended">TSLA 盘后：买价和卖价相差很大</option>
+                  <option value="semis_cluster">半导体组合：几只股票可能一起亏</option>
                   <option value="fomc_macro">FOMC 利率决议 (重磅数据窗口 · 流动性骤降)</option>
                 </select>
                 <div id="arenaScenarioMeta" class="arena-scenario-meta"></div>
@@ -1576,7 +1555,7 @@ class FOMCMacroRiskPipeline:
               <div class="arena-section">
                 <div class="arena-section-head">
                   <span class="arena-step-tag">02</span>
-                  <b>决策策略模式对决</b>
+                  <b>比较两种做法</b>
                 </div>
                 <div id="arenaOptionsList" class="arena-options-list"></div>
               </div>
@@ -1584,13 +1563,13 @@ class FOMCMacroRiskPipeline:
               <div class="arena-section">
                 <div class="arena-section-head">
                   <span class="arena-step-tag">03</span>
-                  <b>多智能体协同流水线</b>
+                  <b>每个 AI 角色检查什么</b>
                 </div>
                 <div class="arena-pipeline-grid" id="arenaPipelineNodes">
                   <div class="pipeline-node" data-node="data">
                     <span class="p-dot"></span>
                     <span class="p-role">数据员 Data</span>
-                    <span class="p-status">30s TTL 校验</span>
+                    <span class="p-status">检查资料是否在 30 秒有效期内</span>
                   </div>
                   <div class="pipeline-node" data-node="analyst">
                     <span class="p-dot"></span>
@@ -1611,7 +1590,7 @@ class FOMCMacroRiskPipeline:
               </div>
 
               <button type="button" id="arenaRunBtn" class="arena-run-btn">
-                <span>▶ 启动多智能体推演与风控审查</span>
+                <span>▶ 运行这个场景的演示</span>
                 <kbd>Enter</kbd>
               </button>
             </div>
@@ -1619,23 +1598,23 @@ class FOMCMacroRiskPipeline:
             <div class="arena-console">
               <div class="console-nav-toolbar">
                 <div class="console-status-pill">
-                  <span id="arenaStatusIndicator" class="status-indicator">● SYSTEM READY</span>
+                  <span id="arenaStatusIndicator" class="status-indicator">● 等待开始</span>
                 </div>
                 <div id="arenaNavTabs" class="console-segmented-tabs">
-                  <button type="button" class="arena-tab-btn is-active" data-tab="stream">🖥️ 实时协同终端</button>
-                  <button type="button" class="arena-tab-btn" data-tab="code">🐍 Python 核心源码</button>
-                  <button type="button" class="arena-tab-btn" data-tab="receipt">🧾 审计凭证与水单</button>
+                  <button type="button" class="arena-tab-btn is-active" data-tab="stream">🖥️ 看检查过程</button>
+                  <button type="button" class="arena-tab-btn" data-tab="code">🐍 Python 示意代码</button>
+                  <button type="button" class="arena-tab-btn" data-tab="receipt">🧾 本次模拟记录</button>
                 </div>
               </div>
 
               <!-- Tab 1: Terminal Stream -->
               <div id="arenaTabStream" class="arena-tab-panel is-active">
                 <div class="terminal-os-bar">
-                  <span>bash — tradingagents.core.engine (PID 84920) — 80x24</span>
+                  <span>以下为预设情景对白，不是正在运行的终端</span>
                 </div>
                 <div id="terminalStreamLog" class="terminal-stream-log">
-                  <div class="log-line green">TradingAgents Multi-Agent Engine v2.4 initialized.</div>
-                  <div class="log-line green">Loaded 28 quantitative risk governance contracts (Fail-Closed).</div>
+                  <div class="log-line green">情景演示 v2.4 已准备好。</div>
+                  <div class="log-line green">演示参考 28 章规则：资料不够或风险超限，就拒绝方案。</div>
                   <div class="log-line white">请在左侧选择情景与决策模式，点击【启动推演】开始多智能体审查。</div>
                 </div>
                 <div id="terminalVerdictBox" class="terminal-verdict-box" style="display: none;"></div>
@@ -1703,20 +1682,20 @@ class FOMCMacroRiskPipeline:
             <div class="ta-receipt-card accepted">
               <div class="ta-receipt-watermark">APPROVED</div>
               <div class="ta-receipt-head">
-                <div class="ta-receipt-title">📋 仿真量化订单风控审计准入凭证</div>
+                <div class="ta-receipt-title">📋 本次情景演示记录</div>
                 <div class="ta-receipt-id">PAPER-TA-${Date.now().toString(36).slice(-5).toUpperCase()}</div>
               </div>
               <div class="ta-receipt-grid">
-                <div class="ta-receipt-item"><span class="lbl">核准时间</span><span class="val">${new Date().toLocaleTimeString()} EST</span></div>
+                <div class="ta-receipt-item"><span class="lbl">核准时间</span><span class="val">${new Date().toLocaleTimeString()}（本地时间）</span></div>
                 <div class="ta-receipt-item"><span class="lbl">标的代码</span><span class="val"><b>${scen.ticker}</b></span></div>
                 <div class="ta-receipt-item"><span class="lbl">所属章节</span><span class="val">${scen.chapterRef}</span></div>
-                <div class="ta-receipt-item"><span class="lbl">最大已知损失</span><span class="val green">≤ 1.0% 安全线</span></div>
+                <div class="ta-receipt-item"><span class="lbl">风险检查结果</span><span class="val green">见本情景的说明</span></div>
                 <div class="ta-receipt-item full"><span class="lbl">风控条款</span><span class="val">${scen.ruleRef}</span></div>
-                <div class="ta-receipt-item full"><span class="lbl">SHA-256 审计哈希</span><code class="val mono">8f2a4bc97e10398f5a1d77b8c02a4e91823901cd7a18f4e9104b2</code></div>
+                <div class="ta-receipt-item full"><span class="lbl">固定展示编号（不是校验哈希）</span><code class="val mono">8f2a4bc97e10398f5a1d77b8c02a4e91823901cd7a18f4e9104b2</code></div>
               </div>
               <div class="ta-receipt-footer">
                 <span>🛡️ 签发人：宁姚 · 首席风控官 (Fail-Closed Gatekeeper)</span>
-                <span class="badge-audit-pass">✅ 已加密归档</span>
+                <span class="badge-audit-pass">✅ 演示结果</span>
               </div>
             </div>
           `;
@@ -1725,15 +1704,15 @@ class FOMCMacroRiskPipeline:
             <div class="ta-receipt-card rejected">
               <div class="ta-receipt-watermark">REJECTED</div>
               <div class="ta-receipt-head">
-                <div class="ta-receipt-title">🚨 宁姚 · 风险官关闸裁决令 (Fail-Closed Veto)</div>
+                <div class="ta-receipt-title">🚨 宁姚：这个方案暂不通过</div>
                 <div class="ta-receipt-id">HALT-VETO-${Date.now().toString(36).slice(-5).toUpperCase()}</div>
               </div>
               <div class="ta-receipt-grid">
-                <div class="ta-receipt-item"><span class="lbl">关闸时间</span><span class="val">${new Date().toLocaleTimeString()} EST</span></div>
+                <div class="ta-receipt-item"><span class="lbl">关闸时间</span><span class="val">${new Date().toLocaleTimeString()}（本地时间）</span></div>
                 <div class="ta-receipt-item"><span class="lbl">违规标的</span><span class="val"><b>${scen.ticker}</b></span></div>
-                <div class="ta-receipt-item"><span class="lbl">触犯罪责</span><span class="val red">${scen.chapterRef}</span></div>
+                <div class="ta-receipt-item"><span class="lbl">未满足的规则</span><span class="val red">${scen.chapterRef}</span></div>
                 <div class="ta-receipt-item"><span class="lbl">允许下单股数</span><span class="val red">0 股 (绝对禁止)</span></div>
-                <div class="ta-receipt-item full"><span class="lbl">保全本金</span><span class="val green">$100,000 完整保全</span></div>
+                <div class="ta-receipt-item full"><span class="lbl">保全本金</span><span class="val green">$100,000（示例本金，未下单）</span></div>
               </div>
               <div class="ta-receipt-footer">
                 <span>🛡️ 签发人：宁姚 · 风险官一票否决权生效</span>
@@ -1794,16 +1773,16 @@ class FOMCMacroRiskPipeline:
         });
 
         // Reset terminal & status
-        statusIndicator.textContent = '● SYSTEM READY';
+        statusIndicator.textContent = '● 等待开始';
         statusIndicator.className = 'status-indicator';
         verdictBox.style.display = 'none';
         streamLog.innerHTML = `
-          <div class="log-line green">TradingAgents Multi-Agent Engine v2.4 initialized.</div>
-          <div class="log-line green">Loaded 28 quantitative risk governance contracts (Fail-Closed).</div>
+          <div class="log-line green">情景演示 v2.4 已准备好。</div>
+          <div class="log-line green">演示参考 28 章规则：资料不够或风险超限，就拒绝方案。</div>
           <div class="log-line white">当前情景：【${scen.name}】已就绪，点击【启动推演】开始多智能体审查。</div>
         `;
 
-        renderReceipt(scen, 'accepted');
+        receiptContainer.textContent = '还没有本情景的结果。选择一个方案并运行演示后，这里才会显示记录。';
       }
 
       scenarioSelect.onchange = updateScenarioUI;
@@ -1827,7 +1806,7 @@ class FOMCMacroRiskPipeline:
         switchTab('stream');
         streamLog.innerHTML = `<div class="log-line white">[START] 启动 TradingAgents 多智能体对齐推演：${scen.ticker}...</div>`;
         verdictBox.style.display = 'none';
-        statusIndicator.textContent = '● RUNNING 4 AGENTS...';
+        statusIndicator.textContent = '● 正在播放角色检查过程';
         statusIndicator.className = 'status-indicator running';
 
         // Reset nodes
@@ -1860,7 +1839,7 @@ class FOMCMacroRiskPipeline:
 
             if (idx === logs.length - 1) {
               if (verdict.status === 'accepted') {
-                statusIndicator.textContent = '● APPROVED (PAPER ENTRY)';
+                statusIndicator.textContent = '● 示例方案通过';
                 statusIndicator.className = 'status-indicator green';
                 verdictBox.className = 'terminal-verdict-box accepted';
                 verdictBox.innerHTML = `
@@ -1893,7 +1872,7 @@ class FOMCMacroRiskPipeline:
                 if (typeof renderJournalLiveReceipts === 'function') renderJournalLiveReceipts();
                 renderReceipt(scen, 'accepted');
               } else {
-                statusIndicator.textContent = '● REJECTED (FAIL-CLOSED)';
+                statusIndicator.textContent = '● 示例方案未通过';
                 statusIndicator.className = 'status-indicator red';
                 verdictBox.className = 'terminal-verdict-box rejected';
                 verdictBox.innerHTML = `
@@ -1952,14 +1931,14 @@ plot(showVWAP ? myVwap : na, "Session VWAP", color=color.rgb(156, 39, 176, 0), l
 // ==========================================
 // 3. 散户救命防线：1.5% 单笔最大损失动态止损水线
 // ==========================================
-entryPrice = input.float(0.0, "持仓成本价 (填 0 则按入场触发)", group="救命风控防线 (1.5% 净值熔断)")
-riskPct = input.float(1.5, "单笔最大容忍亏损 (%)", minval=0.1, maxval=5.0, group="救命风控防线 (1.5% 净值熔断)")
+entryPrice = input.float(0.0, "持仓成本价（填 0 不画提醒线）", group="价格提醒（不代表账户亏损比例）")
+riskPct = input.float(1.5, "股价相对入场价的跌幅 (%)", minval=0.1, maxval=5.0, group="价格提醒（不代表账户亏损比例）")
 
 var float stopLossLevel = na
 if entryPrice > 0
     stopLossLevel := entryPrice * (1 - riskPct / 100)
 
-plot(stopLossLevel, "1.5% 救命止损水位线", color=color.rgb(244, 67, 54, 0), linewidth=2, style=plot.style_circles)
+plot(stopLossLevel, "1.5% 股价下跌提醒线", color=color.rgb(244, 67, 54, 0), linewidth=2, style=plot.style_circles)
 
 // ==========================================
 // 4. 隔夜跳空缺口与极端波动标记
@@ -1976,7 +1955,7 @@ plotshape(isGapDown, title="向下跳空", style=shape.triangledown, location=lo
 // ==========================================
 alertCondition = ta.crossunder(close, stopLossLevel)
 if alertCondition
-    alert('{"ticker": "' + syminfo.ticker + '", "price": ' + str.tostring(close) + ', "event": "RISK_VETO", "msg": "击穿 1.5% 救命防线，立即无条件止损"}', alert.freq_once_per_bar_close)
+    alert('{"ticker": "' + syminfo.ticker + '", "price": ' + str.tostring(close) + ', "event": "RISK_VETO", "msg": "收盘低于设置的价格提醒线，请检查交易计划"}', alert.freq_once_per_bar_close)
 `;
 
   const TRADINGVIEW_CHAPTER_TIPS = [
@@ -2006,7 +1985,7 @@ if alertCondition
     { ch: 25, title: "期权非线性收益", ticker: "SOXL", tool: "损益曲线草图", tip: "绘制 SOXL 衍生品二阶非线性损益曲线，小涨小跌期权磨损，大涨大跌非线性爆发。" },
     { ch: 26, title: "垂直借记价差", ticker: "TSLA", tool: "双水平线 (Alt+H)", tip: "标注 TSLA 210/225 Bull Call Spread 买卖两端行权价，限定 $300 最大损失。" },
     { ch: 27, title: "证据时效与 TTL", ticker: "CRWV", tool: "信息注释 (Note)", tip: "在 CRWV 财报 K 线上标注 SEC 官方 10-Q 披露时间戳与 24 小时 TTL 有效期。" },
-    { ch: 28, title: "风险官 Fail-Closed", ticker: "四神票", tool: "警报器 (Alt+A)", tip: "针对 TSLA/CRWV/COIN/SOXL 挂载 1.5% 止损水线自动化警报，条件不满足坚决关闸。" }
+    { ch: 28, title: "风险官 Fail-Closed", ticker: "示例股票或基金", tool: "警报器 (Alt+A)", tip: "针对 TSLA/CRWV/COIN/SOXL 挂载 1.5% 止损水线自动化警报，条件不满足坚决关闸。" }
   ];
 
   function toggleTradingViewModal(defaultTab) {
@@ -2029,7 +2008,7 @@ if alertCondition
                 <span class="ta-badge-engine">v5 Pine Script</span>
                 <span class="ta-badge-gate">免付费破3指标</span>
                 <span class="ta-badge-gate" style="background:#e8f5e9;color:#2e7d32;border-color:#c8e6c9;">Cboe BZX 避坑</span>
-                <span class="ta-badge-gate" style="background:#fef3c7;color:#b45309;border-color:#fde68a;">四神票实战 (TSLA/CRWV/COIN/SOXL)</span>
+                <span class="ta-badge-gate" style="background:#fef3c7;color:#b45309;border-color:#fde68a;">示例股票或基金实战 (TSLA/CRWV/COIN/SOXL)</span>
               </div>
               <div class="ta-title-sub">
                 专为个人量化交易者定制 · 突破 3 指标槽位限制 · Cboe BZX 抽样防洗盘 · 单条警报 Webhook 自动化 · 28 课画线实操
@@ -2086,14 +2065,14 @@ if alertCondition
 
               <div class="tv-sidebar-footer">
                 <div class="tv-footer-card">
-                  <div class="tv-footer-title">⚡ 四大神票实战校准</div>
+                  <div class="tv-footer-title">⚡ 四只示例股票或基金实战校准</div>
                   <div class="tv-ticker-pills">
                     <span class="tv-pill-tag tsla">TSLA</span>
                     <span class="tv-pill-tag crwv">CRWV</span>
                     <span class="tv-pill-tag coin">COIN</span>
                     <span class="tv-pill-tag soxl">SOXL</span>
                   </div>
-                  <p>全书画线与警报水线已针对 AI 算力、加密及 3 倍杠杆波动率完成校准。</p>
+                  <p>以下价格和阈值是练习示例。实际使用前，要按当前行情、持股数量和亏损预算重新计算。</p>
                 </div>
               </div>
             </div>
@@ -2133,13 +2112,13 @@ if alertCondition
                 <div class="tv-pane-header">
                   <div>
                     <h4>⚠️ Cboe BZX 免费数据源避坑指南（散户必读保命手卡）</h4>
-                    <p>TradingView 免费版美股数据来自 Cboe BZX 交易所，绝非全美全市场聚合数据，必须掌握以下 4 条铁律：</p>
+                    <p>先看图表标注的数据源和是否延迟。若使用的是 Cboe BZX 数据，不要把单一交易所的成交量当成全市场总量。</p>
                   </div>
                 </div>
                 <div class="tv-bzx-grid">
                   <div class="bzx-card bad">
                     <div class="bzx-card-title">❌ 误区一：盯 1 秒/1 分钟图看“突破”</div>
-                    <p><strong>底层真相：</strong>BZX 仅占全美交易量约 10%~15%。在 TSLA、CRWV 超短线中，经常因单一偶发成交产生刺破前高的“假影线 (Phantom Wicks)”。</p>
+                    <p><strong>底层真相：</strong>单一交易所与全市场汇总数据可能不同。不要用未经核实的 10%~15% 固定比例推算，也不要直接把细线判定为假成交。</p>
                     <div class="bzx-solution">🛡️ <strong>实战对策：</strong>在免费版上，趋势与止损判定以 <strong>5 分钟、15 分钟、日线收盘价</strong> 为准，忽略 1 分钟超短噪音。</div>
                   </div>
                   <div class="bzx-card bad">
@@ -2149,12 +2128,12 @@ if alertCondition
                   </div>
                   <div class="bzx-card good">
                     <div class="bzx-card-title">✅ 必开配置：开启延长交易时段 (Extended Hours)</div>
-                    <p><strong>底层真相：</strong>美股重大财报、宏观 CPI 均在美东 8:30 AM 或盘后 16:00 发生。如果图表未开 ETH，开盘瞬间将出现断层巨大的失真跳空。</p>
+                    <p><strong>底层真相：</strong>消息公布时间要逐项查日历，不能统一按 8:30 AM 或 16:00。打开延长时段能多看一部分交易，但不会消除真实跳空。</p>
                     <div class="bzx-solution">🛡️ <strong>实战对策：</strong>在 TradingView 图表右下角时区旁，点击 <strong>「ETH」</strong> 开启盘前盘后延长时段，让隔夜资金博弈清晰可见。</div>
                   </div>
                   <div class="bzx-card good">
                     <div class="bzx-card-title">✅ 成交量定性：只看放大倍数，不看绝对股数</div>
-                    <p><strong>底层真相：</strong>BZX 的 Volume 柱子大约只有真实总成交量的 1/8 左右，直接看绝对成交股数会严重低估标的活跃度。</p>
+                    <p><strong>底层真相：</strong>BZX 的成交量只反映对应数据源，不能固定乘 8 或按 1/8 换算成全市场量。先确认图表统计了哪些交易。</p>
                     <div class="bzx-solution">🛡️ <strong>实战对策：</strong>比较当前柱成交量相对于过去 20 根均量（Volume MA20）的<strong>倍数关系</strong>（如放大 2.5 倍），定性放量与缩量。</div>
                   </div>
                 </div>
@@ -2164,8 +2143,8 @@ if alertCondition
               <div class="tv-view-pane" id="tvPaneAlert" style="display:none;">
                 <div class="tv-pane-header">
                   <div>
-                    <h4>🔔 唯一警报 (Alert) 极限制胜与 Webhook 自动化</h4>
-                    <p>免费版 TradingView 只允许保持 1 个活跃云端警报。如何把这唯一的子弹打在散户最致命的 1.5% 止损痛点上？</p>
+                    <h4>🔔 设置价格提醒，了解如何发送通知</h4>
+                    <p>先核对你的套餐能用多少条警报，以及是否支持 Webhook。下方只演示价格提醒：股价跌 1.5%，不等于整个账户亏 1.5%。</p>
                   </div>
                 </div>
                 <div class="tv-alert-setup">
@@ -2185,22 +2164,22 @@ if alertCondition
                       <input type="number" id="tvAlertEntry" value="215.00" step="0.5" class="tv-input" />
                     </div>
                     <div class="form-row">
-                      <label>单笔最大容忍亏损比例 (%)：</label>
+                      <label>股价比入场价下跌多少时提醒（%）：</label>
                       <input type="number" id="tvAlertPct" value="1.5" step="0.1" class="tv-input" />
                     </div>
                     <div class="tv-calc-result">
-                      <span>1.5% 救命止损水位触发价：</span>
+                      <span>按上方跌幅计算的提醒价：</span>
                       <b id="tvAlertStopVal">$211.78</b>
                     </div>
                   </div>
                   <div class="tv-webhook-box">
                     <div class="tv-webhook-head">
-                      <b>TradingView Webhook 自动化推送报文 (直连 TradingAgents)</b>
+                      <b>Webhook 通知内容示例（需自行连接接收服务）</b>
                       <button type="button" class="btn-copy-sm" id="btnCopyWebhook">复制 Webhook 报文</button>
                     </div>
                     <pre><code id="tvWebhookJson">{\n  "ticker": "TSLA",\n  "close": 211.78,\n  "event": "RISK_WATERLINE_BREACH",\n  "action": "HALT_AND_CLOSE",\n  "source": "TradingView_Free_Deck",\n  "auth_token": "SHAN_TA_SECURE_TOKEN_2026"\n}</code></pre>
                     <div class="tv-webhook-desc">
-                      💡 <strong>设置方法：</strong>在 TradingView 警报窗口中，条件选择我们刚才安装的「TradingAgents 4-in-1」指标，触发动作勾选「Webhook URL」，将上方 JSON 填入消息正文即可实现云端自动风控！
+                      💡 <strong>设置方法：</strong>在 TradingView 警报窗口中，条件选择我们刚才安装的「TradingAgents 4-in-1」指标，触发动作勾选「Webhook URL」，把示例 JSON 填入消息正文，还需自行配置接收地址和身份验证。复制消息不会自动完成风控或下单。
                     </div>
                   </div>
                 </div>
@@ -2354,7 +2333,7 @@ if alertCondition
         tags: ["不设止损", "抱侥幸心理", "浮亏扩大"]
       },
       quant: {
-        action: "触及事前设定的 1% 止损线，系统自动市价单平仓离场，损失严格锁死在 $1,000 以内。",
+        action: "本例按事先设置的止损退出，记录损失 $1,000。真实市价单不保证成交价，实际损失可能超过预算。",
         pnl: -1000,
         tags: ["1%止损执行", "承认失误", "保全99%本金"]
       }
@@ -2388,14 +2367,14 @@ if alertCondition
     {
       name: "第 4 笔：科技巨头财报公布前夕 (High IV Earnings Event)",
       emo: {
-        action: "听说财报必大涨，全仓裸买虚值看涨期权（IV 120%）。财报后股价微涨 1.5%，但遭遇 IV Crush，期权直接腰斩归零！",
+        action: "听说财报必大涨，全仓裸买虚值看涨期权（IV 120%）。财报后股价微涨 1.5%，但遭遇 IV Crush，期权价格大幅下跌！",
         pnl: -4500,
         tags: ["赌徒博弈", "IV Crush 归零", "致命无知"]
       },
       quant: {
         action: "期权智能体识别 IV 处于 95 分位极高区，坚决拒绝单腿买方，改用垂直借记价差 (Debit Spread) 严格锁定最大风险。",
         pnl: 1400,
-        tags: ["垂直价差对冲", "波动率防御", "确定性利润"]
+        tags: ["垂直价差对冲", "波动率防御", "本例盈利"]
       }
     },
     {
@@ -2473,7 +2452,7 @@ if alertCondition
       quant: {
         action: "多智能体一致共识，严格按 1% 风险（当前本金的 1%）建立标准仓位，捕获完整波段收益！",
         pnl: 4600,
-        tags: ["知行合一", "复利增长", "最终盈利 $18.5k"]
+        tags: ["知行合一", "复利增长", "查看下方累计盈亏"]
       }
     }
   ];
@@ -2489,7 +2468,7 @@ if alertCondition
           <div class="autopsy-dialog-head">
             <div>
               <h3>📉 告别感性 · 六年美股三万刀亏损深度解剖与量化重生沙盒</h3>
-              <p>从真实 -$30,000 亏损病灶出发，通过 10 笔典型美股黑天鹅推演：用数据、逻辑、纪律重建交易体系</p>
+              <p>以 -$30,000 的亏损为例，比较 10 笔预设交易的做法。这些结果是演示数据，不是策略收益证明。</p>
             </div>
             <button type="button" class="btn-close-autopsy" aria-label="关闭">
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -2503,7 +2482,7 @@ if alertCondition
             <!-- Section 1: Asymmetric Drawdown Math -->
             <div class="autopsy-math-card">
               <div class="autopsy-card-header">
-                <b>📐 散户亏损第一非对称定律：亏损容易回本难</b>
+                <b>📐 亏损后，要涨多少才能回本</b>
                 <span class="math-badge">亏损数学方程</span>
               </div>
               <div class="autopsy-stats-grid">
@@ -2518,19 +2497,19 @@ if alertCondition
                   <small>回撤幅度 -30.0%</small>
                 </div>
                 <div class="stat-box current">
-                  <span class="stat-label">当前账户真实净值</span>
+                  <span class="stat-label">示例剩余本金</span>
                   <span class="stat-val">$70,000</span>
-                  <small>亟待救赎的本金</small>
+                  <small>亏损后还剩的钱</small>
                 </div>
                 <div class="stat-box recover">
                   <span class="stat-label">真实回本所需净涨幅</span>
                   <span class="stat-val">+42.86%</span>
-                  <small>非对称数学惩罚</small>
+                  <small>剩余本金变少，回本更难</small>
                 </div>
               </div>
               <div class="autopsy-math-formula">
                 <code>回本所需收益率 R = 亏损金额 ÷ 剩余本金 = $30,000 ÷ $70,000 = +42.86%</code>
-                <p>⚠️ <b>痛点反思：</b>亏损 30% 并不等于赚回 30% 就能打平！如果你继续凭感性追涨杀跌、不设 1% 止损，一旦本金亏到 50% ($50,000)，回本需要上涨 100%（翻倍）！这也是 90% 散户在美股亏损后越急越亏、直至账户归零的根本死因。</p>
+                <p>⚠️ <b>痛点反思：</b>亏损 30% 并不等于赚回 30% 就能打平！如果你继续凭感性追涨杀跌、不设 1% 止损，一旦本金亏到 50% ($50,000)，回本需要上涨 100%（翻倍）！这说明剩余本金越少，回本越难；这里没有统计证据支持“90% 散户”这样的结论。</p>
               </div>
             </div>
 
@@ -2552,7 +2531,7 @@ if alertCondition
               <div class="sim-chart-wrap">
                 <div class="chart-legend">
                   <span class="legend-item red"><i class="dot red"></i> 过去6年感性交易模式 (-$30,000 路径)</span>
-                  <span class="legend-item green"><i class="dot green"></i> TradingAgents 量化纪律模式 (+$18,500 路径)</span>
+                  <span class="legend-item green"><i class="dot green"></i> TradingAgents 按规则交易的示例路径</span>
                   <span class="legend-item baseline"><i class="line-base"></i> $100k 起始本金基准</span>
                 </div>
                 <svg id="simDualEquitySvg" class="sim-equity-svg" viewBox="0 0 800 160" preserveAspectRatio="none">
@@ -2595,7 +2574,7 @@ if alertCondition
                     <div class="sim-scenario-name" id="quantScenarioName">准备就绪：智能体系统 Fail-Closed 防线已就位</div>
                     <div class="sim-inner-box green">
                       <div class="box-title">🤖 TradingAgents 多智能体协同裁决：</div>
-                      <p id="quantVerdict">“风险官牢守 1% 资本生命线与日内 3 连亏熔断门禁。”</p>
+                      <p id="quantVerdict">“风险官牢守 本例亏损上限：本金的 1%与日内 3 连亏熔断门禁。”</p>
                     </div>
                     <div class="sim-tags-list" id="quantTagsList">
                       <span class="sim-tag green">1% 止损红线</span>
@@ -2627,7 +2606,7 @@ if alertCondition
                 <div class="cmd-row">
                   <code>python3 tradingagents_workbench.py --audit AAPL,NVDA,TSLA</code>
                   <button type="button" class="btn-copy-cmd" data-cmd="python3 tradingagents_workbench.py --audit AAPL,NVDA,TSLA">复制命令</button>
-                  <span class="cmd-desc">对自选标的按 1% 资本生命线倒推仓位股数</span>
+                  <span class="cmd-desc">对自选标的按 本例亏损上限：本金的 1%倒推仓位股数</span>
                 </div>
               </div>
             </div>
@@ -2707,7 +2686,7 @@ if alertCondition
           emoTagsList.innerHTML = '<span class="sim-tag red">无风控</span><span class="sim-tag red">凭直觉</span>';
 
           quantScenarioEl.textContent = '准备就绪：智能体系统 Fail-Closed 防线已就位';
-          quantVerdictEl.textContent = '“风险官牢守 1% 资本生命线与日内 3 连亏熔断门禁。”';
+          quantVerdictEl.textContent = '“风险官牢守 本例亏损上限：本金的 1%与日内 3 连亏熔断门禁。”';
           quantTagsList.innerHTML = '<span class="sim-tag green">1% 止损红线</span><span class="sim-tag green">Fail-Closed</span>';
         }
 
@@ -2856,7 +2835,7 @@ if alertCondition
             </div>
 
             <div>
-              <div class="paradigm-section-title">🛡️ 散户破局 10 大核心救命防线（直达实战台）</div>
+              <div class="paradigm-section-title">🛡️ 散户破局 10 大重点规则（直达实战台）</div>
               <div class="critical-links-grid" id="paradigmCriticalLinks">
                 <!-- Dynamically rendered -->
               </div>
@@ -2913,7 +2892,7 @@ if alertCondition
           navigator.clipboard.writeText(creed).then(() => {
             showKeyToast('已复制交易军规 7 条到剪贴板！');
           }).catch(() => {
-            showKeyToast('交易军规已就绪');
+            showKeyToast('复制失败，请选中文字手动复制');
           });
         }
       };
@@ -2936,7 +2915,7 @@ if alertCondition
       dialog.innerHTML = `
         <div class="shortcut-dialog-content">
           <div class="shortcut-dialog-head">
-            <h3>⌨️ 全键盘极客操作指南</h3>
+            <h3>⌨️ 键盘快捷键</h3>
             <button type="button" class="btn-close-shortcuts" aria-label="关闭">
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
                 <line x1="1.5" y1="1.5" x2="8.5" y2="8.5"></line>
@@ -2955,7 +2934,7 @@ if alertCondition
             <div class="shortcut-item"><kbd>X</kbd><span>打开 6年-$30k 亏损深度复盘沙盒</span></div>
             <div class="shortcut-item"><kbd>P</kbd><span>打开 散户破局指南罗盘 (数据·逻辑·纪律)</span></div>
             <div class="shortcut-item"><kbd>T</kbd><span>一键轮换设计主题 (🍎 经典苹果 / ☀️ 论文暖白 / 🌙 彭博暗黑)</span></div>
-            <div class="shortcut-item"><kbd>R</kbd><span>打开 🍷 雷司令投资常识精读研习舱 (118篇全集)</span></div>
+            <div class="shortcut-item"><kbd>R</kbd><span>打开118篇通俗讲解</span></div>
             <div class="shortcut-item"><kbd>?</kbd><span>打开 / 关闭本快捷键速查表</span></div>
             <div class="shortcut-item"><kbd>Esc</kbd><span>关闭弹窗 / 极速防窥模式</span></div>
           </div>
@@ -3014,7 +2993,7 @@ if alertCondition
           <div class="receipt-ticket">
             <div class="ticket-meta">
               <span class="ticket-ch">CH.${String(chIdx + 1).padStart(2, '0')}</span>
-              <span class="ticket-status">✓ 审计核准</span>
+              <span class="ticket-status">✓ 练习通过</span>
             </div>
             <div class="ticket-title">${title}</div>
             <div class="ticket-foot">
@@ -3029,21 +3008,21 @@ if alertCondition
     dock.innerHTML = `
       <div class="exposure-meter">
         <div class="meter-head">
-          <span>🛡️ 组合防御覆盖率</span>
+          <span>🛡️ 章节完成比例</span>
           <b class="tabular-nums">${coveragePct}%</b>
         </div>
         <div class="meter-bar">
           <div class="meter-fill" style="width: ${coveragePct}%"></div>
         </div>
         <div class="meter-labels">
-          <span>标的：SHAN / NDX</span>
-          <span>违规拦截：100%</span>
+          <span>仅显示章节进度</span>
+          <span>这里只统计练习进度</span>
         </div>
       </div>
 
       <div class="live-receipts-feed">
         <div class="feed-header">
-          <span>📜 实战 Paper 凭证池 (${curDoneSize}/28)</span>
+          <span>📜 模拟练习记录 (${curDoneSize}/28)</span>
           <small class="live-indicator">LIVE</small>
         </div>
         <div class="receipts-list">
@@ -3058,8 +3037,8 @@ if alertCondition
     const phase4 = document.getElementById('lesson-phase-4');
     if (!phase4) return;
 
-    const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined) 
-      ? window.v2Active 
+    const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined)
+      ? window.v2Active
       : (typeof v2Active !== 'undefined' ? v2Active : +(localStorage.getItem('manga-us-v2-active') || 0));
 
     // Enhance principle with stamp and copy action
@@ -3106,10 +3085,10 @@ if alertCondition
           navigator.clipboard.writeText(fullRuleText).then(() => {
             showKeyToast('已复制本章风控军规至剪贴板！');
           }).catch(() => {
-            showKeyToast('已锁定本章军规');
+            showKeyToast('复制失败，请选中文字手动复制');
           });
         } else {
-          showKeyToast('风控准则已锁定');
+          showKeyToast('当前浏览器不支持复制，请选中文字手动复制');
         }
       };
     }
@@ -3143,9 +3122,9 @@ if alertCondition
         <div class="riesling-mastery-head">
           <div class="mastery-head-left">
             <span class="mastery-wine-badge">🍷 本章通关核准</span>
-            <span class="mastery-title-text">已完全掌握雷司令投资常识体系 (第 ${curChapNum} 章研习对标)</span>
+            <span class="mastery-title-text">继续阅读与第 ${curChapNum} 章有关的文章</span>
           </div>
-          <small class="mastery-sub-badge">118篇深度文集研习矩阵</small>
+          <small class="mastery-sub-badge">118 篇文章索引</small>
         </div>
         <div class="riesling-mastery-body">
           <div class="mastery-item primary-art-row">
@@ -3160,11 +3139,11 @@ if alertCondition
             <blockquote class="mastery-quote-text">“${rMap.rieslingQuote}”</blockquote>
           </div>
           <div class="mastery-item proof-row">
-            <span class="mastery-label">🔬 机构微观结构与学术实证：</span>
+            <span class="mastery-label">🔬 相关原理与参考说明：</span>
             <span class="mastery-proof-content">${rMap.microstructureMechanic} — <i>${rMap.empiricalProof}</i></span>
           </div>
           <div class="mastery-item formula-row">
-            <span class="mastery-label">🎯 实战标定公式：</span>
+            <span class="mastery-label">🎯 计算公式：</span>
             <code class="mastery-formula-code">${rMap.actionableFormula}</code>
           </div>
         </div>
@@ -3184,9 +3163,9 @@ if alertCondition
       const nextIdx = curChapter + 1;
       const nextTitle = (typeof V2_TITLES !== 'undefined' && V2_TITLES[nextIdx]) ? V2_TITLES[nextIdx][0] : `第 ${nextIdx + 1} 章`;
       const nextDepth = (typeof CHAPTER_DEPTH !== 'undefined' && CHAPTER_DEPTH[nextIdx]) ? CHAPTER_DEPTH[nextIdx] : null;
-      const trap = nextDepth?.traps?.[0] || '提前理解真实市场微观摩擦与边界机制。';
+      const trap = nextDepth?.traps?.[0] || '先了解交易成本，以及哪些情况不能照搬这个做法。';
       nextPreview.innerHTML = `
-        <div class="preview-badge">⚡ 下一章预告与风险演进</div>
+        <div class="preview-badge">⚡ 下一章会学什么</div>
         <div class="preview-body">
           <h4>第 ${nextIdx + 1} 章 · ${nextTitle}</h4>
           <p><b>提前警惕：</b>${trap}</p>
@@ -3196,8 +3175,8 @@ if alertCondition
       nextPreview.innerHTML = `
         <div class="preview-badge success">🎓 全流程总结业</div>
         <div class="preview-body">
-          <h4>28 章量化风控决策演练全部完成</h4>
-          <p>你的账本与执行规则已全部经过 Paper 审计，具备完整的真实极端市场防御体系！</p>
+          <h4>28 章练习的最后检查</h4>
+          <p>请核对 28 章练习记录，并重新做一遍还不熟悉的题目。模拟练习通过，不代表真实交易不会亏损。</p>
         </div>
       `;
     }
@@ -3225,8 +3204,8 @@ if alertCondition
 
   // 10.2 Enhance Phase 1 & 2 Top Guidance Bar
   function enhancePhase1And2() {
-    const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined) 
-      ? window.v2Active 
+    const curChapter = (typeof window !== 'undefined' && window.v2Active !== undefined)
+      ? window.v2Active
       : (typeof v2Active !== 'undefined' ? v2Active : +(localStorage.getItem('manga-us-v2-active') || 0));
     const info = PARADIGM_TRINITY[curChapter];
     if (!info) return;
@@ -3528,7 +3507,7 @@ if alertCondition
       bindSidebarFreeNavigation();
       injectSidebarToggle();
       applyViewMode();
-      
+
       const active = document.querySelector('.rail-lesson.active');
       if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     };
