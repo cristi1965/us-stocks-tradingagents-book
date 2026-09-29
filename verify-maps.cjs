@@ -11,7 +11,7 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  assert.equal(await page.locator('.diagram img').count(),4);
  assert.ok(await page.locator('.diagram img').evaluateAll(imgs=>imgs.every(i=>i.complete&&i.naturalWidth>0)));
  for(const href of await page.locator('a[href]').evaluateAll(as=>as.map(a=>a.getAttribute('href')))){
-  if(href.startsWith('index.html#'))assert.ok(ids.has(href.split('#')[1]),href);
+  if(href.startsWith('index.html#'))assert.ok(href.endsWith('#path')||ids.has(href.split('#')[1]),href);
   if(href.startsWith('library.html#'))assert.ok(catalog.some(a=>a.id===href.split('#')[1]),href);
  }
  for(const id of ['learning-route','domain-map','decision-flow','order-sequence']){
@@ -29,6 +29,8 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  await page.screenshot({path:'output/playwright/maps-mobile.png'});
  await page.locator('a[href="index.html#partial-fill"]').last().click();await page.waitForFunction(()=>window.LearningPractice);
  assert.match(await page.locator('h1').textContent(),/只买到一部分/);
+ await page.locator('#mobileCatalogButton').click();
+ assert.equal(await page.locator('.sidebar').evaluate(e=>e.classList.contains('expanded')),true);
  await page.locator('.sidebar a[href="maps.html"]').click();await page.waitForURL('**/maps.html');
  await page.goto('http://127.0.0.1:4186/library.html');await page.locator('.library-nav a[href="maps.html"]').click();await page.waitForURL('**/maps.html');
  // Every article detail receives a local context diagram, not only the overview page.

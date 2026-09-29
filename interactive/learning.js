@@ -11,7 +11,7 @@
     const extra=articleCatalog.flatMap(a=>bank[a.id].map((q,i)=>({
       id:`article-${a.id}-${i+1}`,title:q.title,group:a.section,goal:q.title,concept:q.explanation,
       articleId:a.id,articleTitle:a.title,sourceHeading:q.sourceHeading,part:i+1,parts:bank[a.id].length,
-      terms:[],example:{prompt:'',steps:[]},
+      terms:q.terms||[],example:q.example||{prompt:'',steps:[]},deepDive:q.deepDive||window.ARTICLE_DEPTH_START?.[`${a.id}-${i+1}`],
       quiz:{prompt:q.prompt,options:q.options,answer:q.answer}
     })));
     if(extra.some(l=>!l.title||!l.concept||!l.sourceHeading||!l.quiz.prompt||!Array.isArray(l.quiz.options)||l.quiz.options.length!==3||l.quiz.options.some(o=>!o.text||!o.feedback)||!Number.isInteger(l.quiz.answer)||l.quiz.answer<0||l.quiz.answer>2))throw Error('invalid quiz');
@@ -59,6 +59,7 @@
   }
   function open(id, focus = true) {
     if (!lessons.some(l => l.id === id)) return;
+    closeMobileCatalog();
     mode = 'learn'; state.active = id; persist();
     scope=lessons.find(l=>l.id===id).articleId?'articles':'core';
     history.replaceState(null, '', `#${encodeURIComponent(id)}`);
@@ -79,7 +80,7 @@
     if(l.articleId){
       $('.lesson-heading').innerHTML=`<div class="lesson-meta"><span>${escape(l.group)} · 本文第 ${l.part} / ${l.parts} 个知识点</span><a href="#practice">直接做题 ↓</a></div><h1>${escape(l.title)}</h1><p class="bridge">来自：${escape(l.articleTitle)}</p>`;
       $('.terms').remove();$('.example').remove();
-      $('.dialogue').outerHTML=`<section class="example article-concept"><h2>先弄懂这一点</h2><p>${escape(l.concept)}</p><a href="library.html#${encodeURIComponent(l.articleId)}">回到文章看完整解释 →</a><p class="small muted">对应段落：${escape(l.sourceHeading)}</p></section>`;
+      $('.dialogue').outerHTML=`<section class="example article-concept"><h2>先弄懂这一点</h2><p>${escape(l.concept)}</p>${l.deepDive?`<div class="depth-case"><p class="depth-label">贯穿案例 · 第 ${l.part} 步</p><h3>${escape(l.deepDive.caseTitle)}</h3><p>${escape(l.deepDive.caseText)}</p></div><div class="depth-grid">${l.deepDive.layers.map(layer=>`<section><h3>${escape(layer.title)}</h3><p>${escape(layer.body)}</p></section>`).join('')}</div><section class="reasoning-chain"><h3>不要背答案，沿着这条链判断</h3><ol>${l.deepDive.reasoning.map(step=>`<li>${escape(step)}</li>`).join('')}</ol></section><aside class="depth-boundary"><b>什么时候不能这样判断？</b><p>${escape(l.deepDive.boundary)}</p></aside>`:''}<a href="library.html#${encodeURIComponent(l.articleId)}">回到文章看完整解释 →</a><p class="small muted">对应段落：${escape(l.sourceHeading)}</p></section>`;
       $('.submit-row p').textContent='先按自己的理解选。每个选项都有原因说明。';
       $('.source').innerHTML=`<a href="library.html#${encodeURIComponent(l.articleId)}">返回这篇文章 →</a>`;
     }else{
@@ -87,6 +88,7 @@
       $('.lesson-meta span').textContent=`${phase?`阶段 ${phase.number} · ${phase.title}`:l.group} · ${mainlineIds.indexOf(l.id)+1} / ${coreLessons.length}`;
     }
     $('.lesson-heading').insertAdjacentHTML('afterend',window.DetailContext.render(l.group,l.title,l.articleId||l.id));
+    if(l.focusPoints?.length){const map=$('.detail-map');map.insertAdjacentHTML('afterend',`<section class="focus-summary" aria-labelledby="focus-summary-title"><p class="focus-summary-label">重点补充</p><h2 id="focus-summary-title">把容易混淆的底层逻辑连起来</h2><div class="focus-summary-list">${l.focusPoints.map((item,index)=>`<article><span>${index+1}</span><div><h3>${escape(item.title)}</h3><p>${escape(item.body)}</p></div></article>`).join('')}</div>${l.focusNote?`<p class="focus-summary-note"><b>实际判断前：</b>${escape(l.focusNote)}</p>`:''}</section>`);}
     const sequence=l.articleId?scoped():mainlineLessons,position=sequence.indexOf(l);
     $('#previous').disabled=position===0;
     $('#next').textContent=position===sequence.length-1?'去复习 →':l.articleId&&l.part===l.parts?'下一篇练习 →':'下一节 →';
@@ -146,7 +148,18 @@
   });
   $('#search').oninput = catalog;
   $('#courseScope').onchange=event=>{scope=event.target.value;$('#search').value='';const first=scoped()[0];if(first)open(first.id);else catalog();};
-  $('#catalogToggle').onclick = () => { const expanded = $('.sidebar').classList.toggle('expanded'); $('#catalogToggle').setAttribute('aria-expanded', String(expanded)); $('#catalogToggle').textContent = expanded ? '收起目录' : '展开目录'; };
+  function setMobileCatalog(opened) {
+    $('.sidebar').classList.toggle('expanded',opened);
+    document.body.classList.toggle('catalog-open',opened);
+    for(const id of ['catalogToggle','mobileCatalogButton'])$('#'+id).setAttribute('aria-expanded',String(opened));
+    $('#catalogToggle').textContent=opened?'关闭':'展开目录';
+    if(opened){const current=$('.lesson-link[aria-current]');requestAnimationFrame(()=>current?.scrollIntoView({block:'center'}));}
+  }
+  function closeMobileCatalog(){if(matchMedia('(max-width:650px)').matches)setMobileCatalog(false);}
+  $('#catalogToggle').onclick = () => setMobileCatalog(!$('.sidebar').classList.contains('expanded'));
+  $('#mobileCatalogButton').onclick = () => setMobileCatalog(true);
+  $('#catalogBackdrop').onclick = () => setMobileCatalog(false);
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&$('.sidebar').classList.contains('expanded'))setMobileCatalog(false);});
   $('#pathNav').onclick = () => path();
   $('#learnNav').onclick = () => open(state.active);
   $('#reviewNav').onclick = review;
